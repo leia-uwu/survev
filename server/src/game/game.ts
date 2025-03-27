@@ -29,17 +29,14 @@ import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
 
-export interface GroupData {
-    hash: string;
-    autoFill: boolean;
-}
-
 export interface JoinTokenData {
-    autoFill: boolean;
-    playerCount: number;
-    availableUses: number;
     expiresAt: number;
-    groupHashToJoin: string;
+    userId: string | null;
+    groupData: {
+        autoFill: boolean;
+        playerCount: number;
+        groupHashToJoin: string;
+    };
 }
 
 export class Game {
@@ -377,14 +374,23 @@ export class Game {
         }
     }
 
-    addJoinToken(id: string, autoFill: boolean, playerCount: number) {
-        this.joinTokens.set(id, {
-            autoFill,
-            playerCount,
-            availableUses: playerCount,
-            expiresAt: Date.now() + 15000,
+    addJoinTokens(
+        tokens: Array<{ token: string; userId: string | null }>,
+        autoFill: boolean,
+    ) {
+        const groupData = {
+            playerCount: tokens.length,
             groupHashToJoin: "",
-        });
+            autoFill,
+        };
+
+        for (const token of tokens) {
+            this.joinTokens.set(token.token, {
+                expiresAt: Date.now() + 10000,
+                userId: token.userId,
+                groupData,
+            });
+        }
     }
 
     updateData() {

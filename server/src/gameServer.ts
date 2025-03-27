@@ -3,13 +3,6 @@ import { App, SSLApp, type WebSocket } from "uWebSockets.js";
 import { version } from "../../package.json";
 import { GameConfig } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
-import {
-    type FindGameBody,
-    type FindGameMatchData,
-    type FindGameResponse,
-    zFindGameBody,
-} from "../../shared/types/api";
-import { math } from "../../shared/utils/math";
 import { Config } from "./config";
 import { SingleThreadGameManager } from "./game/gameManager";
 import { GameProcessManager } from "./game/gameProcessManager";
@@ -26,7 +19,12 @@ import {
     readPostedJSON,
     returnJson,
 } from "./utils/serverHelpers";
-import type { GameSocketData } from "./utils/types";
+import {
+    type FindGamePrivateBody,
+    type FindGamePrivateRes,
+    type GameSocketData,
+    zFindGamePrivateBody,
+} from "./utils/types";
 
 class GameServer {
     readonly logger = new Logger("GameServer");
@@ -39,29 +37,30 @@ class GameServer {
             ? new SingleThreadGameManager()
             : new GameProcessManager();
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
-        const parsed = zFindGameBody.safeParse(body);
+    async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
+        const parsed = zFindGamePrivateBody.safeParse(body);
 
-        if (!parsed.success) {
+        if (!parsed.success || !parsed.data) {
             this.logger.warn("/api/find_game: Invalid body");
             return {
                 err: "full",
             };
         }
+        const data = parsed.data;
 
-        if (body.version !== GameConfig.protocolVersion) {
+        if (data.version !== GameConfig.protocolVersion) {
             return {
                 err: "invalid_protocol",
             };
         }
 
-        if (body.region !== this.regionId) {
+        if (data.region !== this.regionId) {
             return {
                 err: "full",
             };
         }
 
-        const mode = Config.modes[body.gameModeIdx];
+        const mode = Config.modes[data.gameModeIdx];
 
         if (!mode || !mode.enabled) {
             return {
@@ -69,27 +68,20 @@ class GameServer {
             };
         }
 
-        body.playerCount = math.clamp(body.playerCount ?? 1, 1, mode.teamMode);
-
-        const data = await this.manager.findGame({
-            region: body.region,
-            zones: body.zones,
-            version: body.version,
-            playerCount: math.clamp(body.playerCount, 1, mode.teamMode),
-            autoFill: body.autoFill,
-            gameModeIdx: body.gameModeIdx,
+        const gameId = await this.manager.findGame({
+            region: data.region,
+            version: data.version,
+            autoFill: data.autoFill,
+            gameModeIdx: data.gameModeIdx,
+            playerData: data.playerData,
         });
 
-        let response: FindGameMatchData = {
-            zone: "",
-            data: data.data,
-            gameId: data.gameId,
+        return {
+            gameId,
             useHttps: this.region.https,
             hosts: [this.region.address],
             addrs: [this.region.address],
         };
-
-        return { res: [response] };
     }
 
     sendData() {
@@ -128,16 +120,17 @@ app.post("/api/find_game", async (res, req) => {
 
     readPostedJSON(
         res,
-        async (body: FindGameBody) => {
+        async (body: FindGamePrivateBody) => {
             try {
                 if (res.aborted) return;
 
-                const parsed = zFindGameBody.safeParse(body);
-                if (!parsed.success) {
+                const parsed = zFindGamePrivateBody.safeParse(body);
+                if (!parsed.success || !parsed.data) {
                     returnJson(res, { err: "full" });
+                    return;
                 }
 
-                returnJson(res, await server.findGame(body));
+                returnJson(res, await server.findGame(parsed.data));
             } catch (error) {
                 server.logger.warn("API find_game error: ", error);
             }

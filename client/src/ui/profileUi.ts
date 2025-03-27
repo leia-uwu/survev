@@ -72,9 +72,12 @@ function createLoginOptions(
     addLoginOption("discord", account.profile.linkedDiscord, () => {
         window.location.href = "/api/auth/discord";
     });
-    addLoginOption("mock", false, () => {
-        window.location.href = "/api/auth/mock";
-    });
+
+    if (IS_DEV) {
+        addLoginOption("mock", false, () => {
+            window.location.href = "/api/auth/mock";
+        });
+    }
 }
 
 export class ProfileUi {

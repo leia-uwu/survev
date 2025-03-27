@@ -34,9 +34,7 @@ import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
-import { lucia } from "../../api/auth/lucia";
-import { logPlayerIP } from "../../api/moderation";
-import { Config, type Region } from "../../config";
+import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
 import { setLoadout } from "../../utils/loadoutHelpers";
 import { validateUserName } from "../../utils/serverHelpers";
@@ -120,14 +118,14 @@ export class PlayerBarn {
     addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
+        if (!joinData || joinData.expiresAt < Date.now()) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
             }
             return;
         }
-        joinData.availableUses -= 1;
+        this.game.joinTokens.delete(joinMsg.matchPriv);
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
@@ -162,7 +160,15 @@ export class PlayerBarn {
             layer = 0;
         }
 
-        const player = new Player(this.game, pos, layer, socketId, joinMsg, ip);
+        const player = new Player(
+            this.game,
+            pos,
+            layer,
+            socketId,
+            joinMsg,
+            ip,
+            joinData.userId,
+        );
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -379,20 +385,21 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    getGroupAndTeam(joinData: JoinTokenData):
+    getGroupAndTeam({ groupData }: JoinTokenData):
         | {
               group?: Group;
               team?: Team;
           }
         | undefined {
         if (!this.game.isTeamMode) return undefined;
-        let group = this.groupsByHash.get(joinData.groupHashToJoin);
+
+        let group = this.groupsByHash.get(groupData.groupHashToJoin);
         let team = this.game.map.factionMode ? this.getSmallestTeam() : undefined;
 
-        if (!group && joinData.autoFill) {
+        if (!group && groupData.autoFill) {
             const groups = team ? team.getGroups() : this.groups;
             group = groups.find((group) => {
-                return group.autoFill && group.canJoin(joinData.playerCount);
+                return group.autoFill && group.canJoin(groupData.playerCount);
             });
         }
 
@@ -400,17 +407,17 @@ export class PlayerBarn {
         // but keeping it just in case
         // since more than 4 players in a group crashes the client
         if (!group || group.players.length >= this.game.teamMode) {
-            group = this.addGroup(joinData.autoFill);
+            group = this.addGroup(groupData.autoFill);
         }
 
         // only reserve slots on the first time this join token is used
         // since the playerCount counts for other people from the team menu
         // using the same token
-        if (group.hash !== joinData.groupHashToJoin) {
-            group.reservedSlots += joinData.playerCount;
+        if (group.hash !== groupData.groupHashToJoin) {
+            group.reservedSlots += groupData.playerCount;
         }
 
-        joinData.groupHashToJoin = group.hash;
+        groupData.groupHashToJoin = group.hash;
 
         // pre-existing group not created during this function call
         // players who join from the same group need the same team
@@ -1145,6 +1152,7 @@ export class Player extends BaseGameObject {
         socketId: string,
         joinMsg: net.JoinMsg,
         ip: string,
+        userId: string | null,
     ) {
         super(game, pos);
 
@@ -1154,6 +1162,7 @@ export class Player extends BaseGameObject {
 
         this.socketId = socketId;
         this.ip = ip;
+        this.userId = userId;
 
         this.name = validateUserName(joinMsg.name);
 
@@ -1220,7 +1229,6 @@ export class Player extends BaseGameObject {
         }
 
         setLoadout(joinMsg, this);
-        this.setUserId(joinMsg.authCookie);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -2287,37 +2295,6 @@ export class Player extends BaseGameObject {
 
         this.sendData(msgStream.getBuffer());
         this._firstUpdate = false;
-    }
-
-    /**
-     * gets userId from cookie to identify user when saving games to database
-     * don't await the function when calling
-     */
-    async setUserId(authCookie: string) {
-        const playerData = {
-            name: this.name,
-            gameId: this.game.id,
-            ip: this.ip,
-            region: Config.thisRegion as Region,
-        };
-
-        try {
-            if (Config.accountsEnabled && authCookie) {
-                const data = await lucia.validateSession(authCookie);
-
-                if (data?.user?.id) {
-                    this.userId = data.user.id;
-                    await logPlayerIP({ ...playerData, userId: this.userId });
-                    return;
-                }
-
-                await logPlayerIP(playerData);
-            } else {
-                await logPlayerIP(playerData);
-            }
-        } catch (err) {
-            console.warn("Failed to set player auth id", err);
-        }
     }
 
     spectate(spectateMsg: net.SpectateMsg): void {

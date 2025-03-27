@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import { Config } from "../../../../config";
+import { validateUserName } from "../../../../utils/serverHelpers";
 import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
@@ -85,7 +86,7 @@ DiscordRouter.get("/callback", async (c) => {
             authId: discordUser.id,
             linked: true,
             linkedDiscord: true,
-            username: slug,
+            username: validateUserName(discordUser.username),
             slug,
         });
 

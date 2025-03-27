@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
+import type { FindGameError } from "../../../shared/types/api";
 import type { MatchDataTable } from "../api/db/schema";
 
 export interface GameSocketData {
@@ -40,10 +41,29 @@ export interface GameData {
     stopped: boolean;
 }
 
-export interface JoinData {
-    gameId: string;
-    data: string;
-}
+export const zFindGamePrivateBody = z.object({
+    region: z.string(),
+    version: z.number(),
+    autoFill: z.boolean(),
+    gameModeIdx: z.number(),
+    playerData: z.array(
+        z.object({
+            token: z.string(),
+            userId: z.string().nullable(),
+        }),
+    ),
+});
+
+export type FindGamePrivateBody = z.infer<typeof zFindGamePrivateBody>;
+
+export type FindGamePrivateRes =
+    | {
+          gameId: string;
+          useHttps: boolean;
+          hosts: string[];
+          addrs: string[];
+      }
+    | { err: FindGameError };
 
 export enum ProcessMsgType {
     Create,
@@ -75,9 +95,11 @@ export interface UpdateDataMsg extends GameData {
 
 export interface AddJoinTokenMsg {
     type: ProcessMsgType.AddJoinToken;
-    token: string;
     autoFill: boolean;
-    playerCount: number;
+    tokens: Array<{
+        token: string;
+        userId: string | null;
+    }>;
 }
 
 /**

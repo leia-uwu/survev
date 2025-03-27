@@ -1,6 +1,8 @@
+import { randomUUID } from "crypto";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
+import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { version } from "../../../package.json";
@@ -18,6 +20,7 @@ import {
     logErrorToWebhook,
 } from "../utils/serverHelpers";
 import { server } from "./apiServer";
+import { lucia } from "./auth/lucia";
 import { validateParams } from "./auth/middleware";
 import { isBanned } from "./moderation";
 import { PrivateRouter } from "./routes/private/private";
@@ -86,16 +89,50 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
 
         const body = c.req.valid("json");
 
+        const token = randomUUID();
+        let userId: string | null = null;
+
+        const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+
+        if (sessionId) {
+            try {
+                const account = await lucia.validateSession(sessionId);
+                userId = account.user?.id || null;
+            } catch (err) {
+                console.error("/api/find_game: Failed to validate session", err);
+                userId = null;
+            }
+        }
+
         const data = await server.findGame({
             region: body.region,
-            zones: body.zones,
             version: body.version,
             gameModeIdx: body.gameModeIdx,
-            playerCount: 1, // only team menu can request more
             autoFill: true,
+            playerData: [
+                {
+                    token,
+                    userId,
+                },
+            ],
         });
 
-        return c.json(data);
+        if ("err" in data) {
+            return c.json(data);
+        }
+
+        return c.json<FindGameResponse>({
+            res: [
+                {
+                    zone: "",
+                    data: token,
+                    useHttps: data.useHttps,
+                    hosts: data.hosts,
+                    addrs: data.addrs,
+                    gameId: data.gameId,
+                },
+            ],
+        });
     } catch (err) {
         server.logger.warn("/api/find_game: Error retrieving body", err);
         return c.json({}, 500);

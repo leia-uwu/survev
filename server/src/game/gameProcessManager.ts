@@ -3,13 +3,12 @@ import { randomUUID } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
-import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import {
+    type FindGamePrivateBody,
     type GameData,
     type GameSocketData,
-    type JoinData,
     type ProcessMsg,
     ProcessMsgType,
     type ServerGameConfig,
@@ -127,12 +126,14 @@ class GameProcess implements GameData {
         this.avaliableSlots = mapDef.gameMode.maxPlayers;
     }
 
-    addJoinToken(token: string, autoFill: boolean, playerCount: number) {
+    addJoinTokens(
+        tokens: Array<{ token: string; userId: string | null }>,
+        autoFill: boolean,
+    ) {
         this.send({
             type: ProcessMsgType.AddJoinToken,
-            token,
             autoFill,
-            playerCount,
+            tokens,
         });
         this.avaliableSlots--;
     }
@@ -274,7 +275,7 @@ export class GameProcessManager implements GameManager {
         return this.processById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<JoinData> {
+    async findGame(body: FindGamePrivateBody): Promise<string> {
         const mode = Config.modes[body.gameModeIdx];
 
         let game = this.processes
@@ -290,8 +291,6 @@ export class GameProcessManager implements GameManager {
                 return a.startedTime - b.startedTime;
             })[0];
 
-        const joinToken = randomUUID();
-
         if (!game) {
             game = await this.newGame({
                 teamMode: mode.teamMode,
@@ -304,21 +303,15 @@ export class GameProcessManager implements GameManager {
         if (!game.created) {
             return new Promise((resolve) => {
                 game.onCreatedCbs.push((game) => {
-                    game.addJoinToken(joinToken, body.autoFill, body.playerCount);
-                    resolve({
-                        gameId: game.id,
-                        data: joinToken,
-                    });
+                    game.addJoinTokens(body.playerData, body.autoFill);
+                    resolve(game.id);
                 });
             });
         }
 
-        game.addJoinToken(joinToken, body.autoFill, body.playerCount);
+        game.addJoinTokens(body.playerData, body.autoFill);
 
-        return {
-            gameId: game.id,
-            data: joinToken,
-        };
+        return game.id;
     }
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {

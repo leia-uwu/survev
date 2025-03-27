@@ -43,7 +43,7 @@ export type LoadoutResponse = {
 
 export const zSetItemStatusRequest = z.object({
     status: z.nativeEnum(ItemStatus),
-    itemTypes: z.array(z.string()),
+    itemTypes: z.array(z.string()).max(50),
 });
 
 export type SetItemStatusRequest = z.infer<typeof zSetItemStatusRequest>;

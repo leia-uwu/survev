@@ -4,6 +4,7 @@ import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import { Config } from "../../../../config";
+import { validateUserName } from "../../../../utils/serverHelpers";
 import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
@@ -91,7 +92,7 @@ GoogleRouter.get("/callback", async (c) => {
             id: userId,
             authId: id,
             linked: true,
-            username: slug,
+            username: validateUserName(username),
             linkedGoogle: true,
             slug,
         });

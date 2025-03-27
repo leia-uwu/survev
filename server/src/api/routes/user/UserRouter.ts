@@ -2,7 +2,6 @@ import { eq, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
-import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type GetPassResponse,
@@ -20,6 +19,7 @@ import {
 } from "../../../../../shared/types/user";
 import loadout, { type Item, ItemStatus } from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
+import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware, validateParams } from "../../auth/middleware";
@@ -148,7 +148,7 @@ UserRouter.post(
             await db
                 .update(usersTable)
                 .set({
-                    username: slug,
+                    username: validateUserName(username),
                     slug: slug,
                     usernameSet: true,
                     lastUsernameChangeTime: now,
@@ -248,11 +248,6 @@ UserRouter.post(
             const user = c.get("user")!;
             const { itemTypes, status } = c.req.valid("json");
 
-            const validOutfits = new Set(Object.keys(OutfitDefs));
-            const validItemTypes = itemTypes.filter((item) => validOutfits.has(item));
-
-            if (!validItemTypes.length) return c.json({}, 200);
-
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.id, user.id),
                 columns: {
@@ -265,7 +260,7 @@ UserRouter.post(
             const { items } = result;
 
             const updatedItems = items.map((item) => {
-                if (validItemTypes.includes(item.type)) {
+                if (itemTypes.includes(item.type)) {
                     item.status = status;
                 }
                 return item;
