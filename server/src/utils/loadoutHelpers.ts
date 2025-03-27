@@ -27,6 +27,7 @@ export function encryptLoadout(loadout: Loadout) {
 }
 
 function decryptLoadout(encodedLoadout: string): Loadout | undefined {
+    if (!encodedLoadout) return undefined;
     try {
         const [ivString, encryptedString] = encodedLoadout.split(":");
 
