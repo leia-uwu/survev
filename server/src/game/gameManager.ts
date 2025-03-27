@@ -2,12 +2,11 @@ import { randomUUID } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
-import type { FindGameBody } from "../../../shared/types/api";
 import { Config } from "../config";
 import type {
+    FindGamePrivateBody,
     GameData,
     GameSocketData,
-    JoinData,
     ServerGameConfig,
 } from "../utils/types";
 import { Game } from "./game";
@@ -19,7 +18,7 @@ export abstract class GameManager {
 
     abstract getById(id: string): GameData | undefined;
 
-    abstract findGame(body: FindGameBody): Promise<JoinData>;
+    abstract findGame(body: FindGamePrivateBody): Promise<string>;
 
     abstract onOpen(socketId: string, socket: WebSocket<GameSocketData>): void;
 
@@ -123,7 +122,7 @@ export class SingleThreadGameManager implements GameManager {
         return this.gamesById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<JoinData> {
+    async findGame(body: FindGamePrivateBody): Promise<string> {
         const config = Config.modes[body.gameModeIdx];
 
         let game = this.games
@@ -146,13 +145,9 @@ export class SingleThreadGameManager implements GameManager {
             });
         }
 
-        const id = randomUUID();
-        game.addJoinToken(id, body.autoFill, body.playerCount);
+        game.addJoinTokens(body.playerData, body.autoFill);
 
-        return {
-            gameId: game.id,
-            data: id,
-        };
+        return game.id;
     }
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {

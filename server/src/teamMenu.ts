@@ -1,4 +1,6 @@
+import { randomUUID } from "crypto";
 import type { Hono } from "hono";
+import { getCookie } from "hono/cookie";
 import type { UpgradeWebSocket, WSContext } from "hono/ws";
 import type { FindGameError } from "../../shared/types/api";
 import {
@@ -14,6 +16,7 @@ import {
 } from "../../shared/types/team";
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
+import { lucia } from "./api/auth/lucia";
 import { isBanned } from "./api/moderation";
 import { Config } from "./config";
 import {
@@ -62,6 +65,7 @@ class Player {
     constructor(
         public socket: WSContext<SocketData>,
         public teamMenu: TeamMenu,
+        public userId: string | null,
     ) {
         // disconnect if didn't join a room in 5 seconds
         this.disconnectTimeout = setTimeout(() => {
@@ -237,13 +241,23 @@ class Room {
         }
         this.data.region = region;
 
+        const tokenMap = new Map<Player, string>();
+
+        const playerData = this.players.map((p) => {
+            const token = randomUUID();
+            tokenMap.set(p, token);
+            return {
+                token,
+                userId: p.userId,
+            };
+        });
+
         const res = await this.teamMenu.server.findGame({
-            playerCount: this.players.length,
             gameModeIdx: this.data.gameModeIdx,
             autoFill: this.data.autoFill,
             region: region,
-            zones: data.zones,
             version: data.version,
+            playerData,
         });
 
         if ("err" in res) {
@@ -261,14 +275,28 @@ class Room {
 
         this.findGameCooldown = Date.now() + 5000;
 
-        const joinData = res.res[0];
+        const joinData = res;
         if (!joinData) return;
 
         this.data.lastError = "";
 
         for (const player of this.players) {
             player.inGame = true;
-            player.send("joinGame", joinData);
+            const token = tokenMap.get(player);
+
+            if (!token) {
+                console.warn(`Missing token for player ${player.name}`);
+                continue;
+            }
+
+            player.send("joinGame", {
+                zone: "",
+                data: token,
+                gameId: res.gameId,
+                addrs: res.addrs,
+                hosts: res.hosts,
+                useHttps: res.useHttps,
+            });
         }
 
         this.sendState();
@@ -356,6 +384,19 @@ export class TeamMenu {
 
                 wsRateLimit.ipConnected(ip!);
 
+                let userId: string | null = null;
+                const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+
+                if (sessionId) {
+                    try {
+                        const account = await lucia.validateSession(sessionId);
+                        userId = account.user?.id || null;
+                    } catch (err) {
+                        console.error(`TeamMenu: Failed to validate session:`, err);
+                        userId = null;
+                    }
+                }
+
                 return {
                     onOpen(_event, ws) {
                         if (closeReason) {
@@ -370,12 +411,12 @@ export class TeamMenu {
                             ws.close();
                             return;
                         }
-
-                        teamMenu.onOpen(ws as WSContext<SocketData>, ip!);
+                        teamMenu.onOpen(ws as WSContext<SocketData>, ip!, userId);
                     },
 
                     onMessage(event, ws) {
                         const data = ws.raw! as SocketData;
+
                         if (wsRateLimit.isRateLimited(data.rateLimit)) {
                             ws.close();
                             return;
@@ -386,7 +427,8 @@ export class TeamMenu {
                                 ws as WSContext<SocketData>,
                                 event.data as string,
                             );
-                        } catch {
+                        } catch (err) {
+                            console.log(err);
                             ws.close();
                         }
                     },
@@ -402,8 +444,8 @@ export class TeamMenu {
         );
     }
 
-    onOpen(ws: WSContext<SocketData>, ip: string) {
-        const player = new Player(ws, this);
+    onOpen(ws: WSContext<SocketData>, ip: string, userId: string | null) {
+        const player = new Player(ws, this, userId);
         ws.raw = {
             ip,
             rateLimit: {},

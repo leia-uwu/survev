@@ -1,11 +1,11 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { FindGameBody, FindGameResponse } from "../../../shared/types/api";
 import { Config, type ConfigType } from "../config";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { Logger } from "../utils/logger";
+import type { FindGamePrivateBody, FindGamePrivateRes } from "../utils/types";
 
 class Region {
     data: ConfigType["regions"][string];
@@ -39,8 +39,8 @@ class Region {
         }
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
-        const data = await this.fetch<FindGameResponse>("api/find_game", body);
+    async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
+        const data = await this.fetch<FindGamePrivateRes>("api/find_game", body);
         if (!data) {
             return { err: "full" };
         }
@@ -100,7 +100,7 @@ export class ApiServer {
         region.lastUpdateTime = Date.now();
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
         if (body.version !== GameConfig.protocolVersion) {
             return { err: "invalid_protocol" };
         }
