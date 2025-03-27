@@ -9,11 +9,6 @@ export class JoinMsg implements AbstractMsg {
     useTouch = false;
     isMobile = false;
     bot = false;
-    /*
-      couldn't figure a way to send the cookie from the client in development
-      much easier to test this way; this temporary;
-    */
-    authCookie = "";
     loadout = {
         outfit: "",
         melee: "",
