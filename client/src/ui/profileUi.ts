@@ -31,11 +31,7 @@ function createLoginOptions(
         class: "account-buttons",
     });
     contentsElem.append(buttonParentElem);
-    const addLoginOption = function (
-        method: string,
-        linked: boolean,
-        onClick: () => void,
-    ) {
+    const addLoginOption = (method: string, linked: boolean, onClick: () => void) => {
         const el = $("<div/>", {
             class: `menu-option btn-darken btn-standard btn-login-${method}`,
         });
@@ -72,9 +68,11 @@ function createLoginOptions(
     addLoginOption("discord", account.profile.linkedDiscord, () => {
         window.location.href = "/api/auth/discord";
     });
-    addLoginOption("mock", false, () => {
-        window.location.href = "/api/auth/mock";
-    });
+    if (!import.meta.env.PROD) {
+        addLoginOption("mock", false, () => {
+            window.location.href = "/api/auth/mock";
+        });
+    }
 }
 
 export class ProfileUi {
@@ -110,7 +108,7 @@ export class ProfileUi {
 
     initUi() {
         // Set username
-        const clearNamePrompt = function () {
+        const clearNamePrompt = () => {
             $("#modal-body-warning").css("display", "none");
             $("#modal-account-name-input").val("");
         };
