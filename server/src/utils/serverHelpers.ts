@@ -364,3 +364,28 @@ export async function fetchApiServer<
 
     return undefined;
 }
+
+// @TODO: format the errors sent better
+export function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
+    if (!Config.errorLoggingWebhook) return;
+    try {
+        const payload = {
+            from,
+            region: `[${Config.thisRegion.toUpperCase()}]`,
+            timestamp: new Date().toISOString(),
+            messages: messages.map((msg) =>
+                typeof msg === "object" ? JSON.stringify(msg) : String(msg),
+            ),
+        };
+
+        fetch(Config.errorLoggingWebhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+    } catch (err) {
+        console.warn("Failed to log error to webhook", err);
+    }
+}

@@ -30,7 +30,6 @@ class ErrorLog {
               }
             | { error: string },
     ) {
-        console.error(loc, data);
 
         if (!this.enabled) return;
 

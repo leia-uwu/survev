@@ -346,12 +346,12 @@ export class TeamMenu {
                     closeReason = "rate_limited";
                 }
 
-                if (await isBanned(ip!)) {
-                    closeReason = "banned";
-                }
-
                 if (!closeReason && (await isBehindProxy(ip!))) {
                     closeReason = "behind_proxy";
+                }
+
+                if (await isBanned(ip!)) {
+                    closeReason = "banned";
                 }
 
                 wsRateLimit.ipConnected(ip!);

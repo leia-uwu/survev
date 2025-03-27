@@ -222,9 +222,6 @@ export interface ConfigType {
         time: number;
     };
 
-    /**
-     * used to hide/disable account-related features in both client and server.
-     */
     accountsEnabled: boolean;
 
     randomizeDefaultPlayerName: boolean;
@@ -232,6 +229,8 @@ export interface ConfigType {
     cachingEnabled: boolean;
 
     rateLimitsEnabled: boolean;
+
+    errorLoggingWebhook?: string;
 
     client: {
         // adin play IDs

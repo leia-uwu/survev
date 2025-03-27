@@ -11,7 +11,12 @@ import {
 } from "../../../shared/types/api";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
-import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
+import {
+    HTTPRateLimit,
+    getHonoIp,
+    isBehindProxy,
+    logErrorToWebhook,
+} from "../utils/serverHelpers";
 import { server } from "./apiServer";
 import { validateParams } from "./auth/middleware";
 import { isBanned } from "./moderation";
@@ -19,6 +24,7 @@ import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
+import { z } from "zod";
 
 export type Context = {
     Variables: {
@@ -66,16 +72,16 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             return c.json({}, 500);
         }
 
-        if (await isBanned(ip)) {
-            return c.json<FindGameResponse>({ err: "banned" });
-        }
-
         if (findGameRateLimit.isRateLimited(ip)) {
             return c.json<FindGameResponse>({ err: "rate_limited" }, 429);
         }
 
         if (await isBehindProxy(ip)) {
             return c.json<FindGameResponse>({ err: "behind_proxy" });
+        }
+
+        if (await isBanned(ip)) {
+            return c.json<FindGameResponse>({ err: "banned" });
         }
 
         const body = c.req.valid("json");
@@ -96,22 +102,14 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     }
 });
 
-app.post("/api/report_error", async (c) => {
+app.post("/api/report_error",
+    validateParams(z.object({ loc: z.string(), data: z.any() })),
+    async (c) => {
     try {
         const content = await c.req.json();
-        return c.json({ success: true }, 200);
 
-        const ERROR_LOGS_WEBHOOK = "";
+        logErrorToWebhook("client", content);
 
-        fetch(ERROR_LOGS_WEBHOOK, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                content,
-            }),
-        });
         return c.json({ success: true }, 200);
     } catch (err) {
         server.logger.warn("/api/report_error: Invalid request", err);
