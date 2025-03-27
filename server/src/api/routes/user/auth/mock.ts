@@ -12,7 +12,6 @@ export const MockRouter = new Hono();
 export const MOCK_USER_ID = "MOCK_USER_ID";
 
 MockRouter.get("/", async (c) => {
-    if (process.env.NODE_ENV == "production") return c.json({ err: "" }, 404);
     try {
         const existingUser = await db.query.usersTable.findFirst({
             where: eq(usersTable.authId, MOCK_USER_ID),
