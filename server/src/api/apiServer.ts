@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { FindGameBody, FindGameResponse, Info } from "../../../shared/types/api";
+import type { Info } from "../../../shared/types/api";
 import { Config, type ConfigType } from "../config";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";

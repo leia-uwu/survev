@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
+import { z } from "zod";
 import { version } from "../../../package.json";
 import {
     type FindGameResponse,
@@ -27,7 +28,6 @@ import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
 import { UserRouter } from "./routes/user/UserRouter";
-import { z } from "zod";
 
 export type Context = {
     Variables: {
@@ -139,20 +139,22 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     }
 });
 
-app.post("/api/report_error",
+app.post(
+    "/api/report_error",
     validateParams(z.object({ loc: z.string(), data: z.any() })),
     async (c) => {
-    try {
-        const content = await c.req.json();
+        try {
+            const content = await c.req.json();
 
-        logErrorToWebhook("client", content);
+            logErrorToWebhook("client", content);
 
-        return c.json({ success: true }, 200);
-    } catch (err) {
-        server.logger.warn("/api/report_error: Invalid request", err);
-        return c.json({ error: "Invalid request" }, 400);
-    }
-});
+            return c.json({ success: true }, 200);
+        } catch (err) {
+            server.logger.warn("/api/report_error: Invalid request", err);
+            return c.json({ error: "Invalid request" }, 400);
+        }
+    },
+);
 
 // reset player count to 0 if region seems to be down
 setInterval(() => {

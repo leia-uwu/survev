@@ -30,7 +30,6 @@ class ErrorLog {
               }
             | { error: string },
     ) {
-
         if (!this.enabled) return;
 
         this.requests++;
