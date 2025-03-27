@@ -11,6 +11,7 @@ import loadout, {
     loadoutSchema,
 } from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
+import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
 import { AuthMiddleware, validateParams } from "../../auth/middleware";
@@ -144,7 +145,7 @@ UserRouter.post(
             await db
                 .update(usersTable)
                 .set({
-                    username: slug,
+                    username: validateUserName(username),
                     slug: slug,
                     usernameSet: true,
                     lastUsernameChangeTime: now,
