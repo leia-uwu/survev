@@ -41,12 +41,6 @@ app.use(
     }),
 );
 
-["/stats", "/stats/"].forEach((route) => {
-    app.get(route, (c) => {
-        return c.redirect("/leaderboard/");
-    });
-});
-
 app.route("/api/user/", UserRouter);
 app.route("/api/auth/", AuthRouter);
 app.route("/api/", StatsRouter);
