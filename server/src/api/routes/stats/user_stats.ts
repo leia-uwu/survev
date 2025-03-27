@@ -120,6 +120,7 @@ async function userStatsSqlQuery(
         ), '[]') AS modes
             FROM users u
             LEFT JOIN mode_stats ms ON 1 = 1
+            WHERE u.id = '${userId}'
             GROUP BY u.slug, u.username, u.banned
             LIMIT 1;
     `);
