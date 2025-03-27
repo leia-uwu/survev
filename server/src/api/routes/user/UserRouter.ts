@@ -2,7 +2,6 @@ import { eq, or } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
-import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
 import { Constants } from "../../../../../shared/net/net";
 import loadout, {
@@ -243,7 +242,7 @@ UserRouter.post(
     "/set_item_status",
     validateParams(
         z.object({
-            itemTypes: z.array(z.string()),
+            itemTypes: z.array(z.string()).max(50),
             status: z.nativeEnum(ItemStatus),
         }),
     ),
@@ -252,11 +251,6 @@ UserRouter.post(
         try {
             const user = c.get("user")!;
             const { itemTypes, status } = c.req.valid("json");
-
-            const validOutfits = new Set(Object.keys(OutfitDefs));
-            const validItemTypes = itemTypes.filter((item) => validOutfits.has(item));
-
-            if (!validItemTypes.length) return c.json({}, 200);
 
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.id, user.id),
@@ -270,7 +264,7 @@ UserRouter.post(
             const { items } = result;
 
             const updatedItems = items.map((item) => {
-                if (validItemTypes.includes(item.type)) {
+                if (itemTypes.includes(item.type)) {
                     item.status = status;
                 }
                 return item;
