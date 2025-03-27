@@ -1,40 +1,14 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
 import { TeamMode } from "../../shared/gameConfig";
+import type { Info } from "../../shared/types/api";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { device } from "./device";
 import type { Localization } from "./ui/localization";
 
-interface Info {
-    country: string;
-    gitRevision: string;
-    modes: Array<{
-        mapName: string;
-        teamMode: TeamMode;
-        enabled: boolean;
-    }>;
-    pops: Record<
-        string,
-        {
-            playerCount: string;
-            l10n: string;
-        }
-    >;
-    youtube: {
-        name: string;
-        link: string;
-    };
-    twitch: Array<{
-        name: string;
-        viewers: number;
-        url: string;
-        img: string;
-    }>;
-}
-
 export class SiteInfo {
-    info: Info = {} as Info;
+    info = {} as Info;
     loaded = false;
 
     constructor(
@@ -60,7 +34,7 @@ export class SiteInfo {
             teamSelector.append(elm);
         }
 
-        $.ajax(siteInfoUrl).done((data, _status) => {
+        $.ajax(siteInfoUrl).done((data: Info) => {
             this.info = data || {};
             this.loaded = true;
             this.updatePageFromInfo();

@@ -3,7 +3,7 @@ import type { Env } from "hono";
 import type { Session, User } from "lucia";
 import { Lucia } from "lucia";
 import { db } from "../db";
-import { sessionTable, usersTable } from "../db/schema";
+import { type UsersTableSelect, sessionTable, usersTable } from "../db/schema";
 
 export interface Context extends Env {
     Variables: {
@@ -30,6 +30,6 @@ export const lucia = new Lucia(adapter, {
 declare module "lucia" {
     interface Register {
         Lucia: typeof lucia;
-        DatabaseUserAttributes: Pick<typeof usersTable.$inferSelect, "username" | "id">;
+        DatabaseUserAttributes: Pick<UsersTableSelect, "username" | "id">;
     }
 }

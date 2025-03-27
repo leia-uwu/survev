@@ -53,7 +53,7 @@ export const zMatchDataRequest = z.object({
 });
 
 export type MatchDataRequest = z.infer<typeof zMatchDataRequest>;
-export type MatchDataResponse = MatchData;
+export type MatchDataResponse = MatchData[];
 
 export type MatchData = {
     slug: string | null;
@@ -84,7 +84,6 @@ export const zUserStatsRequest = z.object({
         .catch("all")
         .transform((v) => v ?? "all"),
     slug: z.string().min(1),
-    // TODO: use mapId eenum for extra validation
     mapIdFilter: z.string().catch(ALL_MAPS),
 });
 

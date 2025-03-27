@@ -11,7 +11,8 @@ CREATE TABLE "ip_logs" (
 	"encoded_ip" text NOT NULL,
 	"name" text NOT NULL,
 	"game_id" text NOT NULL,
-	"user_id" text NOT NULL
+	"user_id" text DEFAULT '',
+	"region" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "match_data" (
@@ -58,10 +59,6 @@ CREATE TABLE "users" (
 	"linked_discord" boolean DEFAULT false NOT NULL,
 	"loadout" json DEFAULT '{"outfit":"outfitBase","melee":"fists","heal":"heal_basic","boost":"boost_basic","player_icon":"","crosshair":{"type":"crosshair_default","color":16777215,"size":"1.00","stroke":"0.00"},"emotes":["emote_happyface","emote_thumbsup","emote_surviv","emote_sadface","",""]}'::json NOT NULL,
 	"items" json DEFAULT '[]'::json NOT NULL,
-	"wins" integer DEFAULT 0 NOT NULL,
-	"games" integer DEFAULT 0 NOT NULL,
-	"kills" integer DEFAULT 0 NOT NULL,
-	"kpg" integer DEFAULT 0 NOT NULL,
 	CONSTRAINT "users_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint

@@ -3,13 +3,12 @@ import { setCookie } from "hono/cookie";
 import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
-import { ItemStatus } from "../../../../../../shared/utils/loadout";
+import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { lucia } from "../../../auth/lucia";
 import { db } from "../../../db";
-import { type UsersTable, usersTable } from "../../../db/schema";
-import type { Item } from "../UserRouter";
+import { type UsersTableInsert, usersTable } from "../../../db/schema";
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -38,15 +37,14 @@ export async function setUserCookie(userId: string, c: Context) {
     return session;
 }
 
-export async function createNewUser(payload: UsersTable) {
+export async function createNewUser(payload: UsersTableInsert) {
     const unlockType = "unlock_new_account";
     const outfitsToUnlock = UnlockDefs[unlockType].unlocks || [];
-    const timeAcquired = new Date();
     const items: Item[] = outfitsToUnlock.map((outfit) => {
         return {
             source: unlockType,
             type: outfit,
-            timeAcquired,
+            timeAcquired: Date.now(),
             status: ItemStatus.New,
         };
     });

@@ -5,8 +5,10 @@ import type {
     LeaderboardRequest,
     MatchData,
     MatchDataRequest,
+    MatchDataResponse,
     MatchHistory,
     MatchHistoryParams,
+    MatchHistoryResponse,
     UserStatsRequest,
     UserStatsResponse,
 } from "../../../../shared/types/stats";
@@ -33,7 +35,6 @@ const TeamModeToString = {
     2: "duo",
     4: "squad",
 };
-
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
@@ -185,7 +186,7 @@ class Query {
                 this.data = data;
                 this.dataValid = !!data;
             },
-            error: (_xhr, _err) => {
+            error: () => {
                 this.error = true;
                 this.dataValid = false;
             },
@@ -256,7 +257,7 @@ export class PlayerView {
             interval: interval,
             mapIdFilter: mapIdFilter,
         };
-        this.userStats.query("/api/user_stats", args, 0, (_err, _data) => {
+        this.userStats.query("/api/user_stats", args, 0, () => {
             this.render();
         });
     }
@@ -268,41 +269,52 @@ export class PlayerView {
             count: count,
             teamModeFilter: teamModeFilter,
         };
-        this.matchHistory.query("/api/match_history", args, 0, (_err, data) => {
-            const gameModes = helpers.getGameModes();
+        this.matchHistory.query(
+            "/api/match_history",
+            args,
+            0,
+            (_err, data: (MatchHistoryResponse[number] & { icon: string })[]) => {
+                const gameModes = helpers.getGameModes();
 
-            const games = data || [];
+                const games = data || [];
 
-            for (let i = 0; i < games.length; i++) {
-                games[i].team_mode =
-                    TeamModeToString[games[i].team_mode as unknown as TeamMode];
+                for (let i = 0; i < games.length; i++) {
+                    // @ts-expect-error string or number, IT STILL WORKS
+                    games[i].team_mode =
+                        TeamModeToString[games[i].team_mode as unknown as TeamMode];
 
-                const gameMode = gameModes.find((x) => x.mapId == games[i].map_id);
-                games[i].icon = gameMode ? gameMode.desc.icon : "";
+                    const gameMode = gameModes.find((x) => x.mapId == games[i].map_id);
+                    games[i].icon = gameMode ? gameMode.desc.icon : "";
 
-                this.games.push({
-                    expanded: false,
-                    summary: games[i],
-                    data: null,
-                    dataError: false,
-                });
-            }
-            this.moreGamesAvailable = games.length >= count;
-            this.render();
-        });
+                    this.games.push({
+                        expanded: false,
+                        summary: games[i],
+                        data: null,
+                        dataError: false,
+                    });
+                }
+                this.moreGamesAvailable = games.length >= count;
+                this.render();
+            },
+        );
     }
     loadMatchData(gameId: string) {
         const args: MatchDataRequest = {
             gameId: gameId,
         };
-        this.matchData.query("/api/match_data", args, 0, (err, data) => {
-            const game = this.getGameByGameId(gameId);
-            if (game) {
-                game.data = data;
-                game.dataError = err || !data;
-            }
-            this.render();
-        });
+        this.matchData.query(
+            "/api/match_data",
+            args,
+            0,
+            (err, data: MatchDataResponse) => {
+                const game = this.getGameByGameId(gameId);
+                if (game) {
+                    game.data = data;
+                    game.dataError = err || !data;
+                }
+                this.render();
+            },
+        );
     }
     toggleMatchData(gameId: string) {
         const game = this.getGameByGameId(gameId);

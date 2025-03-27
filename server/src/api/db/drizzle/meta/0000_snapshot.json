@@ -1,5 +1,5 @@
 {
-  "id": "ef3855d1-a646-4b56-900c-5704f10c17d5",
+  "id": "9bca07de-c616-4c92-953a-b03c455f7cbd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -79,6 +79,13 @@
         },
         "user_id": {
           "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "''"
+        },
+        "region": {
+          "name": "region",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -518,34 +525,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'[]'::json"
-        },
-        "wins": {
-          "name": "wins",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "games": {
-          "name": "games",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "kills": {
-          "name": "kills",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
-        },
-        "kpg": {
-          "name": "kpg",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
         }
       },
       "indexes": {},

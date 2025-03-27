@@ -4,12 +4,21 @@ import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
 import { OutfitDefs } from "../../../../../shared/defs/gameObjects/outfitDefs";
 import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
-import { Constants } from "../../../../../shared/net/net";
-import loadout, {
-    ItemStatus,
-    type Loadout,
-    loadoutSchema,
-} from "../../../../../shared/utils/loadout";
+import {
+    type GetPassResponse,
+    type LoadoutResponse,
+    type ProfileResponse,
+    type RefreshQuestResponse,
+    type SetPassUnlockResponse,
+    type UsernameResponse,
+    zGetPassRequest,
+    zLoadoutRequest,
+    zRefreshQuestRequest,
+    zSetItemStatusRequest,
+    zSetPassUnlockRequest,
+    zUsernameRequest,
+} from "../../../../../shared/types/user";
+import loadout, { type Item, ItemStatus } from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { server } from "../../apiServer";
 import { lucia } from "../../auth/lucia";
@@ -94,12 +103,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
 
 UserRouter.post(
     "/username",
-    validateParams(
-        z.object({
-            username: z.string().trim().min(1).max(Constants.PlayerNameMaxLen),
-        }),
-        { result: "invalid" },
-    ),
+    validateParams(zUsernameRequest, { result: "invalid" } satisfies UsernameResponse),
     AuthMiddleware,
     async (c) => {
         try {
@@ -161,7 +165,7 @@ UserRouter.post(
 
 UserRouter.post(
     "/loadout",
-    validateParams(z.object({ loadout: loadoutSchema })),
+    validateParams(zLoadoutRequest),
     AuthMiddleware,
     async (c) => {
         try {
@@ -185,10 +189,7 @@ UserRouter.post(
                 .set({ loadout: validatedLoadout })
                 .where(eq(usersTable.id, user.id));
 
-            return c.json<{
-                loadout: Loadout;
-                loadoutPriv: string;
-            }>(
+            return c.json<LoadoutResponse>(
                 {
                     loadout: validatedLoadout,
                     loadoutPriv: encryptLoadout(validatedLoadout),
@@ -240,12 +241,7 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
 
 UserRouter.post(
     "/set_item_status",
-    validateParams(
-        z.object({
-            itemTypes: z.array(z.string()),
-            status: z.nativeEnum(ItemStatus),
-        }),
-    ),
+    validateParams(zSetItemStatusRequest),
     AuthMiddleware,
     async (c) => {
         try {
@@ -308,7 +304,6 @@ UserRouter.post(
                 return c.json([], 400);
             }
 
-            const timeAcquired = new Date();
             const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
 
             const result = await db.query.usersTable.findFirst({
@@ -333,7 +328,7 @@ UserRouter.post(
                         source: unlockType,
                         type: outfit,
                         status: ItemStatus.New,
-                        timeAcquired,
+                        timeAcquired: Date.now(),
                     };
                 });
             const updatedItems = items.concat(itemsToUnlock);
@@ -353,9 +348,6 @@ UserRouter.post(
     },
 );
 
-//
-// NOT IMPLEMENTED
-//
 UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
     try {
         const user = c.get("user")!;
@@ -372,50 +364,17 @@ UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
     }
 });
 
-UserRouter.post(
-    "/get_pass",
-    validateParams(
-        z.object({
-            tryRefreshQuests: z.boolean(),
-        }),
-    ),
-    (c) => {
-        return c.json({ success: true }, 200);
-    },
-);
-
 //
-// TYPES
+// NOT IMPLEMENTED
 //
-export type Item = {
-    type: string;
-    status: ItemStatus;
-    timeAcquired: Date;
-    source: string;
-};
+UserRouter.post("/set_pass_unlock", validateParams(zSetPassUnlockRequest), (c) => {
+    return c.json<SetPassUnlockResponse>({ success: true }, 200);
+});
 
-type ProfileResponse =
-    | {
-          readonly banned: true;
-          reason: string;
-      }
-    | {
-          readonly success: true;
-          profile: Pick<
-              typeof usersTable.$inferSelect,
-              "slug" | "username" | "usernameSet" | "linked"
-          > & {
-              usernameChangeTime: number;
-          };
-          loadout: Loadout;
-          loadoutPriv: string;
-          items: Item[];
-      };
+UserRouter.post("/get_pass", validateParams(zGetPassRequest), (c) => {
+    return c.json<GetPassResponse>({ success: true }, 200);
+});
 
-type UsernameResponse =
-    | {
-          result: "success";
-      }
-    | {
-          result: "failed" | "invalid" | "taken" | "change_time_not_expired";
-      };
+UserRouter.post("/refresh_quest", validateParams(zRefreshQuestRequest), (c) => {
+    return c.json<RefreshQuestResponse>({ success: true }, 200);
+});

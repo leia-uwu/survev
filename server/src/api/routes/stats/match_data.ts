@@ -1,7 +1,10 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
-import { type MatchData, zMatchDataRequest } from "../../../../../shared/types/stats";
+import {
+    type MatchDataResponse,
+    zMatchDataRequest,
+} from "../../../../../shared/types/stats";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
@@ -38,7 +41,7 @@ matchDataRouter.post(
                 .orderBy(asc(matchDataTable.rank))
                 .where(eq(matchDataTable.gameId, gameId));
 
-            return c.json<MatchData[]>(result);
+            return c.json<MatchDataResponse>(result);
         } catch (err) {
             server.logger.warn("/api/match_data: Error getting match data", err);
             return c.json({}, 500);

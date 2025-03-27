@@ -4,7 +4,11 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import type { Session, User } from "lucia";
 import { version } from "../../../package.json";
-import { type FindGameResponse, zFindGameBody } from "../../../shared/types/api";
+import {
+    type FindGameResponse,
+    type Info,
+    zFindGameBody,
+} from "../../../shared/types/api";
 import { Config } from "../config";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { HTTPRateLimit, getHonoIp, isBehindProxy } from "../utils/serverHelpers";
@@ -49,7 +53,7 @@ app.route("/private/", PrivateRouter);
 server.init(app, upgradeWebSocket);
 
 app.get("/api/site_info", (c) => {
-    return c.json(server.getSiteInfo(), 200);
+    return c.json<Info>(server.getSiteInfo(), 200);
 });
 
 const findGameRateLimit = new HTTPRateLimit(5, 3000);

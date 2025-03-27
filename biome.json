@@ -11,6 +11,7 @@
     "rules": {
       "recommended": false,
       "complexity": {
+        "noUselessThisAlias": "error",
         "noStaticOnlyClass": "off"
       },
       "correctness": {
@@ -19,6 +20,7 @@
         "noUnusedImports": "warn"
       },
       "style": {
+        "noVar": "error",
         "noNamespace": "off",
         "noNonNullAssertion": "off",
         "useTemplate": "warn",

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TeamMode } from "../gameConfig";
 
 export const zFindGameBody = z.object({
     region: z.string(),
@@ -36,3 +37,30 @@ export type FindGameResponse =
           err: FindGameError;
           res?: undefined;
       };
+
+export interface Info {
+    country: string;
+    gitRevision: string;
+    modes: Array<{
+        mapName: string;
+        teamMode: TeamMode;
+        enabled: boolean;
+    }>;
+    pops: Record<
+        string,
+        {
+            playerCount: number;
+            l10n: string;
+        }
+    >;
+    youtube: {
+        name: string;
+        link: string;
+    };
+    twitch: Array<{
+        name: string;
+        viewers: number;
+        url: string;
+        img: string;
+    }>;
+}

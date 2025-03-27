@@ -1,7 +1,7 @@
 import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { GameConfig } from "../../../shared/gameConfig";
-import type { FindGameBody, FindGameResponse } from "../../../shared/types/api";
+import type { FindGameBody, FindGameResponse, Info } from "../../../shared/types/api";
 import { Config, type ConfigType } from "../config";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";
@@ -69,16 +69,10 @@ export class ApiServer {
         this.teamMenu.init(app, upgradeWebSocket);
     }
 
-    getSiteInfo() {
-        const data = {
+    getSiteInfo(): Info {
+        const data: Info = {
             modes: Config.modes,
-            pops: {} as Record<
-                string,
-                {
-                    playerCount: number;
-                    l10n: string;
-                }
-            >,
+            pops: {},
             youtube: { name: "", link: "" },
             twitch: [],
             country: "US",

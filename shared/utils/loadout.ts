@@ -5,6 +5,14 @@ import { UnlockDefs } from "../defs/gameObjects/unlockDefs";
 import { GameConfig } from "../gameConfig";
 import { deepEqual } from "./deepEqual";
 
+export type Item = {
+    type: string;
+    timeAcquired: number;
+    source: string;
+    status?: ItemStatus;
+    ackd?: ItemStatus.Ackd;
+};
+
 export const loadoutSchema = z.object({
     outfit: z.string(),
     melee: z.string(),
@@ -31,19 +39,15 @@ export enum ItemStatus {
 
 export const loadout = {
     ItemStatus,
-    validate: function (userLoadout: Loadout): Loadout {
-        const getGameType = function (
-            type: string,
-            gameType: string,
-            defaultValue: string,
-        ) {
+    validate: (userLoadout: Loadout): Loadout => {
+        const getGameType = (type: string, gameType: string, defaultValue: string) => {
             const def = GameObjectDefs[gameType];
             if (def && def.type == type) {
                 return gameType;
             }
             return defaultValue;
         };
-        const getFloat = function (flt: string, defaultValue: number) {
+        const getFloat = (flt: string, defaultValue: number) => {
             const val = parseFloat(flt);
             if (Number.isNaN(val)) {
                 return defaultValue;
@@ -93,15 +97,12 @@ export const loadout = {
         }
         return validatedLoadout;
     },
-    validateWithAvailableItems: function (
-        userLoadout: Loadout,
-        userItems: { type: string }[],
-    ) {
+    validateWithAvailableItems: (userLoadout: Loadout, userItems: { type: string }[]) => {
         const unlockedItems = new Set([
             ...(userItems?.map((item) => item.type) || []),
             ...UnlockDefs.unlock_default.unlocks,
         ]);
-        const checkTypeExists = function (type: string) {
+        const checkTypeExists = (type: string) => {
             if (type && unlockedItems.has(type)) {
                 return type;
             }
@@ -128,21 +129,9 @@ export const loadout = {
 
         return loadout.validate(newLoadout);
     },
-    defaultLoadout: function () {
-        return loadout.validate({} as Loadout);
-    },
-    modified: function (a: Loadout, b: Loadout) {
-        return !deepEqual(a, b);
-    },
-    getUserAvailableItems: function (
-        heroItems: {
-            type: string;
-            source: string;
-            timeAcquired: number;
-            status?: ItemStatus;
-            ackd?: ItemStatus.Ackd;
-        }[],
-    ) {
+    defaultLoadout: () => loadout.validate({} as Loadout),
+    modified: (a: Loadout, b: Loadout) => !deepEqual(a, b),
+    getUserAvailableItems: (heroItems: Item[]) => {
         const items: typeof heroItems = [];
         // Add default items
         const unlockDefaultDef =
