@@ -123,9 +123,7 @@ export const loadout = {
 
         newLoadout.crosshair.type = checkTypeExists(newLoadout.crosshair.type);
 
-        newLoadout.emotes = newLoadout.emotes.map((emote) =>
-            checkTypeExists(newLoadout.emotes[emote as any]),
-        );
+        newLoadout.emotes = newLoadout.emotes.map((emote) => checkTypeExists(emote));
 
         return loadout.validate(newLoadout);
     },
