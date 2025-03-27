@@ -1190,6 +1190,12 @@ td.data-player-status {
   box-shadow: inset 0 -4px #8e0000;
 }
 
+#footer-social-links > .btn-kofi {
+  background-image: url(/img/icon_kofi.png);
+  background-color: #ff6433;
+  box-shadow: inset 0 -4px #be4926;
+}
+
 .btn-darken:hover,
 .btn-darken:active {
   color: inherit;
