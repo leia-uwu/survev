@@ -165,9 +165,11 @@ app.ws<GameSocketData>("/play", {
         }
 
         if (gameHTTPRateLimit.isRateLimited(ip) || gameWsRateLimit.isIpRateLimited(ip)) {
-            res.writeStatus("429 Too Many Requests");
-            res.write("429 Too Many Requests");
-            res.end();
+            res.cork(() => {
+                res.writeStatus("429 Too Many Requests");
+                res.write("429 Too Many Requests");
+                res.end();
+            });
             return;
         }
 
@@ -181,13 +183,13 @@ app.ws<GameSocketData>("/play", {
         gameWsRateLimit.ipConnected(ip);
 
         const socketId = randomUUID();
-        res.cork(async () => {
-            let disconnectReason = "";
+        let disconnectReason = "";
 
-            if (await isBehindProxy(ip)) {
-                disconnectReason = "behind_proxy";
-            }
+        if (await isBehindProxy(ip)) {
+            disconnectReason = "behind_proxy";
+        }
 
+        res.cork(() => {
             res.upgrade(
                 {
                     gameId,
