@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { Config } from "../../../config";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { DiscordRouter } from "./auth/discord";
 import { GoogleRouter } from "./auth/google";
@@ -10,4 +11,7 @@ AuthRouter.use(accountsEnabledMiddleware);
 
 AuthRouter.route("/discord", DiscordRouter);
 AuthRouter.route("/google", GoogleRouter);
-AuthRouter.route("/mock", MockRouter);
+
+if (Config.debug.allowMockAccount) {
+    AuthRouter.route("/mock", MockRouter);
+}

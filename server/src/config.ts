@@ -59,6 +59,7 @@ export const Config = {
         spawnMode: "default",
         allowBots: !isProduction,
         allowEditMsg: !isProduction,
+        allowMockAccount: !isProduction,
     },
 
     randomizeDefaultPlayerName: false,
@@ -246,6 +247,7 @@ export interface ConfigType {
         spawnPos?: Vec2;
         allowBots: boolean;
         allowEditMsg: boolean;
+        allowMockAccount: boolean;
     };
 
     // overrides for default items; doesn't apply to bots
