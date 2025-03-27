@@ -307,12 +307,14 @@ a.nav-link-bright:hover {
   }
 }
 
+/*
 #leaderboard-table td.active {
   background-image: url("/img/ui/surviv.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 30px;
 }
+*/
 
 #leaderboard-table tbody,
 #leaderboard-table td,
@@ -977,12 +979,14 @@ table.player-stats-overview td {
   }
 }
 
+/*
 .match-table td.active {
   background-image: url("/img/ui/surviv.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 30px;
 }
+*/
 
 .match-table tbody,
 .match-table td,
