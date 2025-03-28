@@ -156,12 +156,12 @@ function getPlayerCardData(
 // Query
 //
 
-class Query {
+class Query<T> {
     inProgress = false;
     dataValid = false;
     error = false;
     args = {};
-    data: UserStatsResponse | null = null;
+    data: T | null = null;
 
     query(
         url: string,
@@ -212,10 +212,11 @@ export class PlayerView {
     }[] = [];
     moreGamesAvailable = true;
     teamModeFilter = 7;
-    userStats = new Query();
-    matchHistory = new Query();
+    userStats = new Query<UserStatsResponse>();
+    userStatsCache = {} as Record<string, { error: boolean; data: UserStatsResponse }>;
+    matchHistory = new Query<MatchHistoryResponse>();
     matchHistoryCache = {} as Record<number, typeof this.games>;
-    matchData = new Query();
+    matchData = new Query<MatchDataResponse>();
     el = $(
         templates.player({
             phoneDetected: device.mobile && !device.tablet,
@@ -258,7 +259,20 @@ export class PlayerView {
             interval: interval,
             mapIdFilter: mapIdFilter,
         };
-        this.userStats.query("/api/user_stats", args, 0, () => {
+
+        const cacheKey = `${interval}${mapIdFilter}`;
+        if (this.userStatsCache[cacheKey]) {
+            const { error, data } = this.userStatsCache[cacheKey];
+            this.userStats.data = data;
+            this.userStats.error = error;
+            this.render();
+            return;
+        }
+        this.userStats.query("/api/user_stats", args, 0, (error, data) => {
+            this.userStatsCache[cacheKey] = {
+                error,
+                data,
+            };
             this.render();
         });
     }
