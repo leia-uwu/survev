@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
 import { z } from "zod";
@@ -129,10 +129,7 @@ UserRouter.post(
             }
 
             const isUsernameTaken = await db.query.usersTable.findFirst({
-                where: or(
-                    eq(usersTable.username, username),
-                    eq(usersTable.slug, username),
-                ),
+                where: and(eq(usersTable.slug, username), ne(usersTable.id, user.id)),
                 columns: {
                     id: true,
                 },

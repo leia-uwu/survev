@@ -462,6 +462,7 @@ export class Game {
             };
         });
 
+        // only save the game if it has more than 2 players lol
         if (values.length < 2) return;
 
         // FIXME: maybe move this to the parent game server process?
