@@ -39,6 +39,7 @@ export class ProjectileBarn {
         vel: Vec2,
         fuseTime: number,
         damageType: number,
+        throwDir?: Vec2,
     ): Projectile {
         const proj = new Projectile(
             this.game,
@@ -50,6 +51,7 @@ export class ProjectileBarn {
             vel,
             fuseTime,
             damageType,
+            throwDir,
         );
 
         this.projectiles.push(proj);
@@ -66,7 +68,7 @@ export class Projectile extends BaseGameObject {
 
     posZ: number;
     dir: Vec2;
-    initialDir: Vec2;
+    throwDir: Vec2;
 
     type: string;
 
@@ -98,6 +100,7 @@ export class Projectile extends BaseGameObject {
         vel: Vec2,
         fuseTime: number,
         damageType: DamageType,
+        throwDir?: Vec2,
     ) {
         super(game, pos);
         this.layer = layer;
@@ -108,7 +111,7 @@ export class Projectile extends BaseGameObject {
         this.fuseTime = fuseTime;
         this.damageType = damageType;
         this.dir = v2.normalizeSafe(vel);
-        this.initialDir = v2.copy(this.dir);
+        this.throwDir = throwDir ?? v2.copy(this.dir);
 
         const def = GameObjectDefs[type] as ThrowableDef;
         this.velZ = def.throwPhysics.velZ;
@@ -127,7 +130,7 @@ export class Projectile extends BaseGameObject {
 
             if (this.strobe.strobeTicker <= 0) {
                 this.game.playerBarn.addEmote(0, this.pos, "ping_airstrike", true);
-                this.game.planeBarn.addAirStrike(this.pos, this.dir, this.playerId);
+                this.game.planeBarn.addAirStrike(this.pos, this.throwDir, this.playerId);
                 this.strobe.airstrikesLeft--;
                 this.strobe.airstrikeTicker = 0.85;
             }
@@ -145,11 +148,11 @@ export class Projectile extends BaseGameObject {
                 //the position can only be "past" the strobe
                 //meaning that the random direction can be a MAX of 90 degrees offset from the regular direction so it doesnt go backwards
                 const randomDir = v2.rotate(
-                    this.dir,
+                    this.throwDir,
                     util.random(-Math.PI / 2, Math.PI / 2),
                 );
                 const pos = v2.add(this.pos, v2.mul(randomDir, 7));
-                this.game.planeBarn.addAirStrike(pos, this.initialDir, this.playerId);
+                this.game.planeBarn.addAirStrike(pos, this.throwDir, this.playerId);
                 this.strobe.airstrikesLeft--;
                 this.strobe.airstrikeTicker = 0.85;
             }

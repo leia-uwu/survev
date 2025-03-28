@@ -802,6 +802,7 @@ export class WeaponManager {
                     vel,
                     projDef.fuseTime,
                     GameConfig.DamageType.Player,
+                    shotDir,
                 );
             }
 
@@ -834,6 +835,7 @@ export class WeaponManager {
                             v2.rotate(projectile.vel, math.deg2rad(deviation)),
                             projectile.fuseTime,
                             GameConfig.DamageType.Player,
+                            sParams.dir,
                         );
                     }
                 }
@@ -1100,7 +1102,7 @@ export class WeaponManager {
             ),
         );
 
-        let { dir } = this.player;
+        let dir = v2.copy(this.player.dir);
         // Aim toward a point some distance infront of the player
         if (throwableDef.aimDistance > 0.0) {
             const aimTarget = v2.add(
@@ -1130,6 +1132,7 @@ export class WeaponManager {
             vel,
             fuseTime,
             GameConfig.DamageType.Player,
+            dir,
         );
 
         if (oldThrowableType == "strobe") {
