@@ -4,6 +4,7 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
+import { csrf } from "hono/csrf";
 import type { Session, User } from "lucia";
 import { z } from "zod";
 import { version } from "../../../package.json";
@@ -53,6 +54,8 @@ app.use(
         maxAge: 3600,
     }),
 );
+
+app.use(csrf());
 
 app.route("/api/user/", UserRouter);
 app.route("/api/auth/", AuthRouter);
