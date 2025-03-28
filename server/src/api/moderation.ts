@@ -1,5 +1,6 @@
 import { desc, eq, lt } from "drizzle-orm";
-import { Config, type Region } from "../config";
+import { Config } from "../config";
+import type { SaveGameBody } from "../utils/types";
 import { server } from "./apiServer";
 import { db } from "./db";
 import { bannedIpsTable, ipLogsTable } from "./db/schema";
@@ -87,11 +88,11 @@ async function getPlayerIp(name: string) {
     const result = await db
         .select({
             ip: ipLogsTable.encodedIp,
-            name: ipLogsTable.name,
+            name: ipLogsTable.username,
             region: ipLogsTable.region,
         })
         .from(ipLogsTable)
-        .where(eq(ipLogsTable.name, name))
+        .where(eq(ipLogsTable.username, name))
         .orderBy(desc(ipLogsTable.createdAt))
         .limit(10);
 
@@ -102,22 +103,13 @@ async function getPlayerIp(name: string) {
     return result.map(({ ip, name, region }) => `[${region}] ${name}'s IP is ${ip}`);
 }
 
-export async function logPlayerIP({
-    name,
-    ip,
-    gameId,
-    userId,
-    region,
-}: { region: Region; name: string; ip: string; gameId: string; userId?: string }) {
+export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
     try {
-        await db.insert(ipLogsTable).values({
-            realIp: ip,
-            encodedIp: encodeIP(ip),
-            name: name.toLowerCase(),
-            gameId,
-            userId,
-            region,
-        });
+        const logsData = data.map((matchData) => ({
+            ...matchData,
+            encodedIp: encodeIP(matchData.ip),
+        }));
+        await db.insert(ipLogsTable).values(logsData);
     } catch (err) {
         server.logger.warn("Failed to log player ip", err);
     }

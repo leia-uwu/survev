@@ -7,12 +7,13 @@ CREATE TABLE "banned_ips" (
 CREATE TABLE "ip_logs" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
-	"real_ip" text NOT NULL,
-	"encoded_ip" text NOT NULL,
-	"name" text NOT NULL,
+	"region" text NOT NULL,
 	"game_id" text NOT NULL,
+	"map_id" integer NOT NULL,
+	"username" text NOT NULL,
 	"user_id" text DEFAULT '',
-	"region" text NOT NULL
+	"encoded_ip" text NOT NULL,
+	"ip" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "match_data" (
@@ -63,7 +64,7 @@ CREATE TABLE "users" (
 );
 --> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE cascade;--> statement-breakpoint
-CREATE INDEX "name_created_at_idx" ON "ip_logs" USING btree ("name","created_at");--> statement-breakpoint
+CREATE INDEX "name_created_at_idx" ON "ip_logs" USING btree ("username","created_at");--> statement-breakpoint
 CREATE INDEX "idx_match_data_user_stats" ON "match_data" USING btree ("user_id","team_mode","rank","kills","damage_dealt","time_alive");--> statement-breakpoint
 CREATE INDEX "idx_game_id" ON "match_data" USING btree ("game_id");--> statement-breakpoint
 CREATE INDEX "idx_user_id" ON "match_data" USING btree ("user_id");--> statement-breakpoint

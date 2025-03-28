@@ -23,7 +23,7 @@ export const zUpdateRegionBody = z.object({
 export type UpdateRegionBody = z.infer<typeof zUpdateRegionBody>;
 
 export interface SaveGameBody {
-    matchData: MatchDataTable[];
+    matchData: (MatchDataTable & { ip: string })[];
 }
 
 export interface ServerGameConfig {

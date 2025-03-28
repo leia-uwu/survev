@@ -8,7 +8,7 @@ import { privateMiddleware, validateParams } from "../../auth/middleware";
 import { invalidateLeaderboards } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable } from "../../db/schema";
-import { handleModerationAction } from "../../moderation";
+import { handleModerationAction, logPlayerIPs } from "../../moderation";
 
 export const PrivateRouter = new Hono<Context>();
 
@@ -39,8 +39,8 @@ PrivateRouter.post("/save_game", async (c) => {
         await invalidateLeaderboards(matchData);
 
         await db.insert(matchDataTable).values(matchData);
+        await logPlayerIPs(matchData);
         server.logger.log(`Saved game data for ${matchData[0].gameId}`);
-
         return c.json({}, 200);
     } catch (err) {
         server.logger.warn("save_game Error processing request", err);
@@ -51,7 +51,7 @@ PrivateRouter.post("/save_game", async (c) => {
 const zModerationParms = z.discriminatedUnion("action", [
     z.object({
         action: z.literal("get-player-ip"),
-        playerName: z.string().toLowerCase(),
+        playerName: z.string(),
     }),
     z.object({
         action: z.literal("clean-all-bans"),

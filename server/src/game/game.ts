@@ -1,7 +1,6 @@
 import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
-import type { MatchDataTable } from "../api/db/schema";
 import { Config, type Region } from "../config";
 import { Logger } from "../utils/logger";
 import { fetchApiServer } from "../utils/serverHelpers";
@@ -437,7 +436,7 @@ export class Game {
          */
         const teamTotal = new Set(players.map(({ player }) => player.teamId)).size;
 
-        const values: MatchDataTable[] = players.map(({ player, rank }) => {
+        const values: SaveGameBody["matchData"] = players.map(({ player, rank }) => {
             return {
                 // *NOTE: userId is optional; we save the game stats for non logged users too
                 userId: player.userId,
@@ -459,6 +458,7 @@ export class Game {
                 mapSeed: this.map.seed,
                 killedIds: player.killedIds,
                 rank: rank,
+                ip: player.ip,
             };
         });
 

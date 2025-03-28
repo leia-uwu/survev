@@ -110,14 +110,15 @@ export const ipLogsTable = pgTable(
     {
         id: serial().primaryKey(),
         createdAt: timestamp("created_at").notNull().default(defaultNow),
-        realIp: text("real_ip").notNull(),
-        encodedIp: text("encoded_ip").notNull(),
-        name: text("name").notNull(),
-        gameId: text("game_id").notNull(),
-        userId: text("user_id").default(""),
         region: text("region").notNull().$type<Region>(),
+        gameId: text("game_id").notNull(),
+        mapId: integer("map_id").notNull(),
+        username: text("username").notNull(),
+        userId: text("user_id").default(""),
+        encodedIp: text("encoded_ip").notNull(),
+        ip: text("ip").notNull(),
     },
-    (table) => [index("name_created_at_idx").on(table.name, table.createdAt)],
+    (table) => [index("name_created_at_idx").on(table.username, table.createdAt)],
 );
 
 export const bannedIpsTable = pgTable("banned_ips", {

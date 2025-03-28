@@ -1,5 +1,5 @@
 {
-  "id": "9bca07de-c616-4c92-953a-b03c455f7cbd",
+  "id": "9f4966ec-b183-424c-a0fb-6111313f9584",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -53,26 +53,26 @@
           "notNull": true,
           "default": "timezone('utc', now())"
         },
-        "real_ip": {
-          "name": "real_ip",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "encoded_ip": {
-          "name": "encoded_ip",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "name": {
-          "name": "name",
+        "region": {
+          "name": "region",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
         "game_id": {
           "name": "game_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "map_id": {
+          "name": "map_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -84,8 +84,14 @@
           "notNull": false,
           "default": "''"
         },
-        "region": {
-          "name": "region",
+        "encoded_ip": {
+          "name": "encoded_ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ip": {
+          "name": "ip",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -96,7 +102,7 @@
           "name": "name_created_at_idx",
           "columns": [
             {
-              "expression": "name",
+              "expression": "username",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
