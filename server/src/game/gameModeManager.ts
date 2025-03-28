@@ -46,9 +46,27 @@ export class GameModeManager {
         }
     }
 
+    // so the game doesn't start when there's only 2 players and one can of them can despawn which would end the game
+    // instead it will await 10 seconds for the second player to not be able to despawn before starting
+    cantDespawnAliveCount(): number {
+        switch (this.mode) {
+            case GameMode.Solo:
+                return this.game.playerBarn.livingPlayers.filter((p) => !p.canDespawn())
+                    .length;
+            case GameMode.Team:
+                return this.game.playerBarn.getAliveGroups().filter((group) => {
+                    return group.players.filter((p) => !p.canDespawn()).length > 0;
+                }).length;
+            case GameMode.Faction:
+                return this.game.playerBarn.getAliveTeams().filter((team) => {
+                    return team.players.filter((p) => !p.canDespawn()).length;
+                }).length;
+        }
+    }
+
     // used when saving the game match data
     getPlayersSortedByRank(): Array<{ player: Player; rank: number }> {
-        const players = [...this.game.playerBarn.allPlayers];
+        const players = [...this.game.playerBarn.players];
 
         switch (this.mode) {
             case GameMode.Solo: {
@@ -127,7 +145,7 @@ export class GameModeManager {
     }
 
     isGameStarted(): boolean {
-        return this.aliveCount() > 1;
+        return this.cantDespawnAliveCount() > 1;
     }
 
     updateAliveCounts(aliveCounts: number[]): void {

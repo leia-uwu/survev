@@ -61,7 +61,6 @@ interface Emote {
 }
 
 export class PlayerBarn {
-    allPlayers: Player[] = [];
     players: Player[] = [];
     livingPlayers: Player[] = [];
     newPlayers: Player[] = [];
@@ -205,7 +204,6 @@ export class PlayerBarn {
         this.game.logger.log(`Player ${player.name} joined`);
 
         this.newPlayers.push(player);
-        this.allPlayers.push(player);
         this.game.objectRegister.register(player);
         this.players.push(player);
         this.livingPlayers.push(player);
@@ -214,13 +212,6 @@ export class PlayerBarn {
         }
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
-
-        if (!this.game.started) {
-            this.game.started = this.game.modeManager.isGameStarted();
-            if (this.game.started) {
-                this.game.gas.advanceGasStage();
-            }
-        }
 
         this.game.updateData();
 
@@ -2818,6 +2809,12 @@ export class Player extends BaseGameObject {
             return undefined;
         };
         return findAliveKiller(this.killedBy);
+    }
+
+    canDespawn() {
+        return (
+            this.timeAlive < GameConfig.player.minActiveTime && !this.dead && !this.downed
+        );
     }
 
     isReloading() {
