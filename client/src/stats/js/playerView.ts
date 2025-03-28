@@ -214,6 +214,7 @@ export class PlayerView {
     teamModeFilter = 7;
     userStats = new Query();
     matchHistory = new Query();
+    matchHistoryCache = {} as Record<number, typeof this.games>;
     matchData = new Query();
     el = $(
         templates.player({
@@ -269,6 +270,13 @@ export class PlayerView {
             count: count,
             teamModeFilter: teamModeFilter,
         };
+        if (offset === 0 && this.matchHistoryCache[teamModeFilter]) {
+            this.games = this.matchHistoryCache[teamModeFilter];
+
+            this.moreGamesAvailable = this.games.length >= count;
+            this.render();
+            return;
+        }
         this.matchHistory.query(
             "/api/match_history",
             args,
@@ -292,6 +300,9 @@ export class PlayerView {
                         data: null,
                         dataError: false,
                     });
+                }
+                if (offset === 0 && !this.matchHistoryCache[teamModeFilter]) {
+                    this.matchHistoryCache[teamModeFilter] = this.games;
                 }
                 this.moreGamesAvailable = games.length >= count;
                 this.render();
