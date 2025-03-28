@@ -12,13 +12,13 @@ export async function handleModerationAction(data: ModerationParms) {
             return await clearAllBans();
         }
         case "ban-ip": {
-            return await banIP(data.ip);
+            return await banIP(data.ip, data.permanent, data.isEncoded);
         }
         case "unban-ip": {
-            return await unbanIp(data.ip);
+            return await unbanIp(data.ip, data.isEncoded);
         }
         case "check-ban-status": {
-            return await isBanned(data.ip);
+            return await isBanned(data.ip, data.isEncoded);
         }
         case "get-player-ip": {
             return await getPlayerIp(data.playerName);
@@ -29,17 +29,18 @@ export async function handleModerationAction(data: ModerationParms) {
     }
 }
 
-export async function isBanned(ip: string) {
-    const encodedIp = encodeIP(ip);
+export async function isBanned(ip: string, isEncoded = false) {
+    const encodedIp = isEncoded ? ip : encodeIP(ip);
     const banned = await db.query.bannedIpsTable.findFirst({
         where: eq(bannedIpsTable.encodedIp, encodedIp),
         columns: {
+            permanent: true,
             expiresIn: true,
         },
     });
     if (banned) {
-        const { expiresIn } = banned;
-        if (expiresIn.getTime() > Date.now()) {
+        const { expiresIn, permanent } = banned;
+        if (permanent || expiresIn.getTime() > Date.now()) {
             console.log(`${encodedIp} is banned.`);
             return true;
         }
@@ -50,14 +51,21 @@ export async function isBanned(ip: string) {
     return false;
 }
 
-async function banIP(encodedIp: string, durationInDays = 7) {
+async function banIP(
+    ip: string,
+    isEncoded = false,
+    permanent = false,
+    durationInDays = 7,
+) {
     const expiresIn = new Date(Date.now() + durationInDays * 24 * 60 * 60 * 1000);
+    const encodedIp = isEncoded ? ip : encodeIP(ip);
 
     await db
         .insert(bannedIpsTable)
         .values({
             encodedIp,
             expiresIn,
+            permanent,
         })
         .onConflictDoUpdate({
             target: bannedIpsTable.encodedIp,
@@ -66,10 +74,12 @@ async function banIP(encodedIp: string, durationInDays = 7) {
             },
         });
 
-    return `IP ${encodedIp} has been banned for ${durationInDays} days.`;
+    if (permanent) return `IP ${ip} has been permanently banned.`;
+    return `IP ${ip} has been banned for ${durationInDays} days.`;
 }
 
-async function unbanIp(encodedIp: string) {
+async function unbanIp(ip: string, isEncoded = false) {
+    const encodedIp = isEncoded ? ip : encodeIP(ip);
     await db
         .delete(bannedIpsTable)
         .where(eq(bannedIpsTable.encodedIp, encodedIp))

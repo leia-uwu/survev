@@ -59,6 +59,8 @@ const zModerationParms = z.discriminatedUnion("action", [
     z.object({
         action: z.enum(["ban-ip", "unban-ip", "check-ban-status"]),
         ip: z.string(),
+        isEncoded: z.boolean().default(false),
+        permanent: z.boolean().default(false),
     }),
 ]);
 
