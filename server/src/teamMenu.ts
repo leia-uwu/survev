@@ -193,6 +193,7 @@ class Room {
         this.data.gameModeIdx = gameModeIdx;
 
         this.data.maxPlayers = Config.modes[gameModeIdx].teamMode;
+        this.data.autoFill = props.autoFill;
 
         // kick players that don't fit on the new max players
         while (this.players.length > this.data.maxPlayers) {
