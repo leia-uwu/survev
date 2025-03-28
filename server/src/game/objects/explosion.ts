@@ -149,7 +149,7 @@ export class ExplosionBarn {
         let damage = def.damage;
 
         if (dist > def.rad.min) {
-            damage = math.remap(dist, def.rad.min, def.rad.max, damage, 0);
+            damage = math.remap(dist, 0, def.rad.max, damage, 0);
         }
 
         if (obj.__type == ObjectType.Player) {

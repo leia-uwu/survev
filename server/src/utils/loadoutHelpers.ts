@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
 import { GameConfig } from "../../../shared/gameConfig";
@@ -8,18 +9,46 @@ import type { Player } from "../game/objects/player";
 
 const loadoutSecret = Config.encryptLoadoutSecret!;
 
-// very crude, not sure what the original used..
-export function encryptLoadout(loadout: Loadout) {
-    return btoa(JSON.stringify(loadout) + loadoutSecret);
-}
-function decryptLoadout(encodedLoadout: string): Loadout | undefined {
-    [];
-    try {
-        const decoded = atob(encodedLoadout);
-        const loadoutStr = decoded.slice(0, -loadoutSecret.length);
-        const extractedSecret = decoded.slice(-loadoutSecret.length);
+// source: https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb
+// but changed it from hex to base64 since it uses less characters
 
-        if (extractedSecret === loadoutSecret) return JSON.parse(loadoutStr) as Loadout;
+export function encryptLoadout(loadout: Loadout) {
+    const iv = crypto.randomBytes(16);
+    const cipher = crypto.createCipheriv(
+        "aes-256-cbc",
+        Buffer.from(loadoutSecret, "base64"),
+        iv,
+    );
+    const encrypted = Buffer.concat([
+        cipher.update(JSON.stringify(loadout), "utf8"),
+        cipher.final(),
+    ]);
+    return `${iv.toString("base64")}:${encrypted.toString("base64")}`;
+}
+
+function decryptLoadout(encodedLoadout: string): Loadout | undefined {
+    if (!encodedLoadout) return undefined;
+    try {
+        const [ivString, encryptedString] = encodedLoadout.split(":");
+
+        if (!ivString || !encryptedString) {
+            console.warn("Invalid or corrupted cipher format");
+            return;
+        }
+
+        const encryptedText = Buffer.from(encryptedString, "base64");
+        const decipher = crypto.createDecipheriv(
+            "aes-256-cbc",
+            Buffer.from(loadoutSecret, "base64"),
+            Buffer.from(ivString, "base64"),
+        );
+
+        const decrypted = Buffer.concat([
+            decipher.update(encryptedText),
+            decipher.final(),
+        ]);
+
+        return JSON.parse(decrypted.toString());
     } catch (err) {
         console.log(err);
     }
@@ -60,10 +89,10 @@ export function setLoadout(joinMsg: JoinMsg, player: Player) {
         player.weapons[GameConfig.WeaponSlot.Melee].type = processedLoadout.melee;
     }
 
-    if (isItemInLoadout(processedLoadout.heal, "heal")) {
+    if (isItemInLoadout(processedLoadout.heal, "heal_effect")) {
         player.loadout.heal = processedLoadout.heal;
     }
-    if (isItemInLoadout(processedLoadout.boost, "boost")) {
+    if (isItemInLoadout(processedLoadout.boost, "boost_effect")) {
         player.loadout.boost = processedLoadout.boost;
     }
 

@@ -34,9 +34,10 @@ export const Config = {
     BASE_URL: "https://survev.io",
 
     /*
-      a random string, should be private.
+      a random string, should be 32 bytes base64 string
+      can run `openssl rand -base64 32` to generate one
     */
-    encryptLoadoutSecret: "IiRH2yg42jyp24qAAdLB6",
+    encryptLoadoutSecret: "slznQWkRnwg8Q2arG7/W0cayWgFcRiQCa5ZgpddNBwg=",
 
     // OAUTH PROVIDERS
     DISCORD_CLIENT_ID: "",

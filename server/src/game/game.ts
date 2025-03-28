@@ -1,4 +1,4 @@
-import { GameConfig, TeamMode } from "../../../shared/gameConfig";
+import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
 import type { MatchDataTable } from "../api/db/schema";
@@ -45,6 +45,7 @@ export class Game {
     allowJoin = true;
     over = false;
     startedTime = 0;
+    startTicker = 0;
     id: string;
     teamMode: TeamMode;
     mapName: string;
@@ -159,6 +160,13 @@ export class Game {
         if (!this.now) this.now = now;
         const dt = (now - this.now) / 1000;
         this.now = now;
+
+        if (!this.started) {
+            this.started = this.modeManager.isGameStarted();
+            if (this.started) {
+                this.gas.advanceGasStage();
+            }
+        }
 
         if (this.started) this.startedTime += dt;
 
@@ -353,7 +361,7 @@ export class Game {
         player.spectating = undefined;
         player.dir = v2.create(0, 0);
         player.setPartDirty();
-        if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
+        if (player.canDespawn()) {
             player.game.playerBarn.removePlayer(player);
         }
     }
@@ -454,7 +462,8 @@ export class Game {
             };
         });
 
-        if (!values.length) return;
+        // only save the game if it has more than 2 players lol
+        if (values.length < 2) return;
 
         // FIXME: maybe move this to the parent game server process?
         // to avoid blocking the game from being GC'd until this request is done
