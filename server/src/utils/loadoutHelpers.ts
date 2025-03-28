@@ -89,10 +89,10 @@ export function setLoadout(joinMsg: JoinMsg, player: Player) {
         player.weapons[GameConfig.WeaponSlot.Melee].type = processedLoadout.melee;
     }
 
-    if (isItemInLoadout(processedLoadout.heal, "heal")) {
+    if (isItemInLoadout(processedLoadout.heal, "heal_effect")) {
         player.loadout.heal = processedLoadout.heal;
     }
-    if (isItemInLoadout(processedLoadout.boost, "boost")) {
+    if (isItemInLoadout(processedLoadout.boost, "boost_effect")) {
         player.loadout.boost = processedLoadout.boost;
     }
 
