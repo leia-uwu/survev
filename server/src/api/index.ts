@@ -55,7 +55,8 @@ app.use(
     }),
 );
 
-app.use(csrf());
+// @TODO: production?
+app.use(csrf({ origin: ["http://localhost:3000"] }));
 
 app.route("/api/user/", UserRouter);
 app.route("/api/auth/", AuthRouter);
