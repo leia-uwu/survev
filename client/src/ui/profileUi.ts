@@ -266,13 +266,6 @@ export class ProfileUi {
         });
         $(".account-loadout-link, #btn-customize").click(() => {
             this.loadoutMenu.show();
-            this.waitOnLogin(() => {
-                if (!this.account.loggedIn) {
-                    this.showLoginMenu({
-                        modal: true,
-                    });
-                }
-            });
             return false;
         });
         $(".account-details-user").click(() => {
