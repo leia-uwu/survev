@@ -143,11 +143,11 @@ const mapDef: PartialMapDef = {
         ],
         tier_ring_case: [
             { name: "potato_cannon", count: 1, weight: 1 },
-            { name: "spud_gun", count: 1, weight: 0.1 },
+            { name: "potato_smg", count: 1, weight: 0.1 },
         ],
         tier_airdrop_rare: [
             { name: "potato_cannon", count: 1, weight: 1 },
-            { name: "spud_gun", count: 1, weight: 0.1 },
+            { name: "potato_smg", count: 1, weight: 0.1 },
         ],
     },
     mapGen: {
