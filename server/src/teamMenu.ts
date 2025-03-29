@@ -400,6 +400,12 @@ export class TeamMenu {
 
                 return {
                     onOpen(_event, ws) {
+                        ws.raw = {
+                            ip,
+                            rateLimit: {},
+                            player: undefined,
+                        };
+
                         if (closeReason) {
                             ws.send(
                                 JSON.stringify({
@@ -412,7 +418,7 @@ export class TeamMenu {
                             ws.close();
                             return;
                         }
-                        teamMenu.onOpen(ws as WSContext<SocketData>, ip!, userId);
+                        teamMenu.onOpen(ws as WSContext<SocketData>, userId);
                     },
 
                     onMessage(event, ws) {
@@ -445,13 +451,9 @@ export class TeamMenu {
         );
     }
 
-    onOpen(ws: WSContext<SocketData>, ip: string, userId: string | null) {
+    onOpen(ws: WSContext<SocketData>, userId: string | null) {
         const player = new Player(ws, this, userId);
-        ws.raw = {
-            ip,
-            rateLimit: {},
-            player,
-        };
+        ws.raw!.player = player;
     }
 
     onMsg(ws: WSContext<SocketData>, data: string) {
