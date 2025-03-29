@@ -66,14 +66,18 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    addLoginOption("google", account.profile.linkedGoogle, () => {
-        window.location.href = "/api/auth/google";
-    });
-    addLoginOption("discord", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/auth/discord";
-    });
+    if (GOOGLE_LOGIN_SUPPORTED) {
+        addLoginOption("google", account.profile.linkedGoogle, () => {
+            window.location.href = "/api/auth/google";
+        });
+    }
+    if (DISCORD_LOGIN_SUPPORTED) {
+        addLoginOption("discord", account.profile.linkedDiscord, () => {
+            window.location.href = "/api/auth/discord";
+        });
+    }
 
-    if (IS_DEV) {
+    if (MOCK_LOGIN_SUPPORTED) {
         addLoginOption("mock", false, () => {
             window.location.href = "/api/auth/mock";
         });

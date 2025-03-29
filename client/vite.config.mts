@@ -159,6 +159,13 @@ export default defineConfig(({ mode }) => {
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
             AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
             IS_DEV: isDev,
+            GOOGLE_LOGIN_SUPPORTED: JSON.stringify(
+                Config.GOOGLE_CLIENT_ID && Config.GOOGLE_SECRET_ID,
+            ),
+            DISCORD_LOGIN_SUPPORTED: JSON.stringify(
+                Config.DISCORD_CLIENT_ID && Config.DISCORD_SECRET_ID,
+            ),
+            MOCK_LOGIN_SUPPORTED: JSON.stringify(Config.debug.allowMockAccount),
         },
         plugins,
         json: {
