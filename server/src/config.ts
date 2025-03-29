@@ -7,6 +7,9 @@ import type { Vec2 } from "../../shared/utils/v2";
 
 const isProduction = process.env["NODE_ENV"] === "production";
 
+// !! TODO: update this
+export type Region = "eu" | "na" | "as" | "kr" | "sa";
+
 // WARNING: THIS IS THE DEFAULT CONFIG
 // YOU SHOULD MODIFY survev-config.json FILE INSTEAD FOR LOCAL CHANGES
 // TO AVOID MERGE CONFLICTS AND PUSHING IT TO GIT
@@ -15,11 +18,6 @@ const isProduction = process.env["NODE_ENV"] === "production";
  * Default config
  */
 export const Config = {
-    devServer: {
-        host: "127.0.0.1",
-        port: 8001,
-    },
-
     apiServer: {
         host: "0.0.0.0",
         port: 8000,
@@ -33,6 +31,23 @@ export const Config = {
 
     apiKey: "Kongregate Sucks",
 
+    BASE_URL: "https://survev.io",
+
+    /*
+      a random string, should be 32 bytes base64 string
+      can run `openssl rand -base64 32` to generate one
+    */
+    encryptLoadoutSecret: "slznQWkRnwg8Q2arG7/W0cayWgFcRiQCa5ZgpddNBwg=",
+
+    // OAUTH PROVIDERS
+    DISCORD_CLIENT_ID: "",
+    DISCORD_SECRET_ID: "",
+
+    GOOGLE_CLIENT_ID: "",
+    GOOGLE_SECRET_ID: "",
+
+    PROXYCHECK_KEY: "",
+
     modes: [
         { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
         { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
@@ -45,7 +60,14 @@ export const Config = {
         spawnMode: "default",
         allowBots: !isProduction,
         allowEditMsg: !isProduction,
+        allowMockAccount: !isProduction,
     },
+
+    randomizeDefaultPlayerName: false,
+
+    accountsEnabled: true,
+
+    cachingEnabled: false,
 
     rateLimitsEnabled: isProduction,
 
@@ -70,6 +92,18 @@ export const Config = {
     defaultItems: {},
     gameConfig: {},
 } satisfies ConfigType as ConfigType;
+
+if (!isProduction) {
+    util.mergeDeep(Config, {
+        regions: {
+            local: {
+                https: false,
+                address: `${Config.gameServer.host}:${Config.gameServer.port}`,
+                l10n: "index-local",
+            },
+        },
+    });
+}
 
 const runningOnVite = process.argv.toString().includes("vite");
 
@@ -122,8 +156,6 @@ interface ServerConfig {
 }
 
 export interface ConfigType {
-    devServer: ServerConfig;
-
     apiServer: ServerConfig;
     gameServer: ServerConfig & {
         apiServerUrl: string;
@@ -132,6 +164,24 @@ export interface ConfigType {
      * API key used for game server and API server to communicate
      */
     apiKey: string;
+
+    encryptLoadoutSecret?: string;
+
+    /*
+      used for auth redirects in production
+      should be the hosted website url ex: https://survev.io
+    */
+    BASE_URL: string;
+
+    // ##### DISCORD OAUTH
+    DISCORD_CLIENT_ID?: string;
+    DISCORD_SECRET_ID?: string;
+
+    // ##### GOOGLE OAUTH #####
+    GOOGLE_CLIENT_ID?: string;
+    GOOGLE_SECRET_ID?: string;
+
+    PROXYCHECK_KEY?: string;
 
     regions: Record<
         string,
@@ -142,7 +192,7 @@ export interface ConfigType {
         }
     >;
 
-    thisRegion: string;
+    thisRegion: Region | "local";
 
     modes: Array<{
         mapName: keyof typeof MapDefs;
@@ -174,7 +224,15 @@ export interface ConfigType {
         time: number;
     };
 
+    accountsEnabled: boolean;
+
+    randomizeDefaultPlayerName: boolean;
+
+    cachingEnabled: boolean;
+
     rateLimitsEnabled: boolean;
+
+    errorLoggingWebhook?: string;
 
     client: {
         // adin play IDs
@@ -189,6 +247,7 @@ export interface ConfigType {
         spawnPos?: Vec2;
         allowBots: boolean;
         allowEditMsg: boolean;
+        allowMockAccount: boolean;
     };
 
     // overrides for default items; doesn't apply to bots

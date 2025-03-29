@@ -1,5 +1,5 @@
+import loadout from "../../shared/utils/loadout";
 import { util } from "../../shared/utils/util";
-import loadout from "./ui/loadouts";
 import type { Locale } from "./ui/localization";
 
 const defaultDebugConfig = {

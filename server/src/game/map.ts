@@ -5,6 +5,7 @@ import type {
     ObstacleDef,
     StructureDef,
 } from "../../../shared/defs/mapObjectsTyping";
+import type { MapId } from "../../../shared/defs/types/misc";
 import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { MsgStream, MsgType } from "../../../shared/net/net";
@@ -228,6 +229,7 @@ export class GameMap {
     shoreInset: number;
 
     mapDef: MapDef;
+    mapId: MapId;
 
     factionMode: boolean;
     perkMode: boolean;
@@ -301,6 +303,8 @@ export class GameMap {
         ) as MapDef);
 
         assert(mapDef, `Invalid map name: ${game.config.mapName}`);
+
+        this.mapId = mapDef.mapId;
 
         const scale = (this.scale = game.teamMode > TeamMode.Duo ? "large" : "small");
 

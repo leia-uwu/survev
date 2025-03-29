@@ -1,10 +1,10 @@
 import $ from "jquery";
+import loadout from "../../../shared/utils/loadout";
 import type { Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
-import loadout from "./loadouts";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 
@@ -66,12 +66,18 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    addLoginOption("twitch", account.profile.linkedTwitch, () => {
-        window.location.href = "/api/user/auth/twitch";
+    addLoginOption("google", account.profile.linkedGoogle, () => {
+        window.location.href = "/api/auth/google";
     });
     addLoginOption("discord", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/user/auth/discord";
+        window.location.href = "/api/auth/discord";
     });
+
+    if (IS_DEV) {
+        addLoginOption("mock", false, () => {
+            window.location.href = "/api/auth/mock";
+        });
+    }
 }
 
 export class ProfileUi {

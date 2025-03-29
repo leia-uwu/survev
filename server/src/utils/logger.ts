@@ -1,3 +1,5 @@
+import { logErrorToWebhook } from "./serverHelpers";
+
 export const ColorStyles = {
     foreground: {
         black: {
@@ -108,5 +110,6 @@ export class Logger {
             styleText("[WARNING]", ColorStyles.foreground.yellow.normal),
             message.join(" "),
         );
+        logErrorToWebhook("server", ...message);
     }
 }
