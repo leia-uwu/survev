@@ -208,6 +208,83 @@ export class Building extends BaseGameObject {
         }
     }
 
+    delete(): void {
+        const dfs = (obj: Obstacle | Building | Structure | Decal) => {
+            switch (obj.__type) {
+                case ObjectType.Obstacle:
+                case ObjectType.Decal:
+                    obj.destroy();
+                    break;
+                case ObjectType.Building:
+                    for (let i = 0; i < obj.childObjects.length; i++) {
+                        const childObj = obj.childObjects[i];
+                        dfs(childObj);
+                    }
+                    obj.destroy();
+                    break;
+                case ObjectType.Structure:
+                    const topFloor = this.game.objectRegister.getById(
+                        obj.layerObjIds[0],
+                    ) as Building;
+                    const bottomFloor = this.game.objectRegister.getById(
+                        obj.layerObjIds[1],
+                    ) as Building;
+                    dfs(topFloor);
+                    dfs(bottomFloor);
+                    break;
+            }
+        };
+        dfs(this);
+    }
+
+    refresh(): void {
+        this.game.map.genBuilding(
+            this.type,
+            v2.copy(this.pos),
+            this.layer,
+            this.ori,
+            this.parentStructure?.__id,
+            undefined,
+            true,
+        );
+        this.delete();
+    }
+
+    updatePos(newPos: Vec2): void {
+        const deltaPos = v2.sub(newPos, this.pos);
+        const dfs = (obj: Obstacle | Building | Structure | Decal) => {
+            obj.pos = v2.add(obj.pos, deltaPos);
+            this.game.map.clampToMapBounds(obj.pos);
+            switch (obj.__type) {
+                case ObjectType.Obstacle:
+                    obj.setPartDirty();
+                    break;
+                case ObjectType.Decal:
+                    obj.setDirty();
+                    break;
+                case ObjectType.Building:
+                    obj.setDirty();
+                    for (let i = 0; i < obj.childObjects.length; i++) {
+                        const childObj = obj.childObjects[i];
+                        dfs(childObj);
+                    }
+
+                    break;
+                case ObjectType.Structure:
+                    const topFloor = this.game.objectRegister.getById(
+                        obj.layerObjIds[0],
+                    ) as Building;
+                    const bottomFloor = this.game.objectRegister.getById(
+                        obj.layerObjIds[1],
+                    ) as Building;
+                    dfs(topFloor);
+                    dfs(bottomFloor);
+                    break;
+            }
+        };
+        dfs(this);
+    }
+
     puzzlePieceToggled(piece: Obstacle): void {
         if (this.puzzleResetTimeout) clearTimeout(this.puzzleResetTimeout);
 

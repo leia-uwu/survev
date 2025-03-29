@@ -1133,6 +1133,7 @@ export class WeaponManager {
             fuseTime,
             GameConfig.DamageType.Player,
             dir,
+            oldThrowableType,
         );
 
         if (oldThrowableType == "strobe") {

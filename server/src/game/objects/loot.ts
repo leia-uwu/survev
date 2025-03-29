@@ -231,6 +231,17 @@ export class Loot extends BaseGameObject {
         this.push(dir ?? v2.randomUnit(), pushSpeed);
     }
 
+    updatePos(newPos: Vec2): void {
+        this.pos = v2.copy(newPos);
+        this.game.map.clampToMapBounds(this.pos, this.rad);
+        this.setPartDirty();
+    }
+
+    refresh(): void {
+        this.collider.pos = this.pos;
+        this.game.grid.updateObject(this);
+    }
+
     update(dt: number, collisions: Record<string, boolean>): void {
         if (this.ticks > 2 && !this.isOld) {
             this.isOld = true;
