@@ -1672,6 +1672,7 @@ export class GameMap {
         ori?: number,
         parentId?: number,
         hideFromMap?: boolean,
+        dontSpawnLoot?: boolean,
     ): Building {
         const def = MapObjectDefs[type] as BuildingDef;
 
@@ -1705,6 +1706,8 @@ export class GameMap {
                 partType = partType?.();
             }
             if (!partType) continue;
+
+            if (dontSpawnLoot && MapObjectDefs[partType].type == "loot_spawner") continue;
 
             let partOri: number;
             if (mapObject.inheritOri === false) partOri = mapObject.ori;

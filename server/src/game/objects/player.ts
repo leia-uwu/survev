@@ -42,11 +42,19 @@ import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
 import { WeaponManager, throwableList } from "../weaponManager";
+import type { Building } from "./building";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";
 import type { MapIndicator } from "./mapIndicator";
 import type { Obstacle } from "./obstacle";
 import type { Structure } from "./structure";
+
+type GodMode = {
+    isGodMode: boolean;
+    selectedObj?: Loot | Obstacle | Building;
+    originalPos?: Vec2;
+    selectPos?: Vec2;
+};
 
 interface Emote {
     playerId: number;
@@ -1084,6 +1092,16 @@ export class Player extends BaseGameObject {
         /** only overrides base speed so modifiers like haste and freeze still apply */
         baseSpeedOverride: -1,
         spectatorMode: false,
+        /** drag and drop loot, obstacles, and buildings */
+        godMode: <GodMode>{
+            isGodMode: false,
+            /** object you're currently dragging */
+            selectedObj: undefined,
+            /** original position of the selected obj */
+            originalPos: undefined,
+            /** mouse position when obj first selected */
+            selectPos: undefined,
+        },
     };
 
     teamId = 1;
@@ -1785,6 +1803,8 @@ export class Player extends BaseGameObject {
         let zoomRegionZoom = lowestZoom;
         let insideNoZoomRegion = true;
         let insideSmoke = false;
+        //building player is currently inside of
+        let occupiedBuilding: Building | undefined;
 
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
@@ -1832,6 +1852,7 @@ export class Player extends BaseGameObject {
                     ) {
                         this.indoors = true;
                         this.insideZoomRegion = true;
+                        occupiedBuilding = obj;
                         insideNoZoomRegion = false;
                         if (zoomRegion.zoom) {
                             zoomRegionZoom = zoomRegion.zoom;
@@ -1972,6 +1993,8 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (this.debug.godMode.isGodMode) this.godModeUpdate(occupiedBuilding);
+
         //
         // Weapon stuff
         //
@@ -1980,6 +2003,58 @@ export class Player extends BaseGameObject {
         this.shotSlowdownTimer -= dt;
         if (this.shotSlowdownTimer <= 0) {
             this.shotSlowdownTimer = 0;
+        }
+    }
+
+    godModeUpdate(occupiedBuilding?: Building): void {
+        if (!this.debug.godMode.isGodMode) return;
+        const mouseCollider = collider.createCircle(this.mousePos, 1);
+        const childIds = occupiedBuilding
+            ? new Set(occupiedBuilding.childObjects.map((o) => o.__id))
+            : undefined;
+        const hoveredObj = this.game.grid
+            .intersectCollider(mouseCollider)
+            .filter((o): o is Loot | Obstacle | Building => {
+                if (
+                    o.__type != ObjectType.Loot &&
+                    o.__type != ObjectType.Obstacle &&
+                    o.__type != ObjectType.Building
+                )
+                    return false;
+
+                if (!util.sameLayer(o.layer, this.layer)) return false;
+                if (o.__type == ObjectType.Obstacle && o.dead) return false;
+                //if inside building, can only select one of its children
+                if (this.indoors && !childIds?.has(o.__id)) return false;
+                return true;
+            })
+            .find((o) => {
+                const transformedBounds = collider.transform(o.bounds, o.pos, 0, 1);
+                const aabb = collider.toAabb(transformedBounds);
+                return coldet.testPointAabb(this.mousePos, aabb.min, aabb.max);
+            });
+
+        if (hoveredObj && this.shootStart) {
+            this.debug.godMode.selectedObj = hoveredObj;
+            this.debug.godMode.originalPos = v2.copy(this.debug.godMode.selectedObj.pos);
+            this.debug.godMode.selectPos = v2.copy(this.mousePos);
+        }
+
+        if (
+            this.debug.godMode.selectedObj &&
+            this.debug.godMode.selectPos &&
+            this.debug.godMode.originalPos
+        ) {
+            if (this.shootHold) {
+                const deltaPos = v2.sub(this.mousePos, this.debug.godMode.selectPos);
+                const newPos = v2.add(this.debug.godMode.originalPos, deltaPos);
+                this.debug.godMode.selectedObj.updatePos(newPos);
+            } else {
+                this.debug.godMode.selectedObj.refresh();
+                this.debug.godMode.selectedObj = undefined;
+                this.debug.godMode.selectPos = undefined;
+                this.debug.godMode.originalPos = undefined;
+            }
         }
     }
 
@@ -3016,6 +3091,7 @@ export class Player extends BaseGameObject {
     touchMoveLen = 255;
     toMouseDir = v2.create(1, 0);
     toMouseLen = 0;
+    mousePos = v2.create(1, 0);
 
     shouldAcceptInput(input: number): boolean {
         return this.downed
@@ -3046,6 +3122,8 @@ export class Player extends BaseGameObject {
         this.touchMoveDir = v2.normalizeSafe(msg.touchMoveDir);
         this.touchMoveLen = msg.touchMoveLen;
         this.toMouseLen = msg.toMouseLen;
+
+        this.mousePos = v2.add(this.pos, v2.mul(this.dir, this.toMouseLen));
 
         //spectators are only allowed to send movement related inputs
         if (this.debug.spectatorMode) return;
@@ -4156,6 +4234,7 @@ export class Player extends BaseGameObject {
         }
 
         this.debug.spectatorMode = msg.spectatorMode;
+        this.debug.godMode.isGodMode = msg.godMode;
 
         if (msg.spawnLootType) {
             const def = GameObjectDefs[msg.spawnLootType];
