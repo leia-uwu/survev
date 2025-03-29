@@ -36,7 +36,7 @@ export function sanitizeSlug(username: string) {
 export async function setSessionTokenCookie(userId: string, c: Context) {
     const sessionToken = generateSessionToken();
     const session = await createSession(sessionToken, userId);
-    console.log({ sessionToken, session });
+
     setCookie(c, "session", sessionToken, {
         httpOnly: false,
         secure: process.env.NODE_ENV === "production",

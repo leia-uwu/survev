@@ -98,7 +98,7 @@ DiscordRouter.get("/callback", async (c) => {
         await setSessionTokenCookie(userId, c);
         return c.redirect("/");
     } catch (e) {
-        server.logger.warn("/api/auth/mock: Failed to create user");
+        server.logger.warn("/api/auth/discord: Failed to create user");
         if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
             // invalid code
             return c.json({}, 400);
