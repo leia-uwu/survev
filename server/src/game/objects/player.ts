@@ -3305,6 +3305,8 @@ export class Player extends BaseGameObject {
                             this.curWeapIdx ^ 1,
                             false,
                             false,
+                            false,
+                            false,
                         );
                     } else {
                         this.weapsDirty = true;
@@ -3919,6 +3921,12 @@ export class Player extends BaseGameObject {
             }
         }
 
+        const slotDef = GameObjectDefs[this.weapons[index].type] as
+            | GunDef
+            | MeleeDef
+            | ThrowableDef;
+        if (slotDef && slotDef.noPotatoSwap) return;
+
         if (index === this.curWeapIdx && this.isReloading()) {
             this.cancelAction();
         }
@@ -3966,6 +3974,8 @@ export class Player extends BaseGameObject {
 
             this.inventoryDirty = true;
         }
+
+        this.setDirty();
 
         this.game.playerBarn.addEmote(
             this.__id,
