@@ -1,39 +1,40 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Context, Next } from "hono";
-import { deleteCookie, getCookie } from "hono/cookie";
+import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { z } from "zod";
+import { validateSessionToken } from ".";
 import { Config } from "../../config";
 import { server } from "../apiServer";
-import { lucia } from "./lucia";
+import { deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
 
 export const AuthMiddleware = async (c: Context, next: Next) => {
     try {
-        const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+        const sessionToken = getCookie(c, "session") ?? null;
 
-        if (!sessionId) {
+        if (!sessionToken) {
             c.set("user", null);
             c.set("session", null);
             return c.json({ err: "Authentication failed" }, 401);
         }
-        const { session, user } = await lucia.validateSession(sessionId);
+        const { session, user } = await validateSessionToken(sessionToken);
 
         if (!user) {
             return c.json({ err: "Authentication failed" }, 401);
         }
 
-        if (session && session.fresh) {
-            // use `header()` instead of `setCookie()` to avoid TS errors
-            c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-                append: true,
+        if (session) {
+            setCookie(c, "session", sessionToken, {
+                httpOnly: false,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+                expires: session.expiresAt,
             });
-        }
-
-        if (!session) {
-            c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-                append: true,
-            });
+        } else {
+            deleteSessionTokenCookie(c);
             deleteCookie(c, "app-data");
         }
+
         c.set("user", user);
         c.set("session", session);
         return next();

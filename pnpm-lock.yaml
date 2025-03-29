@@ -93,6 +93,12 @@ importers:
       '@lucia-auth/adapter-drizzle':
         specifier: 1.1.0
         version: 1.1.0(drizzle-orm@0.38.4(@types/better-sqlite3@7.6.12)(@types/pg@8.11.11)(better-sqlite3@11.9.1)(bun-types@1.2.5)(mysql2@3.14.0)(pg@8.14.1))(lucia@3.2.2)
+      '@oslojs/crypto':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@oslojs/encoding':
+        specifier: ^1.1.0
+        version: 1.1.0
       arctic:
         specifier: ^1.9.2
         version: 1.9.2

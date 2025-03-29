@@ -2,13 +2,18 @@ import { Google, OAuth2RequestError, generateCodeVerifier, generateState } from 
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
-import { generateId } from "lucia";
 import { Config } from "../../../../config";
 import { validateUserName } from "../../../../utils/serverHelpers";
 import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
-import { createNewUser, getRedirectUri, sanitizeSlug, setUserCookie } from "./authUtils";
+import {
+    createNewUser,
+    generateId,
+    getRedirectUri,
+    sanitizeSlug,
+    setSessionTokenCookie,
+} from "./authUtils";
 
 const google = new Google(
     Config.GOOGLE_CLIENT_ID!,
@@ -81,7 +86,7 @@ GoogleRouter.get("/callback", async (c) => {
         setCookie(c, "app-data", "1");
 
         if (existingUser) {
-            await setUserCookie(existingUser.id, c);
+            await setSessionTokenCookie(existingUser.id, c);
             return c.redirect("/");
         }
 
@@ -97,7 +102,7 @@ GoogleRouter.get("/callback", async (c) => {
             slug,
         });
 
-        await setUserCookie(userId, c);
+        await setSessionTokenCookie(userId, c);
         return c.redirect("/");
     } catch (e) {
         server.logger.warn(`/api/auth/google/callback: Failed to create user`);

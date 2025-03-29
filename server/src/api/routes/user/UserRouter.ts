@@ -21,13 +21,16 @@ import loadout, { type Item, ItemStatus } from "../../../../../shared/utils/load
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
-import { lucia } from "../../auth/lucia";
 import { AuthMiddleware, validateParams } from "../../auth/middleware";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
-import { getTimeUntilNextUsernameChange, sanitizeSlug } from "./auth/authUtils";
+import {
+    getTimeUntilNextUsernameChange,
+    logoutUser,
+    sanitizeSlug,
+} from "./auth/authUtils";
 import { MOCK_USER_ID } from "./auth/mock";
 
 export const UserRouter = new Hono<Context>();
@@ -204,10 +207,9 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
     try {
         const session = c.get("session")!;
         deleteCookie(c, "app-data");
-        await lucia.invalidateSession(session.id);
-        c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-            append: true,
-        });
+
+        await logoutUser(c, session.id);
+
         return c.json({}, 200);
     } catch (err) {
         server.logger.warn("/api/logout: Error logging out", err);
@@ -221,10 +223,7 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
         const session = c.get("session")!;
 
         // logout out the user
-        await lucia.invalidateSession(session.id);
-        c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-            append: true,
-        });
+        await logoutUser(c, session.id);
 
         // delete the account
         await db.delete(usersTable).where(eq(usersTable.id, user.id));

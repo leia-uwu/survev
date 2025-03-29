@@ -1,7 +1,8 @@
 CREATE TABLE "banned_ips" (
 	"created_at" timestamp DEFAULT timezone('utc', now()) NOT NULL,
 	"expries_in" timestamp NOT NULL,
-	"encoded_ip" text PRIMARY KEY NOT NULL
+	"encoded_ip" text PRIMARY KEY NOT NULL,
+	"permanent" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "ip_logs" (

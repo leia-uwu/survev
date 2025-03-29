@@ -3,7 +3,7 @@ import { z } from "zod";
 import type { Context } from "../..";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
-import { lucia } from "../../auth/lucia";
+import { deleteExpiredSessions } from "../../auth";
 import { privateMiddleware, validateParams } from "../../auth/middleware";
 import { invalidateLeaderboards } from "../../cache/leaderboard";
 import { db } from "../../db";
@@ -82,7 +82,7 @@ PrivateRouter.post("/moderation", validateParams(zModerationParms), async (ctx) 
 // TODO: use a cron job instead
 PrivateRouter.post("/delete-expired-sessions", async (ctx) => {
     try {
-        await lucia.deleteExpiredSessions();
+        await deleteExpiredSessions();
     } catch (err) {
         server.logger.warn(
             `/private/delete-expired-sessions: Error deleting expired sessinos`,

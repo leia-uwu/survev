@@ -1,11 +1,10 @@
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
-import { generateId } from "lucia";
 import { server } from "../../../apiServer";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
-import { createNewUser, setUserCookie } from "./authUtils";
+import { createNewUser, generateId, setSessionTokenCookie } from "./authUtils";
 
 export const MockRouter = new Hono();
 
@@ -23,7 +22,7 @@ MockRouter.get("/", async (c) => {
         setCookie(c, "app-data", "1");
 
         if (existingUser) {
-            await setUserCookie(existingUser.id, c);
+            await setSessionTokenCookie(existingUser.id, c);
             return c.redirect("/");
         }
 
@@ -36,7 +35,7 @@ MockRouter.get("/", async (c) => {
             slug: MOCK_USER_ID,
         });
 
-        await setUserCookie(userId, c);
+        await setSessionTokenCookie(userId, c);
         return c.redirect("/");
     } catch (err) {
         server.logger.warn("/api/auth/mock: Failed to create user", err);

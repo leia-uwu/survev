@@ -12,7 +12,7 @@ export async function handleModerationAction(data: ModerationParms) {
             return await clearAllBans();
         }
         case "ban-ip": {
-            return await banIP(data.ip, data.permanent, data.isEncoded);
+            return await banIP(data.ip, data.isEncoded, data.permanent);
         }
         case "unban-ip": {
             return await unbanIp(data.ip, data.isEncoded);

@@ -1,14 +1,24 @@
+import { generateRandomString } from "@oslojs/crypto/random";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
-import { generateId } from "lucia";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
-import { lucia } from "../../../auth/lucia";
+import { createSession, generateSessionToken, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, usersTable } from "../../../db/schema";
+
+const random = {
+    read(bytes: Uint8Array) {
+        crypto.getRandomValues(bytes);
+    },
+};
+export function generateId(length: number) {
+    const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+    return generateRandomString(random, alphabet, length);
+}
 
 export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
@@ -23,18 +33,33 @@ export function sanitizeSlug(username: string) {
     });
 }
 
-export async function setUserCookie(userId: string, c: Context) {
-    const session = await lucia.createSession(userId, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-
-    setCookie(c, sessionCookie.name, sessionCookie.value, {
+export async function setSessionTokenCookie(userId: string, c: Context) {
+    const sessionToken = generateSessionToken();
+    const session = await createSession(sessionToken, userId);
+    console.log({ sessionToken, session });
+    setCookie(c, "session", sessionToken, {
         httpOnly: false,
-        secure: true,
+        secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
-        path: sessionCookie.attributes.path,
-        expires: sessionCookie.attributes.expires,
+        path: "/",
+        expires: session.expiresAt,
     });
     return session;
+}
+
+export async function logoutUser(c: Context, sessionId: string) {
+    await invalidateSession(sessionId);
+    deleteSessionTokenCookie(c);
+}
+
+export function deleteSessionTokenCookie(c: Context) {
+    setCookie(c, "session", "", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 0,
+    });
 }
 
 export async function createNewUser(payload: UsersTableInsert) {

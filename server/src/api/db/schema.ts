@@ -25,6 +25,7 @@ export const sessionTable = pgTable("session", {
     expiresAt: timestamp("expires_at").notNull(),
 });
 
+export type SessionTableSelect = typeof sessionTable.$inferSelect;
 // timestamp().defaultNow() will use the system time zone for some reason
 // which will display with the timezone offset eg in the client match history
 // using this fixes it

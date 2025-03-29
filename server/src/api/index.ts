@@ -4,8 +4,6 @@ import { createNodeWebSocket } from "@hono/node-ws";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
-import { csrf } from "hono/csrf";
-import type { Session, User } from "lucia";
 import { z } from "zod";
 import { version } from "../../../package.json";
 import {
@@ -22,8 +20,9 @@ import {
     logErrorToWebhook,
 } from "../utils/serverHelpers";
 import { server } from "./apiServer";
-import { lucia } from "./auth/lucia";
+import { validateSessionToken } from "./auth";
 import { validateParams } from "./auth/middleware";
+import type { SessionTableSelect, UsersTableSelect } from "./db/schema";
 import { isBanned } from "./moderation";
 import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
@@ -32,19 +31,14 @@ import { UserRouter } from "./routes/user/UserRouter";
 
 export type Context = {
     Variables: {
-        user: User | null;
-        session: Session | null;
+        user: UsersTableSelect | null;
+        session: SessionTableSelect | null;
     };
 };
 
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-// all api routes for now, this should be okey?
-//
-// pretty sure its ok, maybe if we add private APIs for like a management dashboard
-// we could use like /private/
-// - Leia
 app.use(
     "/api/*",
     cors({
@@ -55,8 +49,8 @@ app.use(
     }),
 );
 
-// @TODO: production?
-app.use(csrf({ origin: ["http://localhost:3000"] }));
+// @TODO: figure out the origins for this..
+// app.use(csrf())
 
 app.route("/api/user/", UserRouter);
 app.route("/api/auth/", AuthRouter);
@@ -96,11 +90,11 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         const token = randomUUID();
         let userId: string | null = null;
 
-        const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+        const sessionId = getCookie(c, "session") ?? null;
 
         if (sessionId) {
             try {
-                const account = await lucia.validateSession(sessionId);
+                const account = await validateSessionToken(sessionId);
                 userId = account.user?.id || null;
             } catch (err) {
                 console.error("/api/find_game: Failed to validate session", err);

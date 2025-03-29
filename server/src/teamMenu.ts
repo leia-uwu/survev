@@ -16,7 +16,7 @@ import {
 } from "../../shared/types/team";
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
-import { lucia } from "./api/auth/lucia";
+import { validateSessionToken } from "./api/auth";
 import { isBanned } from "./api/moderation";
 import { Config } from "./config";
 import {
@@ -386,11 +386,11 @@ export class TeamMenu {
                 wsRateLimit.ipConnected(ip!);
 
                 let userId: string | null = null;
-                const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
+                const sessionId = getCookie(c, "session") ?? null;
 
                 if (sessionId) {
                     try {
-                        const account = await lucia.validateSession(sessionId);
+                        const account = await validateSessionToken(sessionId);
                         userId = account.user?.id || null;
                     } catch (err) {
                         console.error(`TeamMenu: Failed to validate session:`, err);
