@@ -1,13 +1,15 @@
+import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { ItemStatus } from "../../../../../shared/utils/loadout";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import { deleteExpiredSessions } from "../../auth";
 import { privateMiddleware, validateParams } from "../../auth/middleware";
 import { invalidateLeaderboards } from "../../cache/leaderboard";
 import { db } from "../../db";
-import { matchDataTable } from "../../db/schema";
+import { matchDataTable, usersTable } from "../../db/schema";
 import { handleModerationAction, logPlayerIPs } from "../../moderation";
 
 export const PrivateRouter = new Hono<Context>();
@@ -91,3 +93,52 @@ PrivateRouter.post("/delete-expired-sessions", async (ctx) => {
         return ctx.json({ message: "An unexpected error occurred." }, 500);
     }
 });
+
+PrivateRouter.post(
+    "/unlock",
+    validateParams(
+        z.object({
+            item: z.string(),
+            slug: z.string(),
+        }),
+    ),
+    async (c) => {
+        try {
+            if (process.env.NODE_ENV === "production") return;
+            // TODO: make sure that item is a valide game item;
+            const { item, slug } = c.req.valid("json");
+
+            const result = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    items: true,
+                },
+            });
+
+            if (!result) {
+                return c.json({ err: "No items found for this user." }, 404);
+            }
+
+            const { items } = result;
+
+            items.push({
+                source: "daddy-has-privileges",
+                type: item,
+                status: ItemStatus.New,
+                timeAcquired: Date.now(),
+            });
+
+            await db
+                .update(usersTable)
+                .set({
+                    items,
+                })
+                .where(eq(usersTable.slug, slug));
+
+            return c.json({ success: true }, 200);
+        } catch (err) {
+            server.logger.warn("/api/set_item_status: Error unlocking item", err);
+            return c.json({}, 500);
+        }
+    },
+);

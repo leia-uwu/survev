@@ -1,8 +1,6 @@
 import { and, eq, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import { deleteCookie } from "hono/cookie";
-import { z } from "zod";
-import { UnlockDefs } from "../../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type GetPassResponse,
     type LoadoutResponse,
@@ -17,7 +15,7 @@ import {
     zSetPassUnlockRequest,
     zUsernameRequest,
 } from "../../../../../shared/types/user";
-import loadout, { type Item, ItemStatus } from "../../../../../shared/utils/loadout";
+import loadout from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
@@ -31,7 +29,6 @@ import {
     logoutUser,
     sanitizeSlug,
 } from "./auth/authUtils";
-import { MOCK_USER_ID } from "./auth/mock";
 
 export const UserRouter = new Hono<Context>();
 
@@ -272,68 +269,6 @@ UserRouter.post(
             return c.json({}, 200);
         } catch (err) {
             server.logger.warn("/api/set_item_status: Error setting item status", err);
-            return c.json({}, 500);
-        }
-    },
-);
-
-// is there a use for this besides unlocking skins on account creation?
-// if not delete it, or make it admin only.
-UserRouter.post(
-    "/unlock",
-    validateParams(
-        z.object({
-            unlockType: z.string(),
-        }),
-    ),
-    async (c) => {
-        try {
-            if (process.env.NODE_ENV === "production") return;
-            const { unlockType } = c.req.valid("json");
-
-            if (!(unlockType in UnlockDefs)) {
-                return c.json([], 400);
-            }
-
-            const outfitsToUnlock = UnlockDefs[unlockType].unlocks;
-
-            const result = await db.query.usersTable.findFirst({
-                where: eq(usersTable.authId, MOCK_USER_ID),
-                columns: {
-                    items: true,
-                },
-            });
-
-            if (!result) {
-                return c.json({ err: "No items found for this user." }, 404);
-            }
-
-            const { items } = result;
-
-            // Remove duplicates
-            const unlockedItemTypes = new Set(items.map(({ type }) => type));
-            const itemsToUnlock: Item[] = outfitsToUnlock
-                .filter((type) => !unlockedItemTypes.has(type))
-                .map((outfit) => {
-                    return {
-                        source: unlockType,
-                        type: outfit,
-                        status: ItemStatus.New,
-                        timeAcquired: Date.now(),
-                    };
-                });
-            const updatedItems = items.concat(itemsToUnlock);
-
-            await db
-                .update(usersTable)
-                .set({
-                    items: updatedItems,
-                })
-                .where(eq(usersTable.authId, MOCK_USER_ID));
-
-            return c.json({ success: true }, 200);
-        } catch (err) {
-            server.logger.warn("/api/set_item_status: Error unlocking item", err);
             return c.json({}, 500);
         }
     },
