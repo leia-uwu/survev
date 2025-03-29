@@ -3186,42 +3186,23 @@ export class Player extends BaseGameObject {
                     this.weaponManager.setCurWeapIndex(this.weaponManager.lastWeaponIdx);
                     break;
                 case GameConfig.Input.EquipOtherGun:
-                    if (
-                        this.curWeapIdx == GameConfig.WeaponSlot.Primary ||
-                        this.curWeapIdx == GameConfig.WeaponSlot.Secondary
-                    ) {
-                        const otherGunSlotIdx = this.curWeapIdx ^ 1;
-                        const isOtherGunSlotFull: number =
-                            +!!this.weapons[otherGunSlotIdx].type; //! ! converts string to boolean, + coerces boolean to number
-                        this.weaponManager.setCurWeapIndex(
-                            isOtherGunSlotFull
-                                ? otherGunSlotIdx
-                                : GameConfig.WeaponSlot.Melee,
-                        );
-                    } else if (
-                        this.curWeapIdx == GameConfig.WeaponSlot.Melee &&
-                        (this.weapons[GameConfig.WeaponSlot.Primary].type ||
-                            this.weapons[GameConfig.WeaponSlot.Secondary].type)
-                    ) {
-                        this.weaponManager.setCurWeapIndex(
-                            +!this.weapons[GameConfig.WeaponSlot.Primary].type,
-                        );
-                    } else if (this.curWeapIdx == GameConfig.WeaponSlot.Throwable) {
-                        const bothSlotsEmpty =
-                            !this.weapons[GameConfig.WeaponSlot.Primary].type &&
-                            !this.weapons[GameConfig.WeaponSlot.Secondary].type;
-                        if (bothSlotsEmpty) {
-                            this.weaponManager.setCurWeapIndex(
-                                GameConfig.WeaponSlot.Melee,
-                            );
-                        } else {
-                            const index = this.weapons[GameConfig.WeaponSlot.Primary].type
-                                ? GameConfig.WeaponSlot.Primary
-                                : GameConfig.WeaponSlot.Secondary;
-                            this.weaponManager.setCurWeapIndex(index);
+                    //priority list of slots to swap to
+                    const slotTargets = [
+                        GameConfig.WeaponSlot.Primary,
+                        GameConfig.WeaponSlot.Secondary,
+                        GameConfig.WeaponSlot.Melee,
+                    ];
+
+                    const currentTarget = slotTargets.indexOf(this.curWeapIdx);
+                    if (currentTarget != -1) slotTargets.splice(currentTarget, 1);
+
+                    for (let i = 0; i < slotTargets.length; i++) {
+                        const slot = slotTargets[i];
+                        if (this.weapons[slot].type) {
+                            this.weaponManager.setCurWeapIndex(slot);
+                            break;
                         }
                     }
-
                     break;
                 case GameConfig.Input.Interact: {
                     const loot = this.getClosestLoot();
