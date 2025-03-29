@@ -221,7 +221,7 @@ export class ProfileUi {
         });
 
         // Create account
-        this.createAccountModal = new MenuModal($("#modal-create-account-INVALID_ID"));
+        this.createAccountModal = new MenuModal($("#modal-create-account"));
         this.createAccountModal.onHide(() => {
             this.loadoutMenu.hide();
         });
@@ -411,13 +411,14 @@ export class ProfileUi {
     }
 
     showLoginMenu(opts: { modal?: boolean; link?: boolean }) {
-        opts = Object.assign(
-            {
+        opts = {
+            ...{
                 modal: false,
                 link: false,
             },
-            opts,
-        );
+            ...opts,
+        };
+
         const modal = opts.modal
             ? this.createAccountModal
             : device.mobile

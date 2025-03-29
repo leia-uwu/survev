@@ -104,7 +104,6 @@ PrivateRouter.post(
     ),
     async (c) => {
         try {
-            if (process.env.NODE_ENV === "production") return;
             // TODO: make sure that item is a valide game item;
             const { item, slug } = c.req.valid("json");
 
@@ -137,7 +136,7 @@ PrivateRouter.post(
 
             return c.json({ success: true }, 200);
         } catch (err) {
-            server.logger.warn("/api/set_item_status: Error unlocking item", err);
+            server.logger.warn("/private/unlock: Error unlocking item", err);
             return c.json({}, 500);
         }
     },
