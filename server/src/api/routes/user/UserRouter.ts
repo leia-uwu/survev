@@ -19,7 +19,7 @@ import loadout from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
-import { AuthMiddleware, validateParams } from "../../auth/middleware";
+import { authMiddleware, validateParams } from "../../auth/middleware";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
@@ -33,29 +33,11 @@ import {
 export const UserRouter = new Hono<Context>();
 
 UserRouter.use(accountsEnabledMiddleware);
-UserRouter.use(AuthMiddleware);
+UserRouter.use(authMiddleware);
 
-UserRouter.post("/profile", AuthMiddleware, async (c) => {
+UserRouter.post("/profile", async (c) => {
     try {
         const user = c.get("user")!;
-        const result = await db.query.usersTable.findFirst({
-            where: eq(usersTable.id, user.id),
-            columns: {
-                loadout: true,
-                slug: true,
-                linked: true,
-                username: true,
-                usernameSet: true,
-                items: true,
-                banned: true,
-                banReason: true,
-                lastUsernameChangeTime: true,
-            },
-        });
-
-        if (!result) {
-            return c.json({ err: "User profile not found" }, 404);
-        }
 
         const {
             loadout,
@@ -67,7 +49,7 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
             items,
             banned,
             banReason,
-        } = result;
+        } = user;
 
         if (banned) {
             return c.json<ProfileResponse>({
@@ -104,21 +86,12 @@ UserRouter.post("/profile", AuthMiddleware, async (c) => {
 UserRouter.post(
     "/username",
     validateParams(zUsernameRequest, { result: "invalid" } satisfies UsernameResponse),
-    AuthMiddleware,
     async (c) => {
         try {
             const user = c.get("user")!;
             const { username } = c.req.valid("json");
-
-            const existingUser = await db.query.usersTable.findFirst({
-                where: eq(usersTable.id, user.id),
-                columns: {
-                    lastUsernameChangeTime: true,
-                },
-            })!;
-
             const timeUntilNextChange = getTimeUntilNextUsernameChange(
-                existingUser!.lastUsernameChangeTime,
+                user.lastUsernameChangeTime,
             );
 
             if (timeUntilNextChange > 0) {
@@ -160,47 +133,35 @@ UserRouter.post(
     },
 );
 
-UserRouter.post(
-    "/loadout",
-    validateParams(zLoadoutRequest),
-    AuthMiddleware,
-    async (c) => {
-        try {
-            const user = c.get("user")!;
-            const { loadout: userLoadout } = c.req.valid("json");
+UserRouter.post("/loadout", validateParams(zLoadoutRequest), async (c) => {
+    try {
+        const user = c.get("user")!;
+        const { loadout: userLoadout } = c.req.valid("json");
 
-            const userItems = await db.query.usersTable.findFirst({
-                where: eq(usersTable.id, user.id),
-                columns: {
-                    items: true,
-                },
-            });
+        const validatedLoadout = loadout.validateWithAvailableItems(
+            userLoadout,
+            user!.items,
+        );
 
-            const validatedLoadout = loadout.validateWithAvailableItems(
-                userLoadout,
-                userItems!.items,
-            );
+        await db
+            .update(usersTable)
+            .set({ loadout: validatedLoadout })
+            .where(eq(usersTable.id, user.id));
 
-            await db
-                .update(usersTable)
-                .set({ loadout: validatedLoadout })
-                .where(eq(usersTable.id, user.id));
+        return c.json<LoadoutResponse>(
+            {
+                loadout: validatedLoadout,
+                loadoutPriv: encryptLoadout(validatedLoadout),
+            },
+            200,
+        );
+    } catch (err) {
+        server.logger.warn("/api/username: Error updating loadout", err);
+        return c.json({}, 500);
+    }
+});
 
-            return c.json<LoadoutResponse>(
-                {
-                    loadout: validatedLoadout,
-                    loadoutPriv: encryptLoadout(validatedLoadout),
-                },
-                200,
-            );
-        } catch (err) {
-            server.logger.warn("/api/username: Error updating loadout", err);
-            return c.json({}, 500);
-        }
-    },
-);
-
-UserRouter.post("/logout", AuthMiddleware, async (c) => {
+UserRouter.post("/logout", async (c) => {
     try {
         const session = c.get("session")!;
         deleteCookie(c, "app-data");
@@ -214,7 +175,7 @@ UserRouter.post("/logout", AuthMiddleware, async (c) => {
     }
 });
 
-UserRouter.post("/delete", AuthMiddleware, async (c) => {
+UserRouter.post("/delete", async (c) => {
     try {
         const user = c.get("user")!;
         const session = c.get("session")!;
@@ -232,49 +193,44 @@ UserRouter.post("/delete", AuthMiddleware, async (c) => {
     }
 });
 
-UserRouter.post(
-    "/set_item_status",
-    validateParams(zSetItemStatusRequest),
-    AuthMiddleware,
-    async (c) => {
-        try {
-            const user = c.get("user")!;
-            const { itemTypes, status } = c.req.valid("json");
+UserRouter.post("/set_item_status", validateParams(zSetItemStatusRequest), async (c) => {
+    try {
+        const user = c.get("user")!;
+        const { itemTypes, status } = c.req.valid("json");
 
-            const result = await db.query.usersTable.findFirst({
-                where: eq(usersTable.id, user.id),
-                columns: {
-                    items: true,
-                },
-            });
+        const result = await db.query.usersTable.findFirst({
+            where: eq(usersTable.id, user.id),
+            columns: {
+                items: true,
+            },
+        });
 
-            if (!result) return c.json({}, 200);
+        if (!result) return c.json({}, 200);
 
-            const { items } = result;
+        const { items } = result;
 
-            const updatedItems = items.map((item) => {
-                if (itemTypes.includes(item.type)) {
-                    item.status = status;
-                }
-                return item;
-            });
+        const updatedItems = items.map((item) => {
+            if (itemTypes.includes(item.type)) {
+                item.status = status;
+            }
+            return item;
+        });
 
-            await db
-                .update(usersTable)
-                .set({
-                    items: updatedItems,
-                })
-                .where(eq(usersTable.id, user.id));
+        await db
+            .update(usersTable)
+            .set({
+                items: updatedItems,
+            })
+            .where(eq(usersTable.id, user.id));
 
-            return c.json({}, 200);
-        } catch (err) {
-            server.logger.warn("/api/set_item_status: Error setting item status", err);
-            return c.json({}, 500);
-        }
-    },
-);
+        return c.json({}, 200);
+    } catch (err) {
+        server.logger.warn("/api/set_item_status: Error setting item status", err);
+        return c.json({}, 500);
+    }
+});
 
-UserRouter.post("/reset_stats", AuthMiddleware, async (c) => {
+UserRouter.post("/reset_stats", async (c) => {
     try {
         const user = c.get("user")!;
 

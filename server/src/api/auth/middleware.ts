@@ -7,7 +7,7 @@ import { Config } from "../../config";
 import { server } from "../apiServer";
 import { deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
 
-export const AuthMiddleware = async (c: Context, next: Next) => {
+export const authMiddleware = async (c: Context, next: Next) => {
     try {
         const sessionToken = getCookie(c, "session") ?? null;
 
