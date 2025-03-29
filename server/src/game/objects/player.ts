@@ -3315,6 +3315,8 @@ export class Player extends BaseGameObject {
                             this.curWeapIdx ^ 1,
                             false,
                             false,
+                            false,
+                            false,
                         );
                     } else {
                         this.weapsDirty = true;
