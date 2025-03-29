@@ -1,10 +1,12 @@
 {
   "name": "@survev/server",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/api/index.js",
-    "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js",
+    "build": "tsx src/build.ts",
+    "typecheck": "tsc",
+    "start:api": "node --enable-source-maps dist/index.js",
+    "start:game": "node --enable-source-maps dist/gameServer.js",
     "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
     "dev:api": "tsx watch --clear-screen=false --include ../survev-config.json src/api/index.ts",
     "dev:game": "tsx watch --clear-screen=false --include ../survev-config.json src/gameServer.ts",
@@ -41,6 +43,7 @@
     "@types/pg": "^8.11.11",
     "concurrently": "^9.1.2",
     "drizzle-kit": "^0.30.5",
+    "esbuild": "^0.25.1",
     "tsx": "^4.19.3",
     "unique-username-generator": "^1.4.0"
   }

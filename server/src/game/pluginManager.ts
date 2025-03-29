@@ -41,7 +41,7 @@ function readDirectory(dir: string): string[] {
     return results;
 }
 
-const pluginDir = path.join(__dirname, "../plugins/");
+const pluginDir = path.join(import.meta.dirname, "../plugins/");
 
 let pluginPaths: string[] = [];
 if (fs.existsSync(pluginDir)) {

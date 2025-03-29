@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import pg from "pg";
 import * as schema from "./schema";
 
 export const dbConfig = {
@@ -12,7 +12,7 @@ export const dbConfig = {
 
 export const DATABASE_URL = `postgresql://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}:${dbConfig.port}/${dbConfig.database}`;
 
-const poolConnection = new Pool({
+const poolConnection = new pg.Pool({
     connectionString: DATABASE_URL,
 });
 

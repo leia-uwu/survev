@@ -16,13 +16,10 @@ import {
 import type { GameManager } from "./gameManager";
 
 let path: string;
-let args: string[];
 if (process.env.NODE_ENV === "production") {
-    path = "dist/server/src/game/gameProcess.js";
-    args = ["--enable-source-maps"];
+    path = "dist/gameProcess.js";
 } else {
     path = "src/game/gameProcess.ts";
-    args = [];
 }
 
 class GameProcess implements GameData {
@@ -49,7 +46,7 @@ class GameProcess implements GameData {
 
     constructor(manager: GameProcessManager, id: string, config: ServerGameConfig) {
         this.manager = manager;
-        this.process = fork(path, args, {
+        this.process = fork(path, [], {
             serialization: "advanced",
         });
 

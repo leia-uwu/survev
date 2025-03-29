@@ -105,19 +105,14 @@ if (!isProduction) {
     });
 }
 
-const runningOnVite = process.argv.toString().includes("vite");
-
-const configPath = path.join(
-    __dirname,
-    isProduction && !runningOnVite ? "../../" : "",
-    "../../",
-);
+const configPath = path.join(import.meta.dirname, "../../");
 
 function loadConfig(fileName: string, create?: boolean) {
     const path = `${configPath}${fileName}`;
 
     let loaded = false;
     if (fs.existsSync(path)) {
+        console.log(`Sourcing config ${path}`);
         const localConfig = JSON.parse(fs.readFileSync(path).toString());
         util.mergeDeep(Config, localConfig);
         loaded = true;
