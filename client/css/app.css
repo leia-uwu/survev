@@ -2144,6 +2144,7 @@ a:active {
   z-index: 1;
 }
 
+/*
 @media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   .account-buttons-wrapper {
     background-color: transparent !important;
@@ -2151,6 +2152,7 @@ a:active {
     width: 60% !important;
   }
 }
+*/
 
 @media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #modal-account-avatar > .modal-content {
