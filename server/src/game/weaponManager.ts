@@ -1010,6 +1010,7 @@ export class WeaponManager {
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
                     dir: v2.neg(hit.dir),
+                    weaponSourceType: this.activeWeapon,
                 });
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {

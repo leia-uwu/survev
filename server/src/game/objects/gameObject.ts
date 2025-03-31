@@ -39,6 +39,7 @@ export interface DamageParams {
     mapSourceType?: string;
     source?: GameObject;
     isExplosion?: boolean;
+    weaponSourceType?: string; // used by potato weapon swaps, gets passed down to e.g explosions
 }
 
 const MAX_ID = 65535;

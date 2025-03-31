@@ -373,10 +373,11 @@ export class Projectile extends BaseGameObject {
                 explosionType,
                 this.pos,
                 this.layer,
-                this.gameSourceType,
-                "",
-                this.damageType,
-                source,
+                {
+                    gameSourceType: this.gameSourceType,
+                    damageType: this.damageType,
+                    source,
+                },
                 this.obstacleBellowId,
             );
         }
