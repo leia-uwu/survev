@@ -3890,8 +3890,6 @@ export class Player extends BaseGameObject {
     /** just used in potato mode, swaps oldWeapon with a random weapon of the same type (mosin -> m9) */
     randomWeaponSwap(params: DamageParams): void {
         if (this.dead) return;
-        console.log(params);
-        console.trace();
         const oldWeapon = params.weaponSourceType || params.gameSourceType;
         if (!oldWeapon) return;
 
