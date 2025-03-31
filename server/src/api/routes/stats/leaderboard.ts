@@ -10,11 +10,7 @@ import {
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
-import {
-    getLeaderboardCache,
-    getLeaderboardCacheKey,
-    setLeaderboardCache,
-} from "../../cache/leaderboard";
+import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { filterByInterval, filterByMapId } from "./user_stats";
@@ -27,24 +23,26 @@ leaderboardRouter.post(
     validateParams(zLeaderboardsRequest),
     async (c) => {
         try {
-            const { teamMode, mapId, type, interval } = c.req.valid("json");
-            const cacheKey = getLeaderboardCacheKey({ teamMode, mapId, type, interval });
-            const cachedResult = await getLeaderboardCache(cacheKey);
+            const params = c.req.valid("json");
+            const { type, teamMode } = params;
+            const cachedResult = await leaderboardCache.get(params);
 
             if (cachedResult) {
-                console.log(`[CACHE HIT] -> ${cacheKey}`);
+                console.log(
+                    `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
+                );
                 return c.json(cachedResult, 200);
             }
 
             const data =
                 type === "most_kills" &&
                 (teamMode === TeamMode.Duo || teamMode === TeamMode.Squad)
-                    ? await multiplePlayersQuery({ teamMode, type, mapId, interval })
-                    : await soloLeaderboardQuery({ teamMode, type, mapId, interval });
+                    ? await multiplePlayersQuery(params)
+                    : await soloLeaderboardQuery(params);
 
             // TODO: decide if we should cache empty results;
             if (data.length != 0) {
-                await setLeaderboardCache({ cacheKey, data });
+                await leaderboardCache.set(params, data);
             }
 
             return c.json<LeaderboardResponse[]>(data, 200);
