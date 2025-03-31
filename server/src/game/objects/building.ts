@@ -8,10 +8,10 @@ import { Puzzles } from "../../../../shared/defs/puzzles";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
+import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
-import { getColliders } from "../map";
 import type { Decal } from "./decal";
 import { BaseGameObject } from "./gameObject";
 import { Obstacle } from "./obstacle";
@@ -93,14 +93,8 @@ export class Building extends BaseGameObject {
 
         this.zIdx = def.zIdx ?? 0;
 
-        const bounds = getColliders(type);
-
-        this.mapObstacleBounds = bounds.ground.map((coll) => {
-            return collider.transform(coll, pos, this.rot, 1);
-        });
-
         this.bounds = collider.transform(
-            bounds.gridBound,
+            mapHelpers.getBoundingCollider(type),
             v2.create(0, 0),
             this.rot,
             1,

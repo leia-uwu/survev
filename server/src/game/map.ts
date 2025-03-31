@@ -27,192 +27,153 @@ import { Structure } from "./objects/structure";
 import { RiverCreator } from "./riverCreator";
 import type { Team } from "./team";
 
-//
-// Helpers
-//
+// most of this logic is based on the `renderMapBuildingBounds` from client debugHelpers
+// which was found on BHA leak
+function getBuildingBounds(type: string, layer = 0, pos: Vec2, rot: number) {
+    const def = MapObjectDefs[type] as BuildingDef | StructureDef;
 
-interface GroundBunkerColliders {
-    ground: Collider[];
-    bunker: Collider[];
-    gridBound: AABB;
+    const bounds: Array<{ layer: number; collision: Collider }> = [];
+
+    const scale = 1.15; // building bounds have 15% more size to make buildings not spawn near each other
+
+    bounds.push({
+        layer,
+        collision: collider.transform(
+            mapHelpers.getBoundingCollider(type),
+            pos,
+            rot,
+            scale,
+        ),
+    });
+
+    if (def.bridgeLandBounds !== undefined) {
+        for (let i = 0; i < def.bridgeLandBounds.length; i++) {
+            bounds.push({
+                collision: collider.transform(def.bridgeLandBounds[i], pos, rot, 1),
+                layer,
+            });
+        }
+    }
+
+    if (def.mapObstacleBounds !== undefined) {
+        for (let i = 0; i < def.mapObstacleBounds.length; i++) {
+            bounds.push({
+                collision: collider.transform(def.mapObstacleBounds[i], pos, rot, 1),
+                layer,
+            });
+        }
+    }
+
+    if (def.type === "building") {
+        for (let i = 0; i < def.mapObjects.length; i++) {
+            const mapObj = def.mapObjects[i];
+            let mt = mapObj.type!;
+            if (typeof mt === "function") {
+                mt = mt();
+            }
+
+            const childDef = MapObjectDefs[mt];
+            // only add child structures, not child buildings and obstacles
+            if (mt && childDef && childDef.type === "structure") {
+                const childRot = math.oriToRad(mapObj.ori);
+                const childPos = v2.add(pos, v2.rotate(mapObj.pos, childRot));
+
+                bounds.push(...getBuildingBounds(mt, layer, childPos, rot + childRot));
+            }
+        }
+    } else {
+        for (let i = 0; i < def.layers.length; i++) {
+            const layerDef = def.layers[i];
+            const layerRot = math.oriToRad(layerDef.ori);
+            const childPos = v2.add(pos, v2.rotate(layerDef.pos, layerRot));
+
+            bounds.push(...getBuildingBounds(layerDef.type, i, childPos, rot + layerRot));
+        }
+    }
+
+    return bounds;
 }
 
-const cachedColliders: Record<string, GroundBunkerColliders> = {};
-
-function computeColliders(type: string): GroundBunkerColliders {
-    const def = MapObjectDefs[type];
-
-    const colliders = {
-        ground: [] as Collider[],
-        bunker: [] as Collider[],
-        gridBound: collider.createAabb(v2.create(0, 0), v2.create(1, 1)),
-    };
-
-    if (def === undefined) return colliders;
-
-    switch (def.type) {
-        case "obstacle": {
-            colliders.ground.push(def.collision);
-            break;
-        }
-        case "structure": {
-            if (def.mapObstacleBounds) {
-                colliders.ground.push(...def.mapObstacleBounds);
-            }
-
-            for (let i = 0; i < def.layers.length; i++) {
-                const layer = def.layers[i];
-                const layerColliders = getColliders(layer.type);
-                const colliderLayer = i === 0 ? "ground" : "bunker";
-                const rot = math.oriToRad(layer.ori);
-
-                for (let j = 0; j < layerColliders.ground.length; j++) {
-                    const coll = collider.transform(
-                        layerColliders.ground[j],
-                        layer.pos,
-                        rot,
-                        1,
-                    );
-                    colliders[colliderLayer].push(coll);
-                }
-                for (let j = 0; j < layerColliders.bunker.length; j++) {
-                    const coll = collider.transform(
-                        layerColliders.bunker[j],
-                        layer.pos,
-                        rot,
-                        1,
-                    );
-                    colliders[colliderLayer].push(coll);
-                }
-            }
-            break;
-        }
-        case "building": {
-            if (def.mapObstacleBounds) {
-                colliders.ground.push(...def.mapObstacleBounds);
-            }
-
-            for (const object of def.mapObjects ?? []) {
-                const type =
-                    typeof object.type === "string" ? object.type : object.type?.()!;
-
-                const objColliders = getColliders(type);
-                const rot = math.oriToRad(object.ori);
-                for (let j = 0; j < objColliders.ground.length; j++) {
-                    const coll = collider.transform(
-                        objColliders.ground[j],
-                        object.pos,
-                        rot,
-                        1,
-                    );
-                    colliders.ground.push(coll);
-                }
-                for (let j = 0; j < objColliders.bunker.length; j++) {
-                    const coll = collider.transform(
-                        objColliders.bunker[j],
-                        object.pos,
-                        rot,
-                        1,
-                    );
-                    colliders.bunker.push(coll);
-                }
-            }
-
-            if (def.mapGroundPatches) {
-                for (let i = 0; i < def.mapGroundPatches.length; i++) {
-                    colliders.ground.push(def.mapGroundPatches[i].bound);
-                }
-            }
-
-            for (let i = 0; i < def.floor.surfaces.length; i++) {
-                const collisions = def.floor.surfaces[i].collision;
-                for (let j = 0; j < collisions.length; j++) {
-                    colliders.ground.push(collisions[j]);
-                }
-            }
-            for (let i = 0; i < def.ceiling.zoomRegions.length; i++) {
-                const region = def.ceiling.zoomRegions[i];
-                if (region.zoomIn) {
-                    colliders.ground.push(region.zoomIn);
-                }
-                if (region.zoomOut) {
-                    colliders.ground.push(region.zoomOut);
-                }
-            }
-            break;
-        }
-        case "loot_spawner": {
-            colliders.ground.push(collider.createCircle(v2.create(0.0, 0.0), 3.0));
-            break;
-        }
-    }
-
-    let aabbs: AABB[] = [];
-    for (let i = 0; i < colliders.bunker.length; i++) {
-        aabbs.push(collider.toAabb(colliders.bunker[i]));
-    }
-    for (let i = 0; i < colliders.ground.length; i++) {
-        aabbs.push(collider.toAabb(colliders.ground[i]));
-    }
-
-    const bound = coldet.boundingAabb(aabbs);
-    colliders.gridBound = collider.createAabb(bound.min, bound.max);
-
-    return colliders;
+interface GridCollider {
+    collision: Collider;
+    layer: number;
+    // Obstacle colliders are used for areas obstacles and buildings cant spawn
+    // building colliders are used only for areas where buildings cant spawn
+    // also structures count as buildings in this case
+    // both have also separated scale multipliers...
+    // obstacle bounds generated by buildings have a 1.1 scale
+    // and building bounds have a 1.15 scale (numbers found from the client debug helpers)
+    type: "obstacle" | "building";
 }
 
-export function getColliders(type: string) {
-    if (cachedColliders[type]) {
-        return cachedColliders[type];
-    }
-    const colliders = computeColliders(type);
-    cachedColliders[type] = colliders;
-    return colliders;
-}
+// stripped down version of the game object grid, used for map generation
+// to store colliders where objects cant spawn
+// its also static so objects cant be removed from it
+export class MapGrid<T extends GridCollider = GridCollider> {
+    readonly width: number;
+    readonly height: number;
+    readonly cellSize = 32;
 
-function transformColliders(
-    colls: GroundBunkerColliders,
-    pos: Vec2,
-    rot: number,
-    type: string,
-) {
-    let scale = 1;
-    if (type === "building" || type === "structure") {
-        scale = 1.5;
-    }
+    //                        X     Y     Object
+    //                      __^__ __^__   __^__
+    private readonly _grid: Array<Array<Array<T>>>;
 
-    const newColls: GroundBunkerColliders = {
-        ground: [],
-        bunker: [],
-        gridBound: collider.transform(colls.gridBound, pos, rot, scale) as AABB,
-    };
+    constructor(width: number, height: number) {
+        this.width = Math.floor(width / this.cellSize);
+        this.height = Math.floor(height / this.cellSize);
 
-    for (let i = 0; i < colls.ground.length; i++) {
-        newColls.ground.push(collider.transform(colls.ground[i], pos, rot, scale));
-    }
-    for (let i = 0; i < colls.bunker.length; i++) {
-        newColls.bunker.push(collider.transform(colls.bunker[i], pos, rot, scale));
+        this._grid = Array.from({ length: this.width + 1 }, () =>
+            Array.from({ length: this.height + 1 }, () => []),
+        );
     }
 
-    return newColls;
-}
+    addCollider(coll: T): void {
+        const aabb = collider.toAabb(coll.collision);
+        // Get the bounds of the hitbox
+        // Round it to the grid cells
+        const min = this._roundToCells(aabb.min);
+        const max = this._roundToCells(aabb.max);
 
-function checkCollision(
-    collsA: GroundBunkerColliders,
-    collsB: Collider[],
-    layer: number,
-) {
-    const collLayer = layer === 0 ? "ground" : "bunker";
-    const layerColls = collsA[collLayer];
-
-    for (let i = 0; i < layerColls.length; i++) {
-        const collA = layerColls[i];
-        for (let j = 0; j < collsB.length; j++) {
-            const collB = collsB[j];
-            if (coldet.test(collA, collB)) return true;
+        // Add it to all grid cells that it intersects
+        for (let x = min.x; x <= max.x; x++) {
+            const xRow = this._grid[x];
+            for (let y = min.y; y <= max.y; y++) {
+                xRow[y].push(coll);
+            }
         }
     }
-    return false;
+
+    intersectCollider(coll: Collider): T[] {
+        return [...this.intersectColliderSet(coll)];
+    }
+
+    intersectColliderSet(coll: Collider): Set<T> {
+        const aabb = collider.toAabb(coll);
+
+        const min = this._roundToCells(aabb.min);
+        const max = this._roundToCells(aabb.max);
+
+        const objects = new Set<T>();
+
+        for (let x = min.x; x <= max.x; x++) {
+            const xRow = this._grid[x];
+            for (let y = min.y; y <= max.y; y++) {
+                const cell = xRow[y];
+                for (const object of cell) {
+                    objects.add(object);
+                }
+            }
+        }
+
+        return objects;
+    }
+
+    private _roundToCells(vector: Vec2): Vec2 {
+        return {
+            x: math.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
+            y: math.clamp(Math.floor(vector.y / this.cellSize), 0, this.height),
+        };
+    }
 }
 
 export class GameMap {
@@ -272,6 +233,7 @@ export class GameMap {
     structures!: Structure[];
     bridges!: Structure[];
     objectCount!: Record<string, number>;
+    grid!: MapGrid;
 
     incrementCount(type: string) {
         if (!this.objectCount[type]) {
@@ -346,6 +308,7 @@ export class GameMap {
         this.structures = [];
         this.bridges = [];
         this.riverDescs = [];
+        this.grid = new MapGrid(this.width, this.height);
 
         this.msg = new net.MapMsg();
         this.msg.mapName = this.game.config.mapName;
@@ -923,7 +886,7 @@ export class GameMap {
             case "building":
                 return this.genBuilding(type, pos, layer, ori, parentId, hideFromMap);
             case "structure":
-                return this.genStructure(type, pos, layer, ori);
+                return this.genStructure(type, pos, layer, ori, parentId);
             case "decal": {
                 const decal = this.game.decalBarn.addDecal(type, pos, layer, ori, scale);
                 return decal;
@@ -942,6 +905,11 @@ export class GameMap {
                             0,
                         );
                     }
+                    this.grid.addCollider({
+                        collision: collider.createCircle(pos, 3),
+                        layer,
+                        type: "obstacle",
+                    });
                 }
                 break;
         }
@@ -987,10 +955,6 @@ export class GameMap {
 
         const rot = math.oriToRad(ori);
 
-        const collsA = transformColliders(getColliders(type), pos, rot, def.type);
-
-        const objs = this.game.grid.intersectCollider(collsA.gridBound);
-
         if (!def.terrain?.river && !def.terrain?.waterEdge) {
             const mapBound = def.terrain?.beach ? this.beachBounds : this.grassBounds;
             if (!coldet.testPointAabb(pos, mapBound.min, mapBound.max)) {
@@ -998,12 +962,35 @@ export class GameMap {
             }
         }
 
-        for (let i = 0; i < objs.length; i++) {
-            if (!GameMap.collidableTypes.includes(objs[i].__type)) continue;
+        if (def.type == "building" || def.type === "structure") {
+            const colliders = getBuildingBounds(type, 0, pos, rot);
+            for (let i = 0; i < colliders.length; i++) {
+                const coll = colliders[i];
+                const gridColls = this.grid.intersectCollider(coll.collision);
 
-            const obj = objs[i] as Obstacle | Building | Structure;
-            if (checkCollision(collsA, obj.mapObstacleBounds, obj.layer)) {
-                return false;
+                for (let j = 0; j < gridColls.length; j++) {
+                    const gridColl = gridColls[j];
+                    // underground parts should still collide with ground parts
+                    // so only continue if the thing we are checking for is on ground and the other is underground
+                    if (coll.layer == 0 && gridColls[j].layer != 0) continue;
+                    if (coldet.test(coll.collision, gridColl.collision)) return false;
+                }
+            }
+        } else {
+            const bounds = collider.transform(
+                mapHelpers.getBoundingCollider(type),
+                pos,
+                rot,
+                scale,
+            );
+            const colliders = this.grid.intersectCollider(bounds);
+
+            for (let i = 0; i < colliders.length; i++) {
+                const coll = colliders[i];
+                if (coll.layer !== 0 || coll.type !== "obstacle") continue;
+                if (coldet.test(coll.collision, bounds)) {
+                    return false;
+                }
             }
         }
 
@@ -1487,9 +1474,11 @@ export class GameMap {
                 v2.mul(river.spline.getNormal(t), offset),
             );
 
-            if (!this.canSpawn(type, pos, 0)) return false;
+            const { ori, scale } = this.getOriAndScale(type);
 
-            this.genAuto(type, pos, 0);
+            if (!this.canSpawn(type, pos, ori, scale)) return false;
+
+            this.genAuto(type, pos, 0, ori, scale);
             return true;
         });
     }
@@ -1511,9 +1500,12 @@ export class GameMap {
                 river.spline.getPos(t),
                 v2.mul(river.spline.getNormal(t), offset),
             );
-            if (!this.canSpawn(type, pos, 0)) return false;
 
-            this.genAuto(type, pos, 0);
+            const { ori, scale } = this.getOriAndScale(type);
+
+            if (!this.canSpawn(type, pos, ori, scale)) return false;
+
+            this.genAuto(type, pos, 0, ori, scale);
             return true;
         });
     }
@@ -1637,6 +1629,8 @@ export class GameMap {
             this.msg.objects.push(obstacle);
         this.incrementCount(type);
 
+        this.addBounds(obstacle, !!buildingId);
+
         return obstacle;
     }
 
@@ -1742,11 +1736,19 @@ export class GameMap {
             });
         }
 
+        this.addBounds(building, !!parentId);
+
         this.incrementCount(type);
         return building;
     }
 
-    genStructure(type: string, pos: Vec2, layer = 0, ori?: number): Structure {
+    genStructure(
+        type: string,
+        pos: Vec2,
+        layer = 0,
+        ori?: number,
+        parentId?: number,
+    ): Structure {
         const def = MapObjectDefs[type] as StructureDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -1755,21 +1757,104 @@ export class GameMap {
         this.game.objectRegister.register(structure);
         this.structures.push(structure);
 
-        layer = 0;
-        for (const layerDef of def.layers) {
+        for (let i = 0; i < def.layers.length; i++) {
+            const layerDef = def.layers[i];
             const building = this.genBuilding(
                 layerDef.type,
                 math.addAdjust(pos, layerDef.pos, ori),
-                layer,
+                i,
                 (layerDef.ori + ori) % 4,
                 structure.__id,
             );
-            layer++;
             structure.layerObjIds.push(building.__id);
         }
 
+        this.addBounds(structure, !!parentId);
+
         this.incrementCount(type);
         return structure;
+    }
+
+    addBounds(mapObj: Obstacle | Building | Structure, hasParent: boolean) {
+        const def = MapObjectDefs[mapObj.type] as
+            | BuildingDef
+            | ObstacleDef
+            | StructureDef;
+
+        // don't add obstacle bounds from child objects generated
+        // by buildings and structures
+        // since they are literally WRONG
+        // for example if we add the child buildings of hydra bunker
+        // no obstacle will be able to spawn on a large area on top of the bunker
+        if (!hasParent) {
+            if (def.mapObstacleBounds) {
+                for (let i = 0; i < def.mapObstacleBounds.length; i++) {
+                    const bound = collider.transform(
+                        def.mapObstacleBounds[i],
+                        mapObj.pos,
+                        mapObj.rot,
+                        mapObj.scale,
+                    );
+
+                    this.grid.addCollider({
+                        collision: bound,
+                        layer: mapObj.layer,
+                        type: "obstacle",
+                    });
+                }
+            } else {
+                // scale found on client debugHelpers
+                const boundScale =
+                    def.type == "building" || def.type == "structure" ? 1.1 : 1.0;
+
+                const bounds = collider.transform(
+                    mapHelpers.getBoundingCollider(mapObj.type),
+                    mapObj.pos,
+                    mapObj.rot,
+                    mapObj.scale * boundScale,
+                );
+                this.grid.addCollider({
+                    collision: bounds,
+                    layer: mapObj.layer,
+                    type: "obstacle",
+                });
+            }
+        }
+
+        if (def.type === "obstacle") return;
+        // building and structure specific code
+        // to add the building bounds
+
+        const boundScale = def.type == "building" || def.type == "structure" ? 1.15 : 1.0;
+        const bounds = [
+            collider.transform(
+                mapHelpers.getBoundingCollider(mapObj.type),
+                mapObj.pos,
+                mapObj.rot,
+                mapObj.scale * boundScale,
+            ),
+        ];
+
+        if (def.bridgeLandBounds !== undefined) {
+            for (let i = 0; i < def.bridgeLandBounds.length; i++) {
+                bounds.push(
+                    collider.transform(
+                        def.bridgeLandBounds[i],
+                        mapObj.pos,
+                        mapObj.rot,
+                        mapObj.scale,
+                    ),
+                );
+            }
+        }
+
+        for (let i = 0; i < bounds.length; i++) {
+            this.grid.addCollider({
+                collision: bounds[i],
+                layer: mapObj.layer,
+                type: "building",
+            });
+        }
     }
 
     getSpawnPos(group?: Group, team?: Team): Vec2 {
@@ -1835,30 +1920,15 @@ export class GameMap {
                 continue;
             }
 
-            const objs = this.game.grid.intersectCollider(circle);
+            const objs = this.grid.intersectCollider(circle);
 
             for (let i = 0; i < objs.length; i++) {
                 const obj = objs[i];
                 if (obj.layer !== 0) continue;
-                if (
-                    obj.__type === ObjectType.Obstacle &&
-                    coldet.test(obj.collider, circle)
-                ) {
+                if (obj.type !== "obstacle") continue;
+                if (coldet.test(circle, obj.collision)) {
                     collided = true;
                     break;
-                }
-
-                if (
-                    obj.__type === ObjectType.Building ||
-                    obj.__type === ObjectType.Structure
-                ) {
-                    for (const bound of obj.mapObstacleBounds) {
-                        if (coldet.test(bound, circle)) {
-                            collided = true;
-                            break;
-                        }
-                    }
-                    if (collided) break;
                 }
             }
 
