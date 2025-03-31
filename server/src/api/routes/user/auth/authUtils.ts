@@ -38,7 +38,7 @@ export async function setSessionTokenCookie(userId: string, c: Context) {
     const session = await createSession(sessionToken, userId);
 
     setCookie(c, "session", sessionToken, {
-        httpOnly: false,
+        httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         path: "/",

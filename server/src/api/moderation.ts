@@ -45,7 +45,6 @@ export async function isBanned(ip: string, isEncoded = false) {
             return true;
         }
         await unbanIp(encodedIp);
-        console.log(`${encodedIp} is not banned.`);
         return false;
     }
     return false;
