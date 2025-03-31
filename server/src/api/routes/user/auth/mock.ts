@@ -19,7 +19,9 @@ MockRouter.get("/", async (c) => {
             },
         });
 
-        setCookie(c, "app-data", "1");
+        setCookie(c, "app-data", "1", {
+            expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        });
 
         if (existingUser) {
             await setSessionTokenCookie(existingUser.id, c);
