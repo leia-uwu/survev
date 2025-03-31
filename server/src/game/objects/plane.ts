@@ -625,6 +625,8 @@ class AirStrikePlane extends Plane {
             v2.mul(this.planeDir, config.bombVel),
             bombDef.fuseTime,
             GameConfig.DamageType.Airstrike,
+            undefined,
+            "strobe", // for potato mode weapon swap
         );
     }
 

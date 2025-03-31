@@ -408,12 +408,8 @@ export class Obstacle extends BaseGameObject {
         }
 
         //potatos in potato mode
-        if (
-            def.swapWeaponOnDestroy &&
-            params.source?.__type === ObjectType.Player &&
-            params.gameSourceType
-        ) {
-            params.source.randomWeaponSwap(params.gameSourceType);
+        if (def.swapWeaponOnDestroy && params.source?.__type === ObjectType.Player) {
+            params.source.randomWeaponSwap(params);
         }
 
         if (def.regrow && def.regrowTimer) {
@@ -478,15 +474,11 @@ export class Obstacle extends BaseGameObject {
         }
 
         if (def.explosion) {
-            this.game.explosionBarn.addExplosion(
-                def.explosion,
-                this.pos,
-                this.layer,
-                "",
-                this.type,
-                params.damageType,
-                params.source,
-            );
+            this.game.explosionBarn.addExplosion(def.explosion, this.pos, this.layer, {
+                ...params,
+                gameSourceType: "",
+                mapSourceType: this.type,
+            });
         }
 
         this.parentBuilding?.obstacleDestroyed(this);

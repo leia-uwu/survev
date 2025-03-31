@@ -359,10 +359,13 @@ export class Bullet {
                 // spawn the explosion a bit behind the bullet so it won't spawn inside obstacles
                 v2.sub(this.pos, v2.mul(this.dir, 0.01)),
                 this.layer,
-                this.shotSourceType,
-                this.mapSourceType,
-                this.damageType,
-                this.player,
+                {
+                    source: this.player,
+                    gameSourceType: this.shotSourceType,
+                    weaponSourceType: this.shotSourceType,
+                    mapSourceType: this.mapSourceType,
+                    damageType: this.damageType,
+                },
             );
         }
 
@@ -560,6 +563,7 @@ export class Bullet {
                 this.bulletManager.damages.push({
                     obj: col.obj!,
                     gameSourceType: this.shotSourceType,
+                    weaponSourceType: this.shotSourceType,
                     mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
                     source: this.player,
@@ -586,6 +590,7 @@ export class Bullet {
                     this.bulletManager.damages.push({
                         obj: col.player!,
                         gameSourceType: this.shotSourceType,
+                        weaponSourceType: this.shotSourceType,
                         mapSourceType: this.mapSourceType,
                         source: this.player,
                         damageType: this.damageType,
