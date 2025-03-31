@@ -65,5 +65,18 @@ DO NOT RUN THIS IN PRODUCTION
  pnpm run db:wipe
 ```
 
+### Additional steps for caching
+Caching is disabled by default, set cachingEnabled to true in config.ts to enable it.
+
+First install redis:
+```sh
+sudo apt install redis-server
+```
+
+Ensure Redis starts on boot and is running:
+```sh
+systemctl enable --now redis-server
+```
+
 ## Production builds
 See [HOSTING.md](./HOSTING.md)
