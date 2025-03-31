@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import pg from "pg";
 import { dbConfig } from ".";
 
 const pgConfig = {
@@ -12,7 +12,7 @@ const PG_URL = `postgresql://${pgConfig.user}:${pgConfig.password}@${pgConfig.ho
 
 async function dropDatabase() {
     if (process.env.NODE_ENV === "production") return;
-    const pool = new Pool({
+    const pool = new pg.Pool({
         connectionString: PG_URL,
     });
 
