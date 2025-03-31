@@ -1,11 +1,12 @@
 import { generateRandomString } from "@oslojs/crypto/random";
+import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { setCookie } from "hono/cookie";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
-import { checkForBadWords } from "../../../../utils/serverHelpers";
+import { checkForBadWords, validateUserName } from "../../../../utils/serverHelpers";
 import { createSession, generateSessionToken, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, usersTable } from "../../../db/schema";
@@ -62,6 +63,57 @@ export function deleteSessionTokenCookie(c: Context) {
     });
 }
 
+type Provider = "discord" | "google";
+
+export async function handleAuthUser(
+    c: Context,
+    provider: Provider,
+    payload: { id: string; username: string },
+) {
+    const existingUser = await db.query.usersTable.findFirst({
+        where: eq(usersTable.authId, payload.id),
+        columns: {
+            id: true,
+        },
+    });
+
+    setCookie(c, "app-data", "1");
+
+    if (existingUser) {
+        await setSessionTokenCookie(existingUser.id, c);
+        return;
+    }
+
+    let slug = sanitizeSlug(payload.username);
+
+    const slugTaken = await db.query.usersTable.findFirst({
+        where: eq(usersTable.slug, slug),
+        columns: {
+            id: true,
+        },
+    });
+
+    if (slugTaken) {
+        slug = `${slug}#${generateId(5)}`;
+    }
+
+    const linkedProvider =
+        provider === "discord" ? { linkedDiscord: true } : { linkedGoogle: true };
+
+    const userId = generateId(15);
+    await createNewUser({
+        id: userId,
+        authId: payload.id,
+        linked: true,
+        username: validateUserName(payload.username),
+        slug,
+        ...linkedProvider,
+    });
+
+    await setSessionTokenCookie(userId, c);
+    return;
+}
+
 export async function createNewUser(payload: UsersTableInsert) {
     const unlockType = "unlock_new_account";
     const outfitsToUnlock = UnlockDefs[unlockType].unlocks || [];
@@ -77,7 +129,7 @@ export async function createNewUser(payload: UsersTableInsert) {
     await db.insert(usersTable).values({ ...payload, items });
 }
 
-export function getRedirectUri(method: "discord" | "google") {
+export function getRedirectUri(method: Provider) {
     const isProduction = process.env.NODE_ENV === "production";
 
     if (isProduction && !Config.BASE_URL) {

@@ -1,19 +1,9 @@
 import { Google, OAuth2RequestError, generateCodeVerifier, generateState } from "arctic";
-import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { validateUserName } from "../../../../utils/serverHelpers";
 import { server } from "../../../apiServer";
-import { db } from "../../../db";
-import { usersTable } from "../../../db/schema";
-import {
-    createNewUser,
-    generateId,
-    getRedirectUri,
-    sanitizeSlug,
-    setSessionTokenCookie,
-} from "./authUtils";
+import { getRedirectUri, handleAuthUser } from "./authUtils";
 
 const google = new Google(
     Config.GOOGLE_CLIENT_ID!,
@@ -76,38 +66,16 @@ GoogleRouter.get("/callback", async (c) => {
         });
         const { sub: id, name: username } = await response.json();
 
-        const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.authId, id),
-            columns: {
-                id: true,
-            },
-        });
+        await handleAuthUser(c, "google", { id, username });
 
-        setCookie(c, "app-data", "1");
-
-        if (existingUser) {
-            await setSessionTokenCookie(existingUser.id, c);
-            return c.redirect("/");
-        }
-
-        const slug = sanitizeSlug(username);
-
-        const userId = generateId(15);
-        await createNewUser({
-            id: userId,
-            authId: id,
-            linked: true,
-            username: validateUserName(username),
-            linkedGoogle: true,
-            slug,
-        });
-
-        await setSessionTokenCookie(userId, c);
         return c.redirect("/");
-    } catch (e) {
-        server.logger.warn(`/api/auth/google/callback: Failed to create user`);
-        if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
-            return c.json({}, 400);
+    } catch (err) {
+        server.logger.warn(`/api/auth/google/callback: Failed to create user`, err);
+        if (
+            err instanceof OAuth2RequestError &&
+            err.message === "bad_verification_code"
+        ) {
+            return c.json({ err: "bad_verification_code" }, 400);
         }
         return c.json({}, 500);
     }

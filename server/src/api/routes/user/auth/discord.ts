@@ -1,19 +1,9 @@
 import { Discord, OAuth2RequestError, generateState } from "arctic";
-import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { validateUserName } from "../../../../utils/serverHelpers";
 import { server } from "../../../apiServer";
-import { db } from "../../../db";
-import { usersTable } from "../../../db/schema";
-import {
-    createNewUser,
-    generateId,
-    getRedirectUri,
-    sanitizeSlug,
-    setSessionTokenCookie,
-} from "./authUtils";
+import { getRedirectUri, handleAuthUser } from "./authUtils";
 
 export const discord = new Discord(
     Config.DISCORD_CLIENT_ID!,
@@ -64,44 +54,25 @@ DiscordRouter.get("/callback", async (c) => {
             },
         });
 
-        const discordUser: {
+        const {
+            id,
+            username,
+        }: {
             username: string;
             id: string;
         } = await discordUserResponse.json();
 
-        const existingUser = await db.query.usersTable.findFirst({
-            where: eq(usersTable.authId, discordUser.id),
-            columns: {
-                id: true,
-            },
-        });
+        await handleAuthUser(c, "discord", { id, username });
 
-        setCookie(c, "app-data", "1");
-
-        if (existingUser) {
-            await setSessionTokenCookie(existingUser.id, c);
-            return c.redirect("/");
-        }
-
-        const slug = sanitizeSlug(discordUser.username);
-
-        const userId = generateId(15);
-        await createNewUser({
-            id: userId,
-            authId: discordUser.id,
-            linked: true,
-            linkedDiscord: true,
-            username: validateUserName(discordUser.username),
-            slug,
-        });
-
-        await setSessionTokenCookie(userId, c);
         return c.redirect("/");
-    } catch (e) {
-        server.logger.warn("/api/auth/discord: Failed to create user");
-        if (e instanceof OAuth2RequestError && e.message === "bad_verification_code") {
+    } catch (err) {
+        server.logger.warn("/api/auth/discord: Failed to create user", err);
+        if (
+            err instanceof OAuth2RequestError &&
+            err.message === "bad_verification_code"
+        ) {
             // invalid code
-            return c.json({}, 400);
+            return c.json({ err: "bad_verification_code" }, 400);
         }
         return c.json({}, 500);
     }
