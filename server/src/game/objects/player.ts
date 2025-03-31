@@ -2682,8 +2682,13 @@ export class Player extends BaseGameObject {
         }
 
         //params.gameSourceType check ensures player didnt die by bleeding out
-        if (this.game.map.potatoMode && this.lastDamagedBy && params.gameSourceType) {
-            this.lastDamagedBy.randomWeaponSwap(params.gameSourceType);
+        if (
+            this.game.map.potatoMode &&
+            this.lastDamagedBy &&
+            params.damageType === GameConfig.DamageType.Player &&
+            params.source !== this
+        ) {
+            this.lastDamagedBy.randomWeaponSwap(params);
         }
 
         this.game.broadcastMsg(net.MsgType.Kill, killMsg);
@@ -3873,11 +3878,18 @@ export class Player extends BaseGameObject {
     }
 
     /** just used in potato mode, swaps oldWeapon with a random weapon of the same type (mosin -> m9) */
-    randomWeaponSwap(oldWeapon: string): void {
+    randomWeaponSwap(params: DamageParams): void {
+        if (this.dead) return;
+        console.log(params);
+        console.trace();
+        const oldWeapon = params.weaponSourceType || params.gameSourceType;
+        if (!oldWeapon) return;
+
         const oldWeaponDef = GameObjectDefs[oldWeapon] as
             | GunDef
             | ThrowableDef
             | MeleeDef;
+
         if (oldWeaponDef.noPotatoSwap) return;
         const weaponDefs = WeaponTypeToDefs[oldWeaponDef.type];
         //necessary for type safety since Object.entries() is not type safe and just returns "any"

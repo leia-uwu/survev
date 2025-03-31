@@ -75,7 +75,19 @@ export class WeaponManager {
 
         if (idx === this._curWeapIdx) return;
         if (this.weapons[idx].type === "") return;
-        if (this.bursts.length && !forceSwitch) return;
+
+        const curWeaponDef = GameObjectDefs[this.activeWeapon] as
+            | GunDef
+            | MeleeDef
+            | ThrowableDef;
+
+        if (
+            curWeaponDef?.type === "gun" &&
+            curWeaponDef.fireMode === "burst" &&
+            this.bursts.length &&
+            !forceSwitch
+        )
+            return;
 
         this.player.cancelAnim();
 
@@ -94,10 +106,6 @@ export class WeaponManager {
 
         if (curWeapon.type && nextWeapon.type && changeCooldown) {
             // ensure that player is still holding both weapons (didnt drop one)
-            const curWeaponDef = GameObjectDefs[this.activeWeapon] as
-                | GunDef
-                | MeleeDef
-                | ThrowableDef;
             const nextWeaponDef = GameObjectDefs[this.weapons[idx].type] as
                 | GunDef
                 | MeleeDef
@@ -185,6 +193,7 @@ export class WeaponManager {
         }
 
         if (idx === this.curWeapIdx) {
+            this.bursts.length = 0;
             this.player.setDirty();
         }
 
@@ -1001,6 +1010,7 @@ export class WeaponManager {
                     damageType: GameConfig.DamageType.Player,
                     source: this.player,
                     dir: v2.neg(hit.dir),
+                    weaponSourceType: this.activeWeapon,
                 });
                 if (obj.interactable) obj.interact(this.player);
             } else if (obj.__type === ObjectType.Player) {
