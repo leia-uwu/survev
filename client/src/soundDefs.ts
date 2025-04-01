@@ -915,6 +915,11 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
             path: "audio/hits/metal_punch_hit_02.mp3",
             volume: 1,
         },
+        egg_hit_01: {
+            path: "audio/hits/egg_hit_01.mp3",
+            volume: 1,
+            preload: false,
+        },
         player_bullet_hit_01: {
             path: "audio/hits/player_bullet_hit_01.mp3",
             volume: 1,
@@ -1104,6 +1109,11 @@ const Sounds: Record<string, Record<string, SoundDef>> = {
         ceramic_break_01: {
             path: "audio/sfx/ceramic_break_01.mp3",
             volume: 1,
+        },
+        egg_break_01: {
+            path: "audio/sfx/egg_break_01.mp3",
+            volume: 1,
+            preload: false,
         },
         footstep_grass_01: {
             path: "audio/sfx/footstep_grass_01.mp3",
@@ -1944,6 +1954,10 @@ const Groups: Record<string, { channel: string; sounds: string[] }> = {
     tree_bullet: {
         channel: "hits",
         sounds: ["wood_bullet_hit_01"],
+    },
+    egg_hit: {
+        channel: "hits",
+        sounds: ["egg_hit_01"],
     },
     player_bullet_grunt: {
         channel: "hits",

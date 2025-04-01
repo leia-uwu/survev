@@ -175,7 +175,7 @@ const mapDef: PartialMapDef = {
             { name: "outfitBarrel", count: 1, weight: 1 },
             { name: "outfitWoodBarrel", count: 1, weight: 1 },
             { name: "outfitStone", count: 1, weight: 1 },
-            { name: "outfitTree", count: 1, weight: 1 },
+            { name: "outfitHalloweenTree", count: 1, weight: 1 },
             { name: "outfitStump", count: 1, weight: 1 },
             { name: "outfitBush", count: 1, weight: 1 },
             { name: "outfitLeafPile", count: 1, weight: 1 },
