@@ -1,6 +1,7 @@
 import { and, eq, gte, inArray, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
+import { MinGames } from "../../../../../shared/constants";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import {
     type LeaderboardRequest,
@@ -68,6 +69,7 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
     const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
+    const minGames = type === "kpg" ? MinGames[type][interval] : 1;
 
     // SQL 🤮, migrate to drizzle once stable
     const query = sql.raw(`
@@ -92,6 +94,7 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
       match_data.region,
       match_data.team_mode,
       users.slug    
+    HAVING COUNT(DISTINCT(match_data.game_id)) >= ${minGames}
     ORDER BY val DESC
     LIMIT ${MAX_RESULT_COUNT};
   `);

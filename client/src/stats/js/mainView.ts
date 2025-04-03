@@ -1,4 +1,5 @@
 import $ from "jquery";
+import { MinGames } from "../../../../shared/constants";
 import type { LeaderboardRequest } from "../../../../shared/types/stats";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
@@ -120,16 +121,6 @@ export class MainView {
             wins: "stats-total-wins",
             kpg: "stats-kpg",
         } satisfies Record<LeaderboardRequest["type"], string>;
-        // @TODO: Refactor shared leaderboard constants with app/src/db.js
-        // uummmm?
-        const MinGames = {
-            kpg: {
-                daily: 15,
-                weekly: 50,
-                alltime: 100,
-            },
-        };
-
         let content = "";
         if (this.loading) {
             content = templates.loading({
