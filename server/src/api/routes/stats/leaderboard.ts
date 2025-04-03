@@ -35,8 +35,7 @@ leaderboardRouter.post(
             }
 
             const data =
-                type === "most_kills" &&
-                (teamMode === TeamMode.Duo || teamMode === TeamMode.Squad)
+                type === "most_kills" && teamMode != TeamMode.Solo
                     ? await multiplePlayersQuery(params)
                     : await soloLeaderboardQuery(params);
 
@@ -68,10 +67,11 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const { interval, mapId, teamMode, type } = params;
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
+    const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
 
     // SQL 🤮, migrate to drizzle once stable
     const query = sql.raw(`
-      SELECT
+    SELECT
         match_data.username,
         match_data.map_id AS map_id,
         match_data.region,
@@ -79,13 +79,13 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
         match_data.team_mode as team_mode,
         users.slug,
         ${typeToQuery[type]} as val
-      FROM match_data
-      LEFT JOIN users ON match_data.user_id = users.id
-      WHERE
-      team_mode = ${teamMode}
+    FROM match_data
+    LEFT JOIN users ON match_data.user_id = users.id
+    WHERE team_mode = ${teamMode}
+      ${loggedPlayersFilterQuery}
       ${intervalFilterQuery}
       ${mapIdFilterQuery}
-      GROUP BY
+    GROUP BY
       map_id,
       match_data.kills,
       match_data.username,
