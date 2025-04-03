@@ -1,13 +1,12 @@
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { StructureDef } from "../../../../shared/defs/mapObjectsTyping";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
+import { type AABB, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { mapHelpers } from "../../../../shared/utils/mapHelpers";
 import { math } from "../../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import type { Game } from "../game";
-import { getColliders } from "../map";
 import { BaseGameObject } from "./gameObject";
 
 interface Stair {
@@ -37,8 +36,6 @@ export class Structure extends BaseGameObject {
 
     scale = 1;
     rot: number;
-
-    mapObstacleBounds: Collider[];
 
     constructor(game: Game, type: string, pos: Vec2, layer: number, ori: number) {
         super(game, pos);
@@ -87,9 +84,5 @@ export class Structure extends BaseGameObject {
                 lootOnly: !!stairsDef.lootOnly,
             });
         }
-
-        this.mapObstacleBounds = getColliders(type).ground.map((coll) => {
-            return collider.transform(coll, pos, this.rot, 1);
-        });
     }
 }

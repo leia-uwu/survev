@@ -941,7 +941,15 @@ const SkinDefs: Record<string, OutfitDef> = {
             tint: 7434609,
         },
     }),
-    outfitTree: defineOutfitSkin("outfitBase", {
+    outfitSpringTree: defineOutfitSkin("outfitBase", {
+        name: "Tree Costume",
+        obstacleType: "tree_07sp",
+        baseScale: 1,
+        lootImg: {
+            tint: 4599058,
+        },
+    }),
+    outfitHalloweenTree: defineOutfitSkin("outfitBase", {
         name: "Tree Costume",
         obstacleType: "tree_07",
         baseScale: 1,

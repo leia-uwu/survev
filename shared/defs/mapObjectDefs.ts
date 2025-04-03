@@ -1268,6 +1268,51 @@ function createPotato<T extends ObstacleDef>(e: Partial<T>): T {
     };
     return util.mergeDeep(t, e || {});
 }
+
+function createEgg<T extends ObstacleDef>(e: Partial<T>): T {
+    const def: ObstacleDef = {
+        type: "obstacle",
+        scale: {
+            createMin: 1,
+            createMax: 1,
+            destroy: 0.75,
+        },
+        collision: collider.createCircle(v2.create(0, 0), 1),
+        height: 0.5,
+        collidable: true,
+        destructible: true,
+        health: 80,
+        hitParticle: "woodChip",
+        explodeParticle: "woodShard",
+        reflectBullets: false,
+        loot: [tierLoot("tier_egg_outfits", 1, 1)],
+        map: {
+            display: false,
+            color: 6697728,
+            scale: 0.875,
+        },
+        terrain: {
+            grass: true,
+            beach: true,
+        },
+        img: {
+            sprite: "map-egg-01.img",
+            residue: "map-egg-res-01.img",
+            scale: 0.35,
+            alpha: 1,
+            tint: 16777215,
+            zIdx: 10,
+        },
+        sound: {
+            bullet: "egg_hit",
+            punch: "egg_hit",
+            explode: "egg_break_01",
+            enter: "none",
+        },
+    };
+    return util.mergeDeep(def, e || {});
+}
+
 function createPumpkin<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
@@ -10057,6 +10102,22 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     potato_01: createPotato({}),
     potato_02: createPotato({ img: { sprite: "map-potato-02.img" } }),
     potato_03: createPotato({ img: { sprite: "map-potato-03.img" } }),
+    egg_01: createEgg({
+        img: { sprite: "map-egg-01.img" },
+        hitParticle: "pinkChip",
+    }),
+    egg_02: createEgg({
+        img: { sprite: "map-egg-02.img" },
+        hitParticle: "ltblueChip",
+    }),
+    egg_03: createEgg({
+        img: { sprite: "map-egg-03.img" },
+        hitParticle: "yellowChip",
+    }),
+    egg_04: createEgg({
+        img: { sprite: "map-egg-04.img" },
+        hitParticle: "greenChip",
+    }),
     power_box_01: createControlPanel({}),
     pumpkin_01: createPumpkin({
         loot: [tierLoot("tier_outfits", 1, 1), tierLoot("tier_pumpkin_candy", 1, 1)],

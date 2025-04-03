@@ -253,7 +253,7 @@ export class Map {
                     activePlayer,
                     renderer,
                 );
-                obstacle.render(camera, debug, activePlayer.layer);
+                obstacle.render(dt, camera, debug, activePlayer.layer);
             }
         }
 
