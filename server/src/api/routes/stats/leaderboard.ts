@@ -8,6 +8,7 @@ import {
     type LeaderboardResponse,
     zLeaderboardsRequest,
 } from "../../../../../shared/types/stats";
+import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { accountsEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
@@ -15,7 +16,6 @@ import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 import { filterByInterval, filterByMapId } from "./user_stats";
-import { Config } from "../../../config";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -34,15 +34,15 @@ leaderboardRouter.post(
                     `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
                 );
                 return c.json(cachedResult, 200);
-            };
-            
+            }
+
             const startTime = performance.now();
             const data =
                 type === "most_kills" && teamMode != TeamMode.Solo
                     ? await multiplePlayersQuery(params)
                     : await soloLeaderboardQuery(params);
             logQueryPerformance(startTime, params);
-            
+
             // TODO: decide if we should cache empty results;
             if (data.length != 0) {
                 await leaderboardCache.set(params, data);
@@ -189,11 +189,11 @@ async function multiplePlayersQuery({
 
 function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
     if (!Config.errorLoggingWebhook) return;
-    if ( Math.random() > 0.5 ) return;
+    if (Math.random() > 0.2) return;
 
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? (executionTime/1000).toFixed(2) + 's' : executionTime.toFixed(2) + 'ms'} | Params: ${JSON.stringify(params)}`;
+    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? (executionTime / 1000).toFixed(2) + "s" : executionTime.toFixed(2) + "ms"} | Params: ${JSON.stringify(params)}`;
 
     fetch(Config.errorLoggingWebhook, {
         method: "POST",
@@ -202,4 +202,4 @@ function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
         },
         body: JSON.stringify(message),
     });
-};
+}

@@ -54,7 +54,7 @@ ModerationRouter.post(
                         .update(usersTable)
                         .set({
                             banned: true,
-                            banReason: "Banned for exceeding the ban duration.",
+                            banReason: "Banned for cheating.",
                         })
                         .where(eq(usersTable.id, user.userId));
                 }

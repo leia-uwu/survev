@@ -186,6 +186,12 @@ UserRouter.post("/delete", async (c) => {
         // delete the account
         await db.delete(usersTable).where(eq(usersTable.id, user.id));
 
+        // remove reference to the user from match data
+        await db
+            .update(matchDataTable)
+            .set({ userId: null })
+            .where(eq(matchDataTable.userId, user.id));
+
         return c.json({}, 200);
     } catch (err) {
         server.logger.warn("/api/delete: Error deleting account", err);
