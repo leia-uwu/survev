@@ -6,9 +6,60 @@ import type { SaveGameBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
-import { bannedIpsTable, ipLogsTable, usersTable } from "../../db/schema";
+import { bannedIpsTable, ipLogsTable, matchDataTable, usersTable } from "../../db/schema";
 
 export const ModerationRouter = new Hono();
+
+ModerationRouter.post(
+    "/ban-account",
+    validateParams(
+        z.object({
+            slug: z.string(),
+            banReason: z.string().default("Banned for cheating."),
+        }),
+    ),
+    async (c) => {
+        try {
+            const { slug, banReason } = c.req.valid("json");
+
+            const user = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    id: true,
+                    banned: true,
+                },
+            });
+
+            if (!user) {
+                return c.json({ message: "No user found with that slug." }, 404);
+            }
+
+            if (user.banned) {
+                return c.json({ message: "User is already banned." }, 400);
+            }
+
+            await db
+                .update(usersTable)
+                .set({
+                    banned: true,
+                    banReason,
+                })
+                .where(eq(usersTable.id, user.id));
+
+            // delete all their matches
+            // manually clear lb cache if they are in it
+            await db.delete(matchDataTable).where(eq(matchDataTable.userId, user.id));
+
+            return c.json({ message: "User has been banned." }, 200);
+        } catch (err) {
+            server.logger.warn(
+                "/private/moderation/ban-account: Error banning account",
+                err,
+            );
+            return c.json({ message: "An unexpected error occurred." }, 500);
+        }
+    },
+);
 
 ModerationRouter.post(
     "/ban-ip",
@@ -60,23 +111,16 @@ ModerationRouter.post(
                 }
             }
             if (permanent)
-                return c.json(
-                    { success: true, message: `IP ${ip} has been permanently banned.` },
-                    200,
-                );
+                return c.json({ message: `IP ${ip} has been permanently banned.` }, 200);
             return c.json(
                 {
-                    success: true,
                     message: `IP ${ip} has been banned for ${durationInDays} days.`,
                 },
                 200,
             );
         } catch (err) {
             server.logger.warn("/private/moderation/ban-ip: Error banning IP", err);
-            return c.json(
-                { success: false, message: "An unexpected error occurred." },
-                500,
-            );
+            return c.json({ message: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -97,16 +141,10 @@ ModerationRouter.post(
                 .delete(bannedIpsTable)
                 .where(eq(bannedIpsTable.encodedIp, encodedIp))
                 .execute();
-            return c.json(
-                { success: true, message: `IP ${encodedIp} has been unbanned.` },
-                200,
-            );
+            return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
         } catch (err) {
             server.logger.warn("/private/moderation/unban-ip: Error unbanning IP", err);
-            return c.json(
-                { success: false, message: "An unexpected error occurred." },
-                500,
-            );
+            return c.json({ message: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -136,7 +174,6 @@ ModerationRouter.post(
             if (result.length === 0) {
                 return c.json(
                     {
-                        success: true,
                         message: `No IP found for ${name}. Make sure the name matches the one in game.`,
                     },
                     200,
@@ -145,7 +182,6 @@ ModerationRouter.post(
 
             return c.json(
                 {
-                    success: true,
                     message: result.map(
                         ({ ip, name, region }) => `[${region}] ${name}'s IP is ${ip}`,
                     ),
@@ -157,10 +193,7 @@ ModerationRouter.post(
                 "/private/moderation/get-player-ip: Error getting player IP",
                 err,
             );
-            return c.json(
-                { success: false, message: "An unexpected error occurred." },
-                500,
-            );
+            return c.json({ message: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -168,13 +201,13 @@ ModerationRouter.post(
 ModerationRouter.post("/clear-all-bans", async (c) => {
     try {
         await db.delete(bannedIpsTable).execute();
-        return c.json({ success: true, message: `All bans have been cleared.` }, 200);
+        return c.json({ message: `All bans have been cleared.` }, 200);
     } catch (err) {
         server.logger.warn(
             "/private/moderation/clear-all-bans: Error clearing all bans",
             err,
         );
-        return c.json({ success: false, message: "An unexpected error occurred." }, 500);
+        return c.json({ message: "An unexpected error occurred." }, 500);
     }
 });
 
