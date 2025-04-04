@@ -23,7 +23,7 @@ import { server } from "./apiServer";
 import { validateSessionToken } from "./auth";
 import { validateParams } from "./auth/middleware";
 import type { SessionTableSelect, UsersTableSelect } from "./db/schema";
-import { isBanned } from "./moderation";
+import { isBanned } from "./routes/private/ModerationRouter";
 import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";

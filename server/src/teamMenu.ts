@@ -17,7 +17,7 @@ import {
 import { assert } from "../../shared/utils/util";
 import type { ApiServer } from "./api/apiServer";
 import { validateSessionToken } from "./api/auth";
-import { isBanned } from "./api/moderation";
+import { isBanned } from "./api/routes/private/ModerationRouter";
 import { Config } from "./config";
 import {
     HTTPRateLimit,

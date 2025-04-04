@@ -12,13 +12,15 @@ import { getRedisClient } from "../../cache";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { type MatchDataTable, matchDataTable, usersTable } from "../../db/schema";
-import { handleModerationAction, logPlayerIPs } from "../../moderation";
 import { generateId } from "../user/auth/authUtils";
 import { MOCK_USER_ID } from "../user/auth/mock";
+import { ModerationRouter, logPlayerIPs } from "./ModerationRouter";
 
 export const PrivateRouter = new Hono<Context>();
 
 PrivateRouter.use(privateMiddleware);
+
+PrivateRouter.route("/moderation", ModerationRouter);
 
 PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
     try {
@@ -51,37 +53,6 @@ PrivateRouter.post("/save_game", async (c) => {
     } catch (err) {
         server.logger.warn("save_game Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
-    }
-});
-
-const zModerationParms = z.discriminatedUnion("action", [
-    z.object({
-        action: z.literal("get-player-ip"),
-        playerName: z.string(),
-    }),
-    z.object({
-        action: z.literal("clean-all-bans"),
-    }),
-    z.object({
-        action: z.enum(["ban-ip", "unban-ip", "check-ban-status"]),
-        ip: z.string(),
-        isEncoded: z.boolean().default(false),
-        permanent: z.boolean().default(false),
-    }),
-]);
-
-export type ModerationParms = z.infer<typeof zModerationParms>;
-
-PrivateRouter.post("/moderation", validateParams(zModerationParms), async (ctx) => {
-    const data = ctx.req.valid("json");
-    try {
-        return ctx.json({ message: await handleModerationAction(data) });
-    } catch (err) {
-        server.logger.warn(
-            `/private/moderation: Error processing ${data.action} request`,
-            err,
-        );
-        return ctx.json({ message: "An unexpected error occurred." }, 500);
     }
 });
 
