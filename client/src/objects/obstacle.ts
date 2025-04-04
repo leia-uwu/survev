@@ -93,6 +93,10 @@ export class Obstacle implements AbstractObject {
     explodeParticle!: string | string[];
     skinPlayerId!: number;
 
+    // for skin interpolation
+    visualPosOld!: Vec2;
+    posInterpTicker!: number;
+
     collider!: Collider & { height: number };
 
     constructor() {
@@ -105,6 +109,7 @@ export class Obstacle implements AbstractObject {
         this.smokeEmitter = null;
         this.sprite.visible = false;
         this.img = "";
+        this.visualPosOld = v2.create(0, 0);
     }
 
     m_free() {
@@ -137,6 +142,12 @@ export class Obstacle implements AbstractObject {
             }
         }
         const def = MapObjectDefs[this.type] as ObstacleDef;
+
+        if (!v2.eq(data.pos, this.visualPosOld)) {
+            this.visualPosOld = v2.copy(isNew ? data.pos : this.pos);
+            this.posInterpTicker = 0;
+        }
+
         this.pos = v2.copy(data.pos);
         this.rot = math.oriToRad(data.ori);
         this.scale = data.scale;
@@ -447,8 +458,15 @@ export class Obstacle implements AbstractObject {
         this.isNew = false;
     }
 
-    render(camera: Camera, debug: DebugOptions, layer: number) {
-        const pos = this.isDoor ? this.door.interpPos : this.pos;
+    render(dt: number, camera: Camera, debug: DebugOptions, layer: number) {
+        let pos = this.isDoor ? this.door.interpPos : this.pos;
+
+        if (this.isSkin && camera.m_interpEnabled) {
+            this.posInterpTicker += dt;
+            const posT = math.clamp(this.posInterpTicker / camera.m_interpInterval, 0, 1);
+            pos = v2.lerp(posT, this.visualPosOld, this.pos);
+        }
+
         const rot = this.isDoor ? this.door.interpRot : this.rot;
         const scale = this.scale;
 

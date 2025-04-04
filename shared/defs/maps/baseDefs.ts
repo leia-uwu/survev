@@ -333,6 +333,22 @@ export const Main: MapDef = {
             { name: "outfitCamo", count: 1, weight: 0.1 }, // ?
             { name: "outfitGhillie", count: 1, weight: 0.01 }, // ?
         ],
+        tier_egg_outfits: [
+            { name: "outfitBarrel", count: 1, weight: 1 },
+            { name: "outfitWoodBarrel", count: 1, weight: 1 },
+            { name: "outfitStone", count: 1, weight: 1 },
+            { name: "outfitSpringTree", count: 1, weight: 1 },
+            { name: "outfitBush", count: 1, weight: 1 },
+            { name: "outfitCrate", count: 1, weight: 1 },
+            { name: "outfitTable", count: 1, weight: 1 },
+            { name: "outfitSoviet", count: 1, weight: 1 },
+            { name: "outfitOven", count: 1, weight: 1 },
+            { name: "outfitRefrigerator", count: 1, weight: 1 },
+            { name: "outfitVending", count: 1, weight: 1 },
+            { name: "outfitToilet", count: 1, weight: 1 },
+            { name: "outfitBushRiver", count: 1, weight: 1 },
+            { name: "outfitCrab", count: 1, weight: 1 },
+        ],
         tier_islander_outfit: [{ name: "outfitIslander", count: 1, weight: 1 }],
         tier_imperial_outfit: [{ name: "outfitImperial", count: 1, weight: 1 }],
         tier_pineapple_outfit: [{ name: "outfitPineapple", count: 1, weight: 1 }],

@@ -809,6 +809,63 @@ const ParticleDefs: Record<string, ParticleDef> = {
             return util.rgbToInt(util.hsvToRgb(0.11, 0.84, util.random(0.88, 0.9)));
         },
     },
+    pinkChip: {
+        image: ["part-spark-02.img"],
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
+        scale: {
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1),
+        },
+        alpha: {
+            start: 1,
+            end: 0,
+            lerp: new Range(0.9, 1),
+        },
+        color: function () {
+            return util.rgbToInt(util.hsvToRgb(0, 0.52, util.random(0.98, 1)));
+        },
+    },
+    ltblueChip: {
+        image: ["part-spark-02.img"],
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
+        scale: {
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1),
+        },
+        alpha: {
+            start: 1,
+            end: 0,
+            lerp: new Range(0.9, 1),
+        },
+        color: function () {
+            return util.rgbToInt(util.hsvToRgb(0.5, 0.65, util.random(0.98, 1)));
+        },
+    },
+    yellowChip: {
+        image: ["part-spark-02.img"],
+        life: new Range(0.5, 1),
+        drag: new Range(1, 5),
+        rotVel: new Range(Math.PI * 3, Math.PI * 3),
+        scale: {
+            start: new Range(0.04, 0.08),
+            end: new Range(0.01, 0.02),
+            lerp: new Range(0, 1),
+        },
+        alpha: {
+            start: 1,
+            end: 0,
+            lerp: new Range(0.9, 1),
+        },
+        color: function () {
+            return util.rgbToInt(util.hsvToRgb(0.16, 0.73, util.random(0.98, 1)));
+        },
+    },
     greenChip: {
         image: ["part-spark-02.img"],
         life: 0.5,

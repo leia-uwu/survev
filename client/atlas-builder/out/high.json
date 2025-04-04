@@ -17628,10 +17628,110 @@
             "h": 768
           }
         },
+        "map-egg-01.img": {
+          "frame": {
+            "x": 1930,
+            "y": 2,
+            "w": 94,
+            "h": 122
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 15,
+            "y": 1,
+            "w": 94,
+            "h": 122
+          },
+          "sourceSize": {
+            "w": 124,
+            "h": 124
+          }
+        },
+        "map-egg-02.img": {
+          "frame": {
+            "x": 1930,
+            "y": 128,
+            "w": 94,
+            "h": 122
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 15,
+            "y": 1,
+            "w": 94,
+            "h": 122
+          },
+          "sourceSize": {
+            "w": 124,
+            "h": 124
+          }
+        },
+        "map-egg-03.img": {
+          "frame": {
+            "x": 1930,
+            "y": 254,
+            "w": 94,
+            "h": 122
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 15,
+            "y": 1,
+            "w": 94,
+            "h": 122
+          },
+          "sourceSize": {
+            "w": 124,
+            "h": 124
+          }
+        },
+        "map-egg-04.img": {
+          "frame": {
+            "x": 1930,
+            "y": 380,
+            "w": 94,
+            "h": 122
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 15,
+            "y": 1,
+            "w": 94,
+            "h": 122
+          },
+          "sourceSize": {
+            "w": 124,
+            "h": 124
+          }
+        },
+        "map-egg-res-01.img": {
+          "frame": {
+            "x": 1930,
+            "y": 506,
+            "w": 92,
+            "h": 88
+          },
+          "rotated": false,
+          "trimmed": true,
+          "spriteSourceSize": {
+            "x": 4,
+            "y": 6,
+            "w": 92,
+            "h": 88
+          },
+          "sourceSize": {
+            "w": 100,
+            "h": 100
+          }
+        },
         "map-potato-01.img": {
           "frame": {
             "x": 1930,
-            "y": 89,
+            "y": 685,
             "w": 72,
             "h": 70
           },
@@ -17651,7 +17751,7 @@
         "map-potato-02.img": {
           "frame": {
             "x": 1930,
-            "y": 163,
+            "y": 759,
             "w": 72,
             "h": 70
           },
@@ -17670,8 +17770,8 @@
         },
         "map-potato-03.img": {
           "frame": {
-            "x": 1930,
-            "y": 237,
+            "x": 2,
+            "y": 833,
             "w": 72,
             "h": 70
           },
@@ -17691,7 +17791,7 @@
         "map-potato-res-01.img": {
           "frame": {
             "x": 1930,
-            "y": 2,
+            "y": 598,
             "w": 85,
             "h": 83
           },
