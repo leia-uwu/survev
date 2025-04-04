@@ -1,6 +1,5 @@
 import { and, eq, ne } from "drizzle-orm";
 import { Hono } from "hono";
-import { deleteCookie } from "hono/cookie";
 import {
     type GetPassResponse,
     type LoadoutResponse,
@@ -52,6 +51,9 @@ UserRouter.post("/profile", async (c) => {
         } = user;
 
         if (banned) {
+            const session = c.get("session")!;
+            await logoutUser(c, session.id);
+
             return c.json<ProfileResponse>({
                 banned: true,
                 reason: banReason,
@@ -164,7 +166,6 @@ UserRouter.post("/loadout", validateParams(zLoadoutRequest), async (c) => {
 UserRouter.post("/logout", async (c) => {
     try {
         const session = c.get("session")!;
-        deleteCookie(c, "app-data");
 
         await logoutUser(c, session.id);
 

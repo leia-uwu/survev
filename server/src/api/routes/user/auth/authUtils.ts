@@ -1,7 +1,7 @@
 import { generateRandomString } from "@oslojs/crypto/random";
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
-import { setCookie } from "hono/cookie";
+import { deleteCookie, setCookie } from "hono/cookie";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
@@ -51,6 +51,7 @@ export async function setSessionTokenCookie(userId: string, c: Context) {
 export async function logoutUser(c: Context, sessionId: string) {
     await invalidateSession(sessionId);
     deleteSessionTokenCookie(c);
+    deleteCookie(c, "app-data");
 }
 
 export function deleteSessionTokenCookie(c: Context) {
