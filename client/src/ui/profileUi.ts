@@ -1,10 +1,10 @@
 import $ from "jquery";
+import loadout from "../../../shared/utils/loadout";
 import type { Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { LoadoutMenu } from "./loadoutMenu";
-import loadout from "./loadouts";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
 
@@ -66,12 +66,22 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    addLoginOption("twitch", account.profile.linkedTwitch, () => {
-        window.location.href = "/api/user/auth/twitch";
-    });
-    addLoginOption("discord", account.profile.linkedDiscord, () => {
-        window.location.href = "/api/user/auth/discord";
-    });
+    if (GOOGLE_LOGIN_SUPPORTED) {
+        addLoginOption("google", account.profile.linkedGoogle, () => {
+            window.location.href = "/api/auth/google";
+        });
+    }
+    if (DISCORD_LOGIN_SUPPORTED) {
+        addLoginOption("discord", account.profile.linkedDiscord, () => {
+            window.location.href = "/api/auth/discord";
+        });
+    }
+
+    if (MOCK_LOGIN_SUPPORTED) {
+        addLoginOption("mock", false, () => {
+            window.location.href = "/api/auth/mock";
+        });
+    }
 }
 
 export class ProfileUi {
@@ -215,7 +225,7 @@ export class ProfileUi {
         });
 
         // Create account
-        this.createAccountModal = new MenuModal($("#modal-create-account-INVALID_ID"));
+        this.createAccountModal = new MenuModal($("#modal-create-account"));
         this.createAccountModal.onHide(() => {
             this.loadoutMenu.hide();
         });
@@ -260,13 +270,6 @@ export class ProfileUi {
         });
         $(".account-loadout-link, #btn-customize").click(() => {
             this.loadoutMenu.show();
-            this.waitOnLogin(() => {
-                if (!this.account.loggedIn) {
-                    this.showLoginMenu({
-                        modal: true,
-                    });
-                }
-            });
             return false;
         });
         $(".account-details-user").click(() => {
@@ -405,13 +408,14 @@ export class ProfileUi {
     }
 
     showLoginMenu(opts: { modal?: boolean; link?: boolean }) {
-        opts = Object.assign(
-            {
+        opts = {
+            ...{
                 modal: false,
                 link: false,
             },
-            opts,
-        );
+            ...opts,
+        };
+
         const modal = opts.modal
             ? this.createAccountModal
             : device.mobile

@@ -329,8 +329,6 @@ export class UiManager2 {
         public localization: Localization,
         public inputBinds: InputBinds,
     ) {
-        const itemAction = this;
-
         // KillFeed
         for (let i = 0; i < maxKillFeedLines; i++) {
             // Search for an existing line; if we don't find one, create it
@@ -558,7 +556,7 @@ export class UiManager2 {
             // Add an input handler specifically to handle fullscreen on Firefox;
             // "requestFullscreen() must be called from inside a short running user-generated event handler."
             const keyCode = e.which || e.keyCode;
-            const bind = itemAction.inputBinds.getBind(Input.Fullscreen);
+            const bind = this.inputBinds.getBind(Input.Fullscreen);
             if (bind && keyCode == bind.code) {
                 helpers.toggleFullScreen();
             }
