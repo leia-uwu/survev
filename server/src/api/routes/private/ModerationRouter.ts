@@ -46,14 +46,68 @@ ModerationRouter.post(
                 })
                 .where(eq(usersTable.id, user.id));
 
-            // delete all their matches
-            // manually clear lb cache if they are in it
-            await db.delete(matchDataTable).where(eq(matchDataTable.userId, user.id));
+            // NOTE: some lb queries join with the userTable so we do
+            // this so it's easier to filter them
+            await db
+                .update(matchDataTable)
+                .set({ userBanned: true })
+                .where(eq(matchDataTable.userId, user.id));
 
             return c.json({ message: "User has been banned." }, 200);
         } catch (err) {
             server.logger.warn(
                 "/private/moderation/ban-account: Error banning account",
+                err,
+            );
+            return c.json({ message: "An unexpected error occurred." }, 500);
+        }
+    },
+);
+
+ModerationRouter.post(
+    "/unban-account",
+    validateParams(
+        z.object({
+            slug: z.string(),
+        }),
+    ),
+    async (c) => {
+        try {
+            const { slug } = c.req.valid("json");
+
+            const user = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    id: true,
+                    banned: true,
+                },
+            });
+
+            if (!user) {
+                return c.json({ message: "No user found with that slug." }, 404);
+            }
+
+            if (!user.banned) {
+                return c.json({ message: "User is not banned." }, 400);
+            }
+
+            await db
+                .update(usersTable)
+                .set({
+                    banned: false,
+                    banReason: "",
+                })
+                .where(eq(usersTable.id, user.id));
+
+            await db
+                .update(matchDataTable)
+                .set({ userBanned: false })
+                .where(eq(matchDataTable.userId, user.id));
+
+            return c.json({ message: "User has been unbanned." }, 200);
+        } catch (err) {
+            server.logger.warn(
+                "/private/moderation/unban-account: Error unbanning account",
                 err,
             );
             return c.json({ message: "An unexpected error occurred." }, 500);

@@ -1,0 +1,1 @@
+ALTER TABLE "match_data" ADD COLUMN "user_banned" boolean DEFAULT false;
