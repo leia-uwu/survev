@@ -58,6 +58,7 @@ export const matchDataTable = pgTable(
     "match_data",
     {
         userId: text("user_id").default(""),
+        userBanned: boolean("user_banned").default(false),
         createdAt: timestamp("created_at").notNull().default(defaultNow),
         region: text("region").notNull().$type<Region>(),
         mapId: integer("map_id").notNull(),

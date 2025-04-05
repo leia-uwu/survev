@@ -71,6 +71,7 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const { interval, mapId, teamMode, type } = params;
     const intervalFilterQuery = filterByInterval(interval);
     const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
+    const userNotBannedQuery = `AND users.banned = false`;
     const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
     const minGames = type === "kpg" ? MinGames[type][interval] : 1;
 
@@ -87,6 +88,7 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     FROM match_data
     LEFT JOIN users ON match_data.user_id = users.id
     WHERE team_mode = ${teamMode}
+      ${userNotBannedQuery}
       ${loggedPlayersFilterQuery}
       ${intervalFilterQuery}
       ${mapIdFilterQuery}
@@ -136,6 +138,7 @@ async function multiplePlayersQuery({
         .where(
             and(
                 interval === "alltime" ? undefined : intervalFilter[interval],
+                eq(matchDataTable.userBanned, false),
                 eq(matchDataTable.teamMode, teamMode),
                 eq(matchDataTable.mapId, mapId),
             ),
@@ -172,7 +175,6 @@ async function multiplePlayersQuery({
     return data.map((row) => {
         const usernames = [];
         const slugs = [];
-
         for (const { userId, username } of row.matchedUsers) {
             usernames.push(username);
             slugs.push(userId ? slugMap[userId] || null : null);
