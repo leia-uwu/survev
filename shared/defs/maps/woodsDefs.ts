@@ -248,6 +248,7 @@ const mapDef: PartialMapDef = {
                 recorder_01: "recorder_08",
                 recorder_02: "recorder_09",
                 crate_21: "crate_21w",
+                tree_01sv: "bush_01sv",
             },
         ],
     },
