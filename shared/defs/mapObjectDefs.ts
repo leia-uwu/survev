@@ -9402,6 +9402,39 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: { sprite: "map-crate-21.img" },
         sound: { explode: "crate_break_01" },
     }),
+    //Marksman Crates for Pre-Savannah Desert, Woods, Potato -- Update Crate Sprites when Atlas is Updated!
+    crate_21d: createCrate({
+        health: 140,
+        loot: [autoLoot("helmet03_dm01", 1, 1), tierLoot("tier_cloud_01", 1, 1)],
+        map: { display: true, color: 8978406, scale: 0.875 },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "map-crate-21.img" },
+        sound: { explode: "crate_break_01" },
+    }),
+    crate_21w: createCrate({
+        health: 140,
+        loot: [
+            autoLoot("helmet03_dm02", 1, 1),
+            tierLoot("tier_cloud_01", 1, 1),
+            tierLoot("tier_cloud_02", 1, 1),
+        ],
+        map: { display: true, color: 11776947, scale: 0.875 },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "map-crate-21.img" },
+        sound: { explode: "crate_break_01" },
+    }),
+    crate_21p: createCrate({
+        health: 140,
+        loot: [
+            autoLoot("helmet03_dm03", 1, 1),
+            tierLoot("tier_cloud_01", 1, 1),
+            tierLoot("tier_cloud_02", 1, 1),
+        ],
+        map: { display: true, color: 11776947, scale: 0.875 },
+        terrain: { grass: true, beach: false },
+        img: { sprite: "map-crate-21.img" },
+        sound: { explode: "crate_break_01" },
+    }),
     crate_22: createCrate({
         health: 140,
         loot: [

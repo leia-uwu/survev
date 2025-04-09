@@ -18,7 +18,7 @@ const mapDef: PartialMapDef = {
             { name: "footstep_09", channel: "sfx" },
             { name: "helmet03_forest_pickup_01", channel: "ui" },
         ],
-        atlases: ["gradient", "loadout", "shared", "woods"],
+        atlases: ["gradient", "loadout", "shared", "woods", "savannah"],
     },
     biome: {
         colors: {
@@ -209,6 +209,7 @@ const mapDef: PartialMapDef = {
         ],
         fixedSpawns: [
             {
+                savannah_patch_01: 2,
                 logging_complex_01: 1,
                 logging_complex_02: 1,
                 logging_complex_03: 3,
@@ -246,6 +247,7 @@ const mapDef: PartialMapDef = {
                 // make eye bunkers have the proper woods recorders
                 recorder_01: "recorder_08",
                 recorder_02: "recorder_09",
+                crate_21: "crate_21w",
             },
         ],
     },

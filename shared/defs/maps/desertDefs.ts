@@ -18,7 +18,7 @@ const mapDef: PartialMapDef = {
             { name: "log_04", channel: "sfx" },
             { name: "piano_music_01", channel: "ambient" },
         ],
-        atlases: ["gradient", "loadout", "shared", "desert"],
+        atlases: ["gradient", "loadout", "shared", "desert", "savannah"],
     },
     biome: {
         colors: {
@@ -282,6 +282,7 @@ const mapDef: PartialMapDef = {
         ],
         fixedSpawns: [
             {
+                savannah_patch_01: 1,
                 warehouse_01: 4,
                 house_red_01: 3,
                 house_red_02: 1,
@@ -311,6 +312,9 @@ const mapDef: PartialMapDef = {
                 crate_02: "crate_18",
                 stone_01: "stone_01b",
                 stone_03: "stone_03b",
+                crate_21: "crate_21d",
+                tree_01sv: "",
+                bush_01sv: "",
             },
         ],
         importantSpawns: ["desert_town_01", "desert_town_02", "river_town_02"],
