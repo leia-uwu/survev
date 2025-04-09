@@ -9408,7 +9408,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         loot: [autoLoot("helmet03_dm01", 1, 1), tierLoot("tier_cloud_01", 1, 1)],
         map: { display: true, color: 8978406, scale: 0.875 },
         terrain: { grass: true, beach: false },
-        img: { sprite: "map-crate-21.img" },
+        img: { sprite: "map-crate-21d.img" },
         sound: { explode: "crate_break_01" },
     }),
     crate_21w: createCrate({
@@ -9420,7 +9420,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ],
         map: { display: true, color: 11776947, scale: 0.875 },
         terrain: { grass: true, beach: false },
-        img: { sprite: "map-crate-21.img" },
+        img: { sprite: "map-crate-21w.img" },
         sound: { explode: "crate_break_01" },
     }),
     crate_21p: createCrate({
@@ -9432,7 +9432,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ],
         map: { display: true, color: 11776947, scale: 0.875 },
         terrain: { grass: true, beach: false },
-        img: { sprite: "map-crate-21.img" },
+        img: { sprite: "map-crate-21w.img" },
         sound: { explode: "crate_break_01" },
     }),
     crate_22: createCrate({
