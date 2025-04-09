@@ -490,7 +490,7 @@ export const Main: MapDef = {
         tier_airdrop_faction_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
         tier_airdrop_faction_melee: [{ name: "pan", count: 1, weight: 1 }],
         tier_perks: [
-            // {name: "small_arms", count: 1, weight: 1 }, 
+            // {name: "small_arms", count: 1, weight: 1 },
             { name: "firepower", count: 1, weight: 1 },
             { name: "windwalk", count: 1, weight: 1 },
             { name: "endless_ammo", count: 1, weight: 1 },
