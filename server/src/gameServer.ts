@@ -43,20 +43,20 @@ class GameServer {
         if (!parsed.success || !parsed.data) {
             this.logger.warn("/api/find_game: Invalid body");
             return {
-                err: "full",
+                error: "full",
             };
         }
         const data = parsed.data;
 
         if (data.version !== GameConfig.protocolVersion) {
             return {
-                err: "invalid_protocol",
+                error: "invalid_protocol",
             };
         }
 
         if (data.region !== this.regionId) {
             return {
-                err: "full",
+                error: "full",
             };
         }
 
@@ -64,7 +64,7 @@ class GameServer {
 
         if (!mode || !mode.enabled) {
             return {
-                err: "full",
+                error: "full",
             };
         }
 
@@ -126,7 +126,7 @@ app.post("/api/find_game", async (res, req) => {
 
                 const parsed = zFindGamePrivateBody.safeParse(body);
                 if (!parsed.success || !parsed.data) {
-                    returnJson(res, { err: "full" });
+                    returnJson(res, { error: "full" });
                     return;
                 }
 

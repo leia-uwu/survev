@@ -34,7 +34,7 @@ export type FindGameResponse =
           res: FindGameMatchData[];
       }
     | {
-          err: FindGameError;
+          error: FindGameError;
           res?: undefined;
       };
 

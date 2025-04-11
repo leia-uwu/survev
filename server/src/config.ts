@@ -66,7 +66,7 @@ export const Config = {
     randomizeDefaultPlayerName: false,
 
     database: {
-        enabled: false,
+        enabled: true,
         host: "127.0.0.1",
         user: "survev",
         password: "survev",

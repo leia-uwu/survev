@@ -33,11 +33,11 @@ ModerationRouter.post(
             });
 
             if (!user) {
-                return c.json({ message: "No user found with that slug." }, 404);
+                return c.json({ error: "No user found with that slug." }, 404);
             }
 
             if (user.banned) {
-                return c.json({ message: "User is already banned." }, 400);
+                return c.json({ error: "User is already banned." }, 400);
             }
 
             await db
@@ -61,7 +61,7 @@ ModerationRouter.post(
                 "/private/moderation/ban-account: Error banning account",
                 err,
             );
-            return c.json({ message: "An unexpected error occurred." }, 500);
+            return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -86,11 +86,11 @@ ModerationRouter.post(
             });
 
             if (!user) {
-                return c.json({ message: "No user found with that slug." }, 404);
+                return c.json({ error: "No user found with that slug." }, 404);
             }
 
             if (!user.banned) {
-                return c.json({ message: "User is not banned." }, 400);
+                return c.json({ error: "User is not banned." }, 400);
             }
 
             await db
@@ -112,7 +112,7 @@ ModerationRouter.post(
                 "/private/moderation/unban-account: Error unbanning account",
                 err,
             );
-            return c.json({ message: "An unexpected error occurred." }, 500);
+            return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -176,7 +176,7 @@ ModerationRouter.post(
             );
         } catch (err) {
             server.logger.warn("/private/moderation/ban-ip: Error banning IP", err);
-            return c.json({ message: "An unexpected error occurred." }, 500);
+            return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -200,7 +200,7 @@ ModerationRouter.post(
             return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
         } catch (err) {
             server.logger.warn("/private/moderation/unban-ip: Error unbanning IP", err);
-            return c.json({ message: "An unexpected error occurred." }, 500);
+            return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -249,7 +249,7 @@ ModerationRouter.post(
                 "/private/moderation/get-player-ip: Error getting player IP",
                 err,
             );
-            return c.json({ message: "An unexpected error occurred." }, 500);
+            return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
@@ -263,7 +263,7 @@ ModerationRouter.post("/clear-all-bans", async (c) => {
             "/private/moderation/clear-all-bans: Error clearing all bans",
             err,
         );
-        return c.json({ message: "An unexpected error occurred." }, 500);
+        return c.json({ error: "An unexpected error occurred." }, 500);
     }
 });
 

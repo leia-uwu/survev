@@ -17,7 +17,7 @@ export const DiscordRouter = new Hono();
 
 DiscordRouter.get("/", async (c) => {
     if (!Config.DISCORD_CLIENT_ID || !Config.DISCORD_SECRET_ID) {
-        return c.json({ err: "Missing Discord credentials" }, 500);
+        return c.json({ error: "Missing Discord credentials" }, 500);
     }
     const state = generateState();
 
@@ -72,7 +72,7 @@ DiscordRouter.get("/callback", async (c) => {
             err.message === "bad_verification_code"
         ) {
             // invalid code
-            return c.json({ err: "bad_verification_code" }, 400);
+            return c.json({ error: "bad_verification_code" }, 400);
         }
         return c.json({}, 500);
     }

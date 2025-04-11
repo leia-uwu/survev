@@ -261,13 +261,13 @@ class Room {
             playerData,
         });
 
-        if ("err" in res) {
-            const errToTeamMenuErr: Partial<Record<FindGameError, TeamMenuErrorType>> = {
+        if ("error" in res) {
+            const errMap: Partial<Record<FindGameError, TeamMenuErrorType>> = {
                 full: "find_game_full",
                 invalid_protocol: "find_game_invalid_protocol",
             };
 
-            this.data.lastError = errToTeamMenuErr[res.err] || "find_game_error";
+            this.data.lastError = errMap[res.error] || "find_game_error";
             this.sendState();
             // 1 second cooldown on error
             this.findGameCooldown = Date.now() + 1000;

@@ -14,12 +14,12 @@ export const authMiddleware = async (c: Context, next: Next) => {
         if (!sessionToken) {
             c.set("user", null);
             c.set("session", null);
-            return c.json({ err: "Authentication failed" }, 401);
+            return c.json({ error: "Authentication failed" }, 401);
         }
         const { session, user } = await validateSessionToken(sessionToken);
 
         if (!user) {
-            return c.json({ err: "Authentication failed" }, 401);
+            return c.json({ error: "Authentication failed" }, 401);
         }
 
         if (session) {
@@ -55,7 +55,7 @@ export function validateParams<Schema extends z.ZodSchema>(
         if (!result.success) {
             return c.json(
                 response ?? {
-                    message: "Invalid params",
+                    error: "Invalid params",
                 },
                 400,
             );
@@ -65,14 +65,14 @@ export function validateParams<Schema extends z.ZodSchema>(
 
 export async function databaseEnabledMiddleware(c: Context, next: Next) {
     if (!Config.database.enabled) {
-        return c.json({ err: "Database is disabled" }, 403);
+        return c.json({ error: "Database is disabled" }, 403);
     }
     await next();
 }
 
 export async function privateMiddleware(c: Context, next: Next) {
     if (c.req.header("survev-api-key") !== Config.apiKey) {
-        return c.json({ message: "Forbidden" }, 403);
+        return c.json({ error: "Forbidden" }, 403);
     }
     await next();
 }

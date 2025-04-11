@@ -63,7 +63,7 @@ export type FindGamePrivateRes =
           hosts: string[];
           addrs: string[];
       }
-    | { err: FindGameError };
+    | { error: FindGameError };
 
 export enum ProcessMsgType {
     Create,

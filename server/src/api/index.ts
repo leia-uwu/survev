@@ -74,16 +74,16 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         }
 
         if (findGameRateLimit.isRateLimited(ip)) {
-            return c.json<FindGameResponse>({ err: "rate_limited" }, 429);
+            return c.json<FindGameResponse>({ error: "rate_limited" }, 429);
         }
 
         if (await isBehindProxy(ip)) {
-            return c.json<FindGameResponse>({ err: "behind_proxy" });
+            return c.json<FindGameResponse>({ error: "behind_proxy" });
         }
 
         try {
             if (await isBanned(ip)) {
-                return c.json<FindGameResponse>({ err: "banned" });
+                return c.json<FindGameResponse>({ error: "banned" });
             }
         } catch (err) {
             console.error("/api/find_game: Failed to check if IP is banned", err);
@@ -119,7 +119,7 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             ],
         });
 
-        if ("err" in data) {
+        if ("error" in data) {
             return c.json(data);
         }
 

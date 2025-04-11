@@ -43,7 +43,7 @@ class Region {
     async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
         const data = await this.fetch<FindGamePrivateRes>("api/find_game", body);
         if (!data) {
-            return { err: "full" };
+            return { error: "full" };
         }
         return data;
     }
@@ -97,18 +97,18 @@ export class ApiServer {
 
     async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
         if (body.version !== GameConfig.protocolVersion) {
-            return { err: "invalid_protocol" };
+            return { error: "invalid_protocol" };
         }
 
         const mode = Config.modes[body.gameModeIdx];
         if (!mode || !mode.enabled) {
-            return { err: "full" };
+            return { error: "full" };
         }
 
         if (body.region in this.regions) {
             return await this.regions[body.region].findGame(body);
         }
-        return { err: "full" };
+        return { error: "full" };
     }
 }
 

@@ -74,7 +74,7 @@ PrivateRouter.post("/delete-expired-sessions", databaseEnabledMiddleware, async 
             `/private/delete-expired-sessions: Error deleting expired sessinos`,
             err,
         );
-        return ctx.json({ message: "An unexpected error occurred." }, 500);
+        return ctx.json({ error: "An unexpected error occurred." }, 500);
     }
 });
 
@@ -100,7 +100,7 @@ PrivateRouter.post(
             });
 
             if (!result) {
-                return c.json({ err: "No items found for this user." }, 404);
+                return c.json({ error: "No items found for this user." }, 404);
             }
 
             const { items } = result;

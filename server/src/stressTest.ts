@@ -434,8 +434,8 @@ void (() => {
                     } satisfies FindGameBody),
                 })
             ).json()) as FindGameResponse;
-            if ("err" in response) {
-                console.log("Failed finding game, err:", response.err);
+            if ("error" in response) {
+                console.log("Failed finding game, error:", response.error);
                 return;
             }
 

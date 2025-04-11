@@ -18,7 +18,7 @@ export const GoogleRouter = new Hono();
 
 GoogleRouter.get("/", async (c) => {
     if (!Config.GOOGLE_CLIENT_ID || !Config.GOOGLE_SECRET_ID) {
-        return c.json({ err: "Missing Google credentials" }, 500);
+        return c.json({ error: "Missing Google credentials" }, 500);
     }
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
@@ -75,7 +75,7 @@ GoogleRouter.get("/callback", async (c) => {
             err instanceof OAuth2RequestError &&
             err.message === "bad_verification_code"
         ) {
-            return c.json({ err: "bad_verification_code" }, 400);
+            return c.json({ error: "bad_verification_code" }, 400);
         }
         return c.json({}, 500);
     }

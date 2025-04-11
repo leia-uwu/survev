@@ -646,8 +646,8 @@ class Application {
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
                 success: function (data: FindGameResponse) {
-                    if ("err" in data && data.err != "full") {
-                        cb(data.err);
+                    if ("error" in data && data.error != "full") {
+                        cb(data.error);
                         return;
                     }
 
