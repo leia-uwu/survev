@@ -1,6 +1,7 @@
 import { sha256 } from "@oslojs/crypto/sha2";
 import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
 import { eq, lt } from "drizzle-orm";
+import { Config } from "../../config";
 import { db } from "../db";
 import {
     type SessionTableSelect,
@@ -35,6 +36,8 @@ export async function createSession(
 export async function validateSessionToken(
     token: string,
 ): Promise<SessionValidationResult> {
+    if (!Config.database.enabled) return { session: null, user: null };
+
     const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
     const result = await db
         .select({ user: usersTable, session: sessionTable })

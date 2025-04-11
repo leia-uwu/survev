@@ -6,7 +6,7 @@ import {
     zUserStatsRequest,
 } from "../../../../../shared/types/stats";
 import { server } from "../../apiServer";
-import { accountsEnabledMiddleware } from "../../auth/middleware";
+import { databaseEnabledMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
@@ -24,7 +24,7 @@ const emptyState = {
 
 UserStatsRouter.post(
     "/",
-    accountsEnabledMiddleware,
+    databaseEnabledMiddleware,
     validateParams(zUserStatsRequest),
     async (c) => {
         try {

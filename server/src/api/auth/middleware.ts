@@ -63,9 +63,9 @@ export function validateParams<Schema extends z.ZodSchema>(
     });
 }
 
-export async function accountsEnabledMiddleware(c: Context, next: Next) {
-    if (!Config.accountsEnabled) {
-        return c.json({ err: "Account-related features are disabled" }, 403);
+export async function databaseEnabledMiddleware(c: Context, next: Next) {
+    if (!Config.database.enabled) {
+        return c.json({ err: "Database is disabled" }, 403);
     }
     await next();
 }

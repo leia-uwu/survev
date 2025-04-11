@@ -1,19 +1,13 @@
 import pg from "pg";
-import { dbConfig } from ".";
-
-const pgConfig = {
-    ...dbConfig,
-    user: "postgres",
-    password: "postgres",
-    database: "postgres",
-};
-
-const PG_URL = `postgresql://${pgConfig.user}:${pgConfig.password}@${pgConfig.host}:${pgConfig.port}/${pgConfig.database}`;
+import { Config } from "../../config";
 
 async function dropDatabase() {
     if (process.env.NODE_ENV === "production") return;
     const pool = new pg.Pool({
-        connectionString: PG_URL,
+        ...Config.database,
+        user: "postgres",
+        password: "postgres",
+        database: "postgres",
     });
 
     try {

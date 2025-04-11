@@ -65,7 +65,14 @@ export const Config = {
 
     randomizeDefaultPlayerName: false,
 
-    accountsEnabled: true,
+    database: {
+        enabled: false,
+        host: "127.0.0.1",
+        user: "survev",
+        password: "survev",
+        database: "survev",
+        port: 5432,
+    },
 
     cachingEnabled: false,
 
@@ -219,7 +226,14 @@ export interface ConfigType {
         time: number;
     };
 
-    accountsEnabled: boolean;
+    database: {
+        enabled: boolean;
+        host: string;
+        user: string;
+        password: string;
+        database: string;
+        port: number;
+    };
 
     randomizeDefaultPlayerName: boolean;
 

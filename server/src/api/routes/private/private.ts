@@ -7,7 +7,11 @@ import { ItemStatus } from "../../../../../shared/utils/loadout";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import { deleteExpiredSessions } from "../../auth";
-import { privateMiddleware, validateParams } from "../../auth/middleware";
+import {
+    databaseEnabledMiddleware,
+    privateMiddleware,
+    validateParams,
+} from "../../auth/middleware";
 import { getRedisClient } from "../../cache";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
@@ -22,19 +26,24 @@ PrivateRouter.use(privateMiddleware);
 
 PrivateRouter.route("/moderation", ModerationRouter);
 
-PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
-    try {
-        const { regionId, data } = c.req.valid("json");
+PrivateRouter.post(
+    "/update_region",
+    databaseEnabledMiddleware,
+    validateParams(zUpdateRegionBody),
+    (c) => {
+        try {
+            const { regionId, data } = c.req.valid("json");
 
-        server.updateRegion(regionId, data);
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.warn("/private/update_region: Error processing request", err);
-        return c.json({ error: "Error processing request" }, 500);
-    }
-});
+            server.updateRegion(regionId, data);
+            return c.json({}, 200);
+        } catch (err) {
+            server.logger.warn("/private/update_region: Error processing request", err);
+            return c.json({ error: "Error processing request" }, 500);
+        }
+    },
+);
 
-PrivateRouter.post("/save_game", async (c) => {
+PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
     try {
         const data = (await c.req.json()) as SaveGameBody;
 
@@ -57,7 +66,7 @@ PrivateRouter.post("/save_game", async (c) => {
 });
 
 // TODO: use a cron job instead
-PrivateRouter.post("/delete-expired-sessions", async (ctx) => {
+PrivateRouter.post("/delete-expired-sessions", databaseEnabledMiddleware, async (ctx) => {
     try {
         await deleteExpiredSessions();
     } catch (err) {
@@ -71,6 +80,7 @@ PrivateRouter.post("/delete-expired-sessions", async (ctx) => {
 
 PrivateRouter.post(
     "/unlock",
+    databaseEnabledMiddleware,
     validateParams(
         z.object({
             item: z.string(),
@@ -130,6 +140,7 @@ PrivateRouter.post("/clear_cache", async (c) => {
 
 PrivateRouter.post(
     "/test/insert_game",
+    databaseEnabledMiddleware,
     validateParams(
         z.object({
             kills: z.number().catch(1),

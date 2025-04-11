@@ -4,11 +4,13 @@ import { z } from "zod";
 import { Config } from "../../../config";
 import type { SaveGameBody } from "../../../utils/types";
 import { server } from "../../apiServer";
-import { validateParams } from "../../auth/middleware";
+import { databaseEnabledMiddleware, validateParams } from "../../auth/middleware";
 import { db } from "../../db";
 import { bannedIpsTable, ipLogsTable, matchDataTable, usersTable } from "../../db/schema";
 
 export const ModerationRouter = new Hono();
+
+ModerationRouter.use(databaseEnabledMiddleware);
 
 ModerationRouter.post(
     "/ban-account",
@@ -276,6 +278,8 @@ async function cleanupOldLogs() {
 }
 
 export async function isBanned(ip: string, isEncoded = false) {
+    if (!Config.database.enabled) return false;
+
     const encodedIp = isEncoded ? ip : encodeIP(ip);
     const banned = await db.query.bannedIpsTable.findFirst({
         where: eq(bannedIpsTable.encodedIp, encodedIp),
