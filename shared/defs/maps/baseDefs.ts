@@ -495,7 +495,7 @@ export const Main: MapDef = {
             { name: "endless_ammo", count: 1, weight: 1 },
             { name: "steelskin", count: 1, weight: 1 },
             { name: "splinter", count: 1, weight: 1 },
-            { name: "small_arms", count: 1, weight: 1 },
+            // { name: "small_arms", count: 1, weight: 1 },
             { name: "takedown", count: 1, weight: 1 },
             { name: "field_medic", count: 1, weight: 1 },
             { name: "tree_climbing", count: 1, weight: 1 },
@@ -508,6 +508,18 @@ export const Main: MapDef = {
         tier_potato_perks: [
             { name: "", count: 1, weight: 25 },
             { name: "tier_perks", count: 1, weight: 1 },
+        ],
+        tier_cloud_01: [
+            { name: "mk12", count: 1, weight: 0.3 },
+            { name: "m39", count: 1, weight: 0.3 },
+            { name: "scout_elite", count: 1, weight: 0.2 },
+            { name: "mosin", count: 1, weight: 0.1 },
+            { name: "garand", count: 1, weight: 0.05 },
+            { name: "sv98", count: 1, weight: 0.05 },
+        ],
+        tier_cloud_02: [
+            { name: "", count: 1, weight: 0.75 },
+            { name: "outfitWheat", count: 1, weight: 0.25 },
         ],
     },
     mapGen: {

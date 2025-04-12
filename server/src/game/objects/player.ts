@@ -1063,6 +1063,10 @@ export class Player extends BaseGameObject {
     hasPerk(type: string) {
         return this.perkTypes.includes(type);
     }
+    // Added so flares can be infinite only for Desert Marksmen
+    hasHelmet(type: string) {
+        return this.helmet.includes(type);
+    }
 
     hasActivePan() {
         return (
