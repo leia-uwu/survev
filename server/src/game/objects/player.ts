@@ -1051,6 +1051,8 @@ export class Player extends BaseGameObject {
             }
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = 0;
+        } else if (type === "firepower") {
+            this.weaponManager.reload();
         }
 
         this.recalculateScale();
