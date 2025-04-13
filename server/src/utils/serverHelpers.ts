@@ -142,7 +142,7 @@ const textDecoder = new TextDecoder();
  */
 export function getIp(res: HttpResponse, req: HttpRequest, proxyHeader?: string) {
     const ip = proxyHeader
-        ? req.getHeader(proxyHeader)
+        ? req.getHeader(proxyHeader.toLowerCase())
         : textDecoder.decode(res.getRemoteAddressAsText());
 
     if (!ip || isIP(ip) == 0) return undefined;
