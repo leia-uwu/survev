@@ -341,17 +341,16 @@ async function setupDevelopmentConfig(config: PartialConfig) {
 const configPath = path.join(import.meta.dirname, "survev-config.hjson");
 
 async function loadExistingConfig(config: PartialConfig) {
-    if (fs.existsSync(configPath)) {
-        const confirmation = await prompt<{ value: boolean }>({
-            message:
-                "A config file already exists, would you like to run this setup anyway?",
-            name: "value",
-            type: "confirm",
-            initial: true,
-        });
-        if (!confirmation.value) {
-            process.exit(0);
-        }
+    if (!fs.existsSync(configPath)) return;
+
+    const confirmation = await prompt<{ value: boolean }>({
+        message: "A config file already exists, would you like to run this setup anyway?",
+        name: "value",
+        type: "confirm",
+        initial: true,
+    });
+    if (!confirmation.value) {
+        process.exit(0);
     }
 
     const configText = fs.readFileSync(configPath).toString();
