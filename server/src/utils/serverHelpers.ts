@@ -282,9 +282,9 @@ export class HTTPRateLimit {
     }
 }
 
-const proxyCheck = Config.PROXYCHECK_KEY
+const proxyCheck = Config.secrets.PROXYCHECK_KEY
     ? new ProxyCheck({
-          api_key: Config.PROXYCHECK_KEY,
+          api_key: Config.secrets.PROXYCHECK_KEY,
       })
     : undefined;
 
@@ -347,7 +347,7 @@ export async function fetchApiServer<
             method: "post",
             headers: {
                 "content-type": "application/json",
-                "survev-api-key": Config.apiKey,
+                "survev-api-key": Config.secrets.SURVEV_API_KEY,
             },
             body: JSON.stringify(body),
             signal: AbortSignal.timeout(5000),
@@ -371,7 +371,7 @@ export function logErrorToWebhook(from: "server" | "client", ...messages: any[])
     try {
         const payload = {
             from,
-            region: `[${Config.thisRegion.toUpperCase()}]`,
+            region: `[${Config.gameServer.thisRegion.toUpperCase()}]`,
             timestamp: new Date().toISOString(),
             messages: messages.map((msg) =>
                 typeof msg === "object" ? JSON.stringify(msg) : String(msg),

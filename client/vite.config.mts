@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { type Plugin, type ServerOptions, defineConfig } from "vite";
+import { getConfig } from "../config";
 import { version } from "../package.json";
-import { Config } from "../server/src/config";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 import { codefendPlugin } from "./vite-plugins/codefendPlugin";
 import { ejsPlugin } from "./vite-plugins/ejsPlugin";
@@ -35,11 +35,16 @@ export const SplashThemes = {
     },
 };
 
-const selectedTheme = SplashThemes[Config.client.theme];
+export default defineConfig(({ mode }) => {
+    const isDev = mode === "development";
 
-const AdsVars = {
-    VITE_ADIN_PLAY_SCRIPT: `
-    <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.client.AIP_ID}/tag.min.js"></script>
+    const Config = getConfig(!isDev, "");
+
+    const selectedTheme = SplashThemes[Config.clientTheme];
+
+    const AdsVars = {
+        VITE_ADIN_PLAY_SCRIPT: `
+    <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.secrets.AIP_PLACEMENT_ID}/tag.min.js"></script>
     <script>
         window.aiptag = window.aiptag || { cmd: [] };
         aiptag.cmd.display = aiptag.cmd.display || [];
@@ -53,24 +58,21 @@ const AdsVars = {
         };
     </script>
     `,
-    VITE_AIP_PLACEMENT_ID: Config.client.AIP_PLACEMENT_ID,
-};
+        VITE_AIP_PLACEMENT_ID: Config.secrets.AIP_PLACEMENT_ID,
+    };
 
-if (!Config.client.AIP_ID) {
-    for (const key in AdsVars) {
-        AdsVars[key] = "";
+    if (!Config.secrets.AIP_ID) {
+        for (const key in AdsVars) {
+            AdsVars[key] = "";
+        }
     }
-}
 
-export default defineConfig(({ mode }) => {
     process.env = {
         ...process.env,
         VITE_GAME_VERSION: version,
         VITE_BACKGROUND_IMG: selectedTheme.SPLASH_BG,
         ...AdsVars,
     };
-
-    const isDev = mode === "development";
 
     const plugins: Plugin[] = [ejsPlugin()];
 
@@ -85,17 +87,15 @@ export default defineConfig(({ mode }) => {
         );
     }
 
-    const port = 3000;
-    const host = "0.0.0.0";
     const serverOptions: ServerOptions = {
-        port,
-        host,
+        port: Config.vite.port,
+        host: Config.vite.host,
         proxy: {
             // regex that matches /stats, /stats/slug but doesn't match /stats/
             // since if it matches /stats/ it will infinite loop :p
             // also why does vite not work without trailing slashes at the end of paths 😭
             "^/stats(?!/$).*": {
-                target: `http://${host}:${port}`,
+                target: `http://${Config.vite.host}:${Config.vite.port}`,
                 rewrite: (path) => path.replace(/^\/stats(?!\/$).*/, "/stats/"),
                 changeOrigin: true,
                 secure: false,
@@ -157,13 +157,13 @@ export default defineConfig(({ mode }) => {
                 };
             }),
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
-            AIP_PLACEMENT_ID: JSON.stringify(Config.client.AIP_PLACEMENT_ID),
+            AIP_PLACEMENT_ID: JSON.stringify(Config.secrets.AIP_PLACEMENT_ID),
             IS_DEV: isDev,
             GOOGLE_LOGIN_SUPPORTED: JSON.stringify(
-                Config.GOOGLE_CLIENT_ID && Config.GOOGLE_SECRET_ID,
+                Config.secrets.GOOGLE_CLIENT_ID && Config.secrets.GOOGLE_SECRET_ID,
             ),
             DISCORD_LOGIN_SUPPORTED: JSON.stringify(
-                Config.DISCORD_CLIENT_ID && Config.DISCORD_SECRET_ID,
+                Config.secrets.DISCORD_CLIENT_ID && Config.secrets.DISCORD_SECRET_ID,
             ),
             MOCK_LOGIN_SUPPORTED: JSON.stringify(Config.debug.allowMockAccount),
         },

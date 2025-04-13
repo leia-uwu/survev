@@ -1,7 +1,7 @@
 import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
-import { Config, type Region } from "../config";
+import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import { fetchApiServer } from "../utils/serverHelpers";
 import {
@@ -440,7 +440,7 @@ export class Game {
             return {
                 // *NOTE: userId is optional; we save the game stats for non logged users too
                 userId: player.userId,
-                region: Config.thisRegion as Region,
+                region: Config.gameServer.thisRegion,
                 username: player.name,
                 playerId: player.matchDataId,
                 teamMode: this.teamMode,

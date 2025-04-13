@@ -6,8 +6,8 @@ import { server } from "../../../apiServer";
 import { getRedirectUri, handleAuthUser } from "./authUtils";
 
 export const discord = new Discord(
-    Config.DISCORD_CLIENT_ID!,
-    Config.DISCORD_SECRET_ID!,
+    Config.secrets.DISCORD_CLIENT_ID!,
+    Config.secrets.DISCORD_SECRET_ID!,
     getRedirectUri("discord"),
 );
 
@@ -16,7 +16,7 @@ const stateCookieName = "discord_oauth_state";
 export const DiscordRouter = new Hono();
 
 DiscordRouter.get("/", async (c) => {
-    if (!Config.DISCORD_CLIENT_ID || !Config.DISCORD_SECRET_ID) {
+    if (!Config.secrets.DISCORD_CLIENT_ID || !Config.secrets.DISCORD_SECRET_ID) {
         return c.json({ error: "Missing Discord credentials" }, 500);
     }
     const state = generateState();

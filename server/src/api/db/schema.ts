@@ -12,7 +12,6 @@ import {
 } from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import { type Item, type Loadout, loadout } from "../../../../shared/utils/loadout";
-import type { Region } from "../../config";
 
 export const sessionTable = pgTable("session", {
     id: text("id").primaryKey(),
@@ -60,7 +59,7 @@ export const matchDataTable = pgTable(
         userId: text("user_id").default(""),
         userBanned: boolean("user_banned").default(false),
         createdAt: timestamp("created_at").notNull().default(defaultNow),
-        region: text("region").notNull().$type<Region>(),
+        region: text("region").notNull(),
         mapId: integer("map_id").notNull(),
         gameId: text("game_id").notNull(),
         mapSeed: bigint("map_seed", { mode: "number" }).notNull(),
@@ -112,7 +111,7 @@ export const ipLogsTable = pgTable(
     {
         id: serial().primaryKey(),
         createdAt: timestamp("created_at").notNull().default(defaultNow),
-        region: text("region").notNull().$type<Region>(),
+        region: text("region").notNull(),
         gameId: text("game_id").notNull(),
         mapId: integer("map_id").notNull(),
         username: text("username").notNull(),

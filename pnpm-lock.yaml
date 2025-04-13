@@ -7,10 +7,23 @@ settings:
 importers:
 
   .:
+    dependencies:
+      enquirer:
+        specifier: ^2.4.1
+        version: 2.4.1
+      hjson:
+        specifier: ^3.2.2
+        version: 3.2.2
+      tsx:
+        specifier: ^4.19.3
+        version: 4.19.3
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
         version: 1.9.4
+      '@types/hjson':
+        specifier: ^2.4.6
+        version: 2.4.6
       '@types/node':
         specifier: ^22.13.13
         version: 22.13.13
@@ -1439,6 +1452,9 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
+  '@types/hjson@2.4.6':
+    resolution: {integrity: sha512-tEQ4hlyKfsb9WWeueUY5eRnU2eK+KdE0eofSpQ05v9Aah4VvWwIRIid/ZN1zZZ0TfeVTRDgabKKqKZXEkfD3Sw==}
+
   '@types/jquery@3.5.32':
     resolution: {integrity: sha512-b9Xbf4CkMqS02YH8zACqN1xzdxc3cO735Qe5AbSUFmyOiaWAbcpqh9Wna+Uk0vgACvoQHpWDg2rGdHkYPLmCiQ==}
 
@@ -1461,6 +1477,10 @@ packages:
     resolution: {integrity: sha512-OvQ/2pUDKmgfCg++xsTX1wGxfTaszcHVcTctW4UJB4hibJx2HXxxO5UmVgyjMa+ZDsiaf5wWLXYpRWMmBI0QHg==}
     engines: {node: '>=0.4.0'}
     hasBin: true
+
+  ansi-colors@4.1.3:
+    resolution: {integrity: sha512-/6w/C21Pm1A7aZitlI5Ni/2J6FFQN8i1Cvz3kHABAAbw93v/NlvKdVOqz7CCWz/3iv/JplRSEEZ83XION15ovw==}
+    engines: {node: '>=6'}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -1782,6 +1802,10 @@ packages:
   end-of-stream@1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
 
+  enquirer@2.4.1:
+    resolution: {integrity: sha512-rRqJg/6gd538VHvR3PSrdRBb/1Vy2YfzHqzvbhGIQpDRKIa4FgV/54b5Q1xYSxOOwKvjXweS26E0Q+nAMwp2pQ==}
+    engines: {node: '>=8.6'}
+
   entities@2.2.0:
     resolution: {integrity: sha512-p92if5Nz619I0w+akJrLZH0MX0Pb5DX39XOwQTtXSdQQOaYH03S1uIQp4mhOZtAXrxq4ViO67YTiLBo2638o9A==}
 
@@ -1925,6 +1949,10 @@ packages:
 
   he@1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
+    hasBin: true
+
+  hjson@3.2.2:
+    resolution: {integrity: sha512-MkUeB0cTIlppeSsndgESkfFD21T2nXPRaBStLtf3cAYA2bVEFdXlodZB0TukwZiobPD1Ksax5DK4RTZeaXCI3Q==}
     hasBin: true
 
   hono@4.7.5:
@@ -3444,6 +3472,8 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
+  '@types/hjson@2.4.6': {}
+
   '@types/jquery@3.5.32':
     dependencies:
       '@types/sizzle': 2.3.9
@@ -3468,6 +3498,8 @@ snapshots:
     optional: true
 
   acorn@8.14.1: {}
+
+  ansi-colors@4.1.3: {}
 
   ansi-regex@5.0.1: {}
 
@@ -3720,6 +3752,11 @@ snapshots:
     dependencies:
       once: 1.4.0
 
+  enquirer@2.4.1:
+    dependencies:
+      ansi-colors: 4.1.3
+      strip-ansi: 6.0.1
+
   entities@2.2.0: {}
 
   env-paths@3.0.0: {}
@@ -3925,6 +3962,8 @@ snapshots:
       function-bind: 1.1.2
 
   he@1.2.0: {}
+
+  hjson@3.2.2: {}
 
   hono@4.7.5: {}
 

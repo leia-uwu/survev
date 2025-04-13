@@ -29,8 +29,8 @@ import {
 class GameServer {
     readonly logger = new Logger("GameServer");
 
-    readonly region = Config.regions[Config.thisRegion];
-    readonly regionId = Config.thisRegion;
+    readonly region = Config.regions[Config.gameServer.thisRegion];
+    readonly regionId = Config.gameServer.thisRegion;
 
     readonly manager =
         Config.processMode === "single"
@@ -89,7 +89,7 @@ class GameServer {
             data: {
                 playerCount: this.manager.getPlayerCount(),
             },
-            regionId: Config.thisRegion,
+            regionId: Config.gameServer.thisRegion,
         });
     }
 }
@@ -113,7 +113,7 @@ app.post("/api/find_game", async (res, req) => {
         res.aborted = true;
     });
 
-    if (req.getHeader("survev-api-key") !== Config.apiKey) {
+    if (req.getHeader("survev-api-key") !== Config.secrets.SURVEV_API_KEY) {
         forbidden(res);
         return;
     }

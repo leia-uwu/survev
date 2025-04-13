@@ -135,16 +135,11 @@ export async function createNewUser(payload: UsersTableInsert) {
 export function getRedirectUri(method: Provider) {
     const isProduction = process.env.NODE_ENV === "production";
 
-    if (isProduction && !Config.BASE_URL) {
-        throw new Error("BASE_URL is not defined.");
+    if (isProduction && !Config.oauthRedirectURI) {
+        throw new Error("oauthRedirectURI is not defined.");
     }
 
-    const baseUrl = isProduction
-        ? Config.BASE_URL!
-        : // uh don't hardcode me
-          `http://localhost:3000`;
-
-    return `${baseUrl}/api/auth/${method}/callback`;
+    return `${Config.oauthRedirectURI}/api/auth/${method}/callback`;
 }
 
 export const dayInMs = 24 * 60 * 60 * 1000;

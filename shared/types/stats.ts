@@ -1,7 +1,6 @@
 // TODO: use those typings ig?
 
 import { z } from "zod";
-import type { Region } from "../../server/src/config";
 import { TeamMode } from "../gameConfig";
 
 //
@@ -140,7 +139,7 @@ export const zLeaderboardsRequest = z.object({
 
 export type LeaderboardResponse = {
     val: number;
-    region: Region;
+    region: string;
     /**
      * not used
      */

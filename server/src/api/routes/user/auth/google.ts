@@ -6,8 +6,8 @@ import { server } from "../../../apiServer";
 import { getRedirectUri, handleAuthUser } from "./authUtils";
 
 const google = new Google(
-    Config.GOOGLE_CLIENT_ID!,
-    Config.GOOGLE_SECRET_ID!,
+    Config.secrets.GOOGLE_CLIENT_ID!,
+    Config.secrets.GOOGLE_SECRET_ID!,
     getRedirectUri("google"),
 );
 
@@ -17,7 +17,7 @@ const codeVerifierCookieName = "google_code_verifier";
 export const GoogleRouter = new Hono();
 
 GoogleRouter.get("/", async (c) => {
-    if (!Config.GOOGLE_CLIENT_ID || !Config.GOOGLE_SECRET_ID) {
+    if (!Config.secrets.GOOGLE_CLIENT_ID || !Config.secrets.GOOGLE_SECRET_ID) {
         return c.json({ error: "Missing Google credentials" }, 500);
     }
     const state = generateState();

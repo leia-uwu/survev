@@ -319,7 +319,7 @@ export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
 /**
  * DONT ASK ME ABOUT THIS CODE.
  */
-export function encodeIP(ip: string, secret: string = Config.apiKey) {
+export function encodeIP(ip: string, secret: string = Config.secrets.SURVEV_API_KEY) {
     let encoded = "";
     for (let i = 0; i < ip.length; i++) {
         encoded += String.fromCharCode(
@@ -329,7 +329,10 @@ export function encodeIP(ip: string, secret: string = Config.apiKey) {
     return Buffer.from(encoded).toString("base64");
 }
 
-export function decodeIP(encoded: string, secret: string = Config.apiKey) {
+export function decodeIP(
+    encoded: string,
+    secret: string = Config.secrets.SURVEV_API_KEY,
+) {
     const decoded = Buffer.from(encoded, "base64").toString();
     let ip = "";
     for (let i = 0; i < decoded.length; i++) {

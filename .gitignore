@@ -2,11 +2,12 @@ reference/
 
 client/atlas-builder/pngs
 
-# config file
-# legacy
+# old config files
 resurviv-config.json
-# new
 survev-config.json
+
+# new one
+survev-config.hjson
 
 # env file
 .env

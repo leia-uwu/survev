@@ -2,14 +2,14 @@ import type { Hono } from "hono";
 import type { UpgradeWebSocket } from "hono/ws";
 import { GameConfig } from "../../../shared/gameConfig";
 import type { Info } from "../../../shared/types/api";
-import { Config, type ConfigType } from "../config";
+import { Config } from "../config";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";
 import { Logger } from "../utils/logger";
 import type { FindGamePrivateBody, FindGamePrivateRes } from "../utils/types";
 
 class Region {
-    data: ConfigType["regions"][string];
+    data: (typeof Config)["regions"][string];
     playerCount = 0;
 
     lastUpdateTime = Date.now();
@@ -26,7 +26,7 @@ class Region {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
-                    "survev-api-key": Config.apiKey,
+                    "survev-api-key": Config.secrets.SURVEV_API_KEY,
                 },
                 body: JSON.stringify(body),
             });

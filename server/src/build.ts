@@ -23,6 +23,5 @@ esbuild.buildSync({
     splitting: true,
     define: {
         "process.env.NODE_ENV": "'production'",
-        gameProcessPath: "'./dist/gameProcess.js'",
     },
 });

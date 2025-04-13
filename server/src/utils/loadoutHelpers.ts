@@ -7,7 +7,7 @@ import type { Loadout } from "../../../shared/utils/loadout";
 import { Config } from "../config";
 import type { Player } from "../game/objects/player";
 
-const loadoutSecret = Config.encryptLoadoutSecret!;
+const loadoutSecret = Config.secrets.SURVEV_LOADOUT_SECRET;
 
 // source: https://gist.github.com/vlucas/2bd40f62d20c1d49237a109d491974eb
 // but changed it from hex to base64 since it uses less characters
