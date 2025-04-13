@@ -1052,7 +1052,12 @@ export class Player extends BaseGameObject {
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = 0;
         } else if (type === "firepower") {
-            this.weaponManager.reload();
+            const originalIndex = this.weaponManager.curWeapIdx;
+            [0, 1].forEach((weapIndx) => {
+                this.weaponManager.setCurWeapIndex(weapIndx);
+                this.weaponManager.reload();
+            })
+            this.weaponManager.setCurWeapIndex(originalIndex);
         }
 
         this.recalculateScale();
