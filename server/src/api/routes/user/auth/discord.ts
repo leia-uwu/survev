@@ -22,7 +22,7 @@ DiscordRouter.get("/", async (c) => {
     const state = generateState();
 
     const url = await discord.createAuthorizationURL(state, {
-        scopes: ["identify"],
+        scopes: ["identify", "email"],
     });
 
     setCookie(c, stateCookieName, state, {
@@ -57,10 +57,16 @@ DiscordRouter.get("/callback", async (c) => {
         const {
             id,
             username,
+            verified,
         }: {
             username: string;
             id: string;
+            verified: boolean;
         } = await discordUserResponse.json();
+
+        if (!verified) {
+            return c.json({ error: "verified_email_required" }, 400);
+        }
 
         await handleAuthUser(c, "discord", { id, username });
 

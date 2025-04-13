@@ -64,7 +64,11 @@ GoogleRouter.get("/callback", async (c) => {
                 Authorization: `Bearer ${tokens.accessToken}`,
             },
         });
-        const { sub: id, name: username } = await response.json();
+        const { sub: id, name: username, email_verified } = await response.json();
+
+        if (!email_verified) {
+            return c.json({ error: "verified_email_required" }, 400);
+        }
 
         await handleAuthUser(c, "google", { id, username });
 
