@@ -26,22 +26,17 @@ PrivateRouter.use(privateMiddleware);
 
 PrivateRouter.route("/moderation", ModerationRouter);
 
-PrivateRouter.post(
-    "/update_region",
-    databaseEnabledMiddleware,
-    validateParams(zUpdateRegionBody),
-    (c) => {
-        try {
-            const { regionId, data } = c.req.valid("json");
+PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
+    try {
+        const { regionId, data } = c.req.valid("json");
 
-            server.updateRegion(regionId, data);
-            return c.json({}, 200);
-        } catch (err) {
-            server.logger.warn("/private/update_region: Error processing request", err);
-            return c.json({ error: "Error processing request" }, 500);
-        }
-    },
-);
+        server.updateRegion(regionId, data);
+        return c.json({}, 200);
+    } catch (err) {
+        server.logger.warn("/private/update_region: Error processing request", err);
+        return c.json({ error: "Error processing request" }, 500);
+    }
+});
 
 PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
     try {

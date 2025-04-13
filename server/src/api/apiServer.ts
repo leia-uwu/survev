@@ -91,6 +91,10 @@ export class ApiServer {
 
     updateRegion(regionId: string, regionData: RegionData) {
         const region = this.regions[regionId];
+        if (!region) {
+            this.logger.warn("updateRegion: Invalid region", regionId);
+            return;
+        }
         region.playerCount = regionData.playerCount;
         region.lastUpdateTime = Date.now();
     }
