@@ -362,7 +362,7 @@ async function loadExistingConfig(config: PartialConfig) {
 async function setupConfig() {
     const config: PartialConfig = {
         secrets: {
-            SURVEV_API_KEY: randomBytes(64).toString("hex"),
+            SURVEV_API_KEY: randomBytes(64).toString("base64"),
             SURVEV_LOADOUT_SECRET: randomBytes(32).toString("base64"),
         },
     };

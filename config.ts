@@ -94,7 +94,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             localConfig = {
                 // always specify default random keys..
                 secrets: {
-                    SURVEV_API_KEY: randomBytes(64).toString("hex"),
+                    SURVEV_API_KEY: randomBytes(64).toString("base64"),
                     SURVEV_LOADOUT_SECRET: randomBytes(32).toString("base64"),
                 },
             };
@@ -109,7 +109,7 @@ export function getConfig(isProduction: boolean, dir: string) {
         localConfig = {
             // always specify default random keys..
             secrets: {
-                SURVEV_API_KEY: randomBytes(64).toString("hex"),
+                SURVEV_API_KEY: randomBytes(64).toString("base64"),
                 SURVEV_LOADOUT_SECRET: randomBytes(32).toString("base64"),
             },
         };
@@ -199,7 +199,7 @@ function migrateConfig(localConfig: PartialConfig, legacyConfigPath: string) {
     }
 
     if (!localConfig.secrets.SURVEV_API_KEY) {
-        localConfig.secrets.SURVEV_API_KEY = randomBytes(64).toString("hex");
+        localConfig.secrets.SURVEV_API_KEY = randomBytes(64).toString("base64");
     }
     if (!localConfig.secrets.SURVEV_LOADOUT_SECRET) {
         localConfig.secrets.SURVEV_LOADOUT_SECRET = randomBytes(32).toString("base64");
