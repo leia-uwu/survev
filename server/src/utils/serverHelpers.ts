@@ -117,22 +117,41 @@ export function checkForBadWords(name: string) {
     return false;
 }
 
-export function validateUserName(name: string) {
+const allowedCharsRegex =
+    /[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g;
+
+export function validateUserName(name: string): {
+    originalWasInvalid: boolean;
+    validName: string;
+} {
     const randomNumber = Math.random().toString(10).slice(2, 6);
+
     const defaultName = Config.randomizeDefaultPlayerName
         ? `Player#${randomNumber}`
         : "Player";
-    if (!name || typeof name !== "string") return defaultName;
+
+    if (!name || typeof name !== "string")
+        return {
+            originalWasInvalid: true,
+            validName: defaultName,
+        };
 
     name = name
         .trim()
         .substring(0, Constants.PlayerNameMaxLen)
         // remove extended ascii etc
-        .replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, "");
+        .replace(allowedCharsRegex, "");
 
-    if (!name.length || checkForBadWords(name)) return defaultName;
+    if (!name.length || checkForBadWords(name))
+        return {
+            originalWasInvalid: true,
+            validName: defaultName,
+        };
 
-    return name;
+    return {
+        originalWasInvalid: false,
+        validName: name,
+    };
 }
 
 const textDecoder = new TextDecoder();

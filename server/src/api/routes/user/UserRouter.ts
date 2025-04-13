@@ -103,27 +103,32 @@ UserRouter.post(
                 );
             }
 
-            const isUsernameTaken = await db.query.usersTable.findFirst({
-                where: and(eq(usersTable.slug, username), ne(usersTable.id, user.id)),
+            const { validName, originalWasInvalid } = validateUserName(username);
+
+            if (originalWasInvalid) {
+                return c.json<UsernameResponse>({ result: "invalid" }, 200);
+            }
+
+            const slug = sanitizeSlug(validName);
+
+            const slugTaken = await db.query.usersTable.findFirst({
+                where: and(eq(usersTable.slug, slug), ne(usersTable.id, user.id)),
                 columns: {
                     id: true,
                 },
             });
 
-            if (isUsernameTaken) {
+            if (slugTaken) {
                 return c.json<UsernameResponse>({ result: "taken" }, 200);
             }
-
-            const now = new Date();
-            const slug = sanitizeSlug(username);
 
             await db
                 .update(usersTable)
                 .set({
-                    username: validateUserName(username),
+                    username: validName,
                     slug: slug,
                     usernameSet: true,
-                    lastUsernameChangeTime: now,
+                    lastUsernameChangeTime: new Date(),
                 })
                 .where(eq(usersTable.id, user.id));
 

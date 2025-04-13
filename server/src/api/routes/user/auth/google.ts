@@ -24,7 +24,7 @@ GoogleRouter.get("/", async (c) => {
     const codeVerifier = generateCodeVerifier();
 
     const url = await google.createAuthorizationURL(state, codeVerifier, {
-        scopes: ["profile", "email"],
+        scopes: ["openid", "email"],
     });
 
     setCookie(c, stateCookieName, state, {
@@ -64,13 +64,17 @@ GoogleRouter.get("/callback", async (c) => {
                 Authorization: `Bearer ${tokens.accessToken}`,
             },
         });
-        const { sub: id, name: username, email_verified } = await response.json();
 
-        if (!email_verified) {
+        const resData = (await response.json()) as {
+            sub: string;
+            email_verified: boolean;
+        };
+
+        if (!resData.email_verified) {
             return c.json({ error: "verified_email_required" }, 400);
         }
 
-        await handleAuthUser(c, "google", { id, username });
+        await handleAuthUser(c, "google", resData.sub);
 
         return c.redirect("/");
     } catch (err) {

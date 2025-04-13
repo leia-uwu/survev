@@ -1173,7 +1173,7 @@ export class Player extends BaseGameObject {
         this.ip = ip;
         this.userId = userId;
 
-        this.name = validateUserName(joinMsg.name);
+        this.name = validateUserName(joinMsg.name).validName;
 
         this.isMobile = joinMsg.isMobile;
 

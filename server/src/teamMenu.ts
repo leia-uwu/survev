@@ -76,7 +76,7 @@ class Player {
     }
 
     setName(name: string) {
-        this.name = validateUserName(name);
+        this.name = validateUserName(name).validName;
     }
 
     send<T extends ServerToClientTeamMsg["type"]>(

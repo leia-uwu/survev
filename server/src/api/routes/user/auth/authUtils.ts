@@ -6,7 +6,7 @@ import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
-import { checkForBadWords, validateUserName } from "../../../../utils/serverHelpers";
+import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { createSession, generateSessionToken, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, usersTable } from "../../../db/schema";
@@ -25,7 +25,7 @@ export function sanitizeSlug(username: string) {
     username = username.toLowerCase().trim();
 
     if (username === "" || checkForBadWords(username)) {
-        username = `Player${generateId(6)}`;
+        username = `Player ${generateId(6)}`;
     }
 
     return slugify(username, {
@@ -66,13 +66,9 @@ export function deleteSessionTokenCookie(c: Context) {
 
 type Provider = "discord" | "google";
 
-export async function handleAuthUser(
-    c: Context,
-    provider: Provider,
-    payload: { id: string; username: string },
-) {
+export async function handleAuthUser(c: Context, provider: Provider, authId: string) {
     const existingUser = await db.query.usersTable.findFirst({
-        where: eq(usersTable.authId, payload.id),
+        where: eq(usersTable.authId, authId),
         columns: {
             id: true,
         },
@@ -87,17 +83,22 @@ export async function handleAuthUser(
         return;
     }
 
-    let slug = sanitizeSlug(payload.username);
+    let generateUsername = true;
 
-    const slugTaken = await db.query.usersTable.findFirst({
-        where: eq(usersTable.slug, slug),
-        columns: {
-            id: true,
-        },
-    });
+    let username = "";
+    let slug = "";
 
-    if (slugTaken) {
-        slug = `${slug}#${generateId(5)}`;
+    while (generateUsername) {
+        username = `Player ${generateId(6)}`;
+        slug = sanitizeSlug(username);
+
+        const slugTaken = await db.query.usersTable.findFirst({
+            where: eq(usersTable.slug, slug),
+            columns: {
+                id: true,
+            },
+        });
+        generateUsername = !!slugTaken;
     }
 
     const linkedProvider =
@@ -106,9 +107,9 @@ export async function handleAuthUser(
     const userId = generateId(15);
     await createNewUser({
         id: userId,
-        authId: payload.id,
+        authId,
         linked: true,
-        username: validateUserName(payload.username),
+        username: username,
         slug,
         ...linkedProvider,
     });

@@ -54,21 +54,16 @@ DiscordRouter.get("/callback", async (c) => {
             },
         });
 
-        const {
-            id,
-            username,
-            verified,
-        }: {
-            username: string;
+        const resData = (await discordUserResponse.json()) as {
             id: string;
             verified: boolean;
-        } = await discordUserResponse.json();
+        };
 
-        if (!verified) {
+        if (!resData.verified) {
             return c.json({ error: "verified_email_required" }, 400);
         }
 
-        await handleAuthUser(c, "discord", { id, username });
+        await handleAuthUser(c, "discord", resData.id);
 
         return c.redirect("/");
     } catch (err) {
