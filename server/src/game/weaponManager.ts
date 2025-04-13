@@ -437,10 +437,11 @@ export class WeaponManager {
     /**
      * called when reload action completed, actually updates all state variables
      */
-    reload(): void {
-        const weaponDef = GameObjectDefs[this.activeWeapon] as GunDef;
+    reload(curWeapIdx = this.curWeapIdx): void {
+        const weapon = this.weapons[curWeapIdx];
+        const weaponDef = GameObjectDefs[weapon.type] as GunDef;
         const trueAmmoStats = this.getTrueAmmoStats(weaponDef);
-        const activeWeaponAmmo = this.weapons[this.curWeapIdx].ammo;
+        const activeWeaponAmmo = weapon.ammo;
         const spaceLeft = trueAmmoStats.trueMaxClip - activeWeaponAmmo; // if gun is 27/30 ammo, spaceLeft = 3
 
         const inv = this.player.inventory;
@@ -451,7 +452,7 @@ export class WeaponManager {
         }
 
         if (this.isInfinite(weaponDef)) {
-            this.weapons[this.curWeapIdx].ammo += math.clamp(
+            weapon.ammo += math.clamp(
                 amountToReload,
                 0,
                 spaceLeft,
@@ -460,16 +461,16 @@ export class WeaponManager {
             // 27/30, inv = 2
             if (trueAmmoStats.trueMaxClip != amountToReload) {
                 // m870, mosin, spas: only refill by one bullet at a time
-                this.weapons[this.curWeapIdx].ammo++;
+                weapon.ammo++;
                 inv[weaponDef.ammo]--;
             } else {
                 // mp5, sv98, ak47: refill to as much as you have left in your inventory
-                this.weapons[this.curWeapIdx].ammo += inv[weaponDef.ammo];
+                weapon.ammo += inv[weaponDef.ammo];
                 inv[weaponDef.ammo] = 0;
             }
         } else {
             // 27/30, inv = 100
-            this.weapons[this.curWeapIdx].ammo += math.clamp(
+            weapon.ammo += math.clamp(
                 amountToReload,
                 0,
                 spaceLeft,
@@ -480,11 +481,11 @@ export class WeaponManager {
         // if you have an m870 with 2 ammo loaded and 0 ammo left in your inventory, your actual max clip is just 2 since you cant load anymore ammo
         const realMaxClip =
             inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
-                ? this.weapons[this.curWeapIdx].ammo
+                ? weapon.ammo
                 : trueAmmoStats.trueMaxClip;
         if (
             trueAmmoStats.trueMaxClip != amountToReload &&
-            this.weapons[this.curWeapIdx].ammo != realMaxClip
+            weapon.ammo != realMaxClip
         ) {
             this.player.reloadAgain = true;
         }
