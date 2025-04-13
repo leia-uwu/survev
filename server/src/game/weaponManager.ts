@@ -688,7 +688,7 @@ export class WeaponManager {
         const hasSplinter = this.player.hasPerk("splinter");
         const shouldApplyChambered =
             this.player.hasPerk("chambered") &&
-            itemDef.bulletCount === 1 &&
+            itemDef.ammo !== "12gauge" &&
             (weapon.ammo === 0 || //ammo count already decremented
                 weapon.ammo === this.getTrueAmmoStats(itemDef).trueMaxClip - 1);
 
