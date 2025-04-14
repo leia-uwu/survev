@@ -107,7 +107,6 @@ export class Group {
         }
     }
 
-
     /**
      * checks if any players in the group have the self revive perk
      * @returns true if any players in the group have the self revive perk
@@ -121,7 +120,6 @@ export class Group {
         }
         return false;
     }
-
 
     checkPlayers(): void {
         this.livingPlayers = this.players.filter((p) => !p.dead);
