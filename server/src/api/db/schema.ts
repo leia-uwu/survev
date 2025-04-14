@@ -127,4 +127,5 @@ export const bannedIpsTable = pgTable("banned_ips", {
     expiresIn: timestamp("expries_in").notNull(),
     encodedIp: text("encoded_ip").notNull().primaryKey(),
     permanent: boolean("permanent").notNull().default(false),
+    reason: text("reason").notNull().default(""),
 });
