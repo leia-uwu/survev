@@ -1617,7 +1617,7 @@ export class UiManager2 {
                 if (
                     object &&
                     player &&
-                    object == player &&
+                    (object == player || player.downed) &&
                     player.m_hasPerk("self_revive")
                 ) {
                     return this.localization.translate("game-revive-self");
