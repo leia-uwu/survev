@@ -107,6 +107,20 @@ export class Group {
         }
     }
 
+    /**
+     * checks if any players in the group have the self revive perk
+     * @returns true if any players in the group have the self revive perk
+     */
+    checkSelfRevive() {
+        const alivePlayers = this.getAlivePlayers();
+        for (const p of alivePlayers) {
+            if (p.hasPerk("self_revive")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     checkPlayers(): void {
         this.livingPlayers = this.players.filter((p) => !p.dead);
         this.allDeadOrDisconnected = this.players.every((p) => p.dead || p.disconnected);
