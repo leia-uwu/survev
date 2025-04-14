@@ -845,7 +845,7 @@ export class UiManager {
                                 camAabb.min,
                                 camAabb.max,
                             )!;
-                            const rot = Math.atan2(dir.y, -dir.x) + Math.PI * 0.5;
+                            const rot = Math.atan2(dir.y, -dir.x) - Math.PI * 0.5;
                             const screenEdge = camera.m_pointToScreen(edge);
                             const onscreen = coldet.testCircleAabb(
                                 playerPos,
