@@ -126,13 +126,19 @@ ModerationRouter.post(
             permanent: z.boolean().default(false),
             banAssociatedAccount: z.boolean().default(true),
             durationInDays: z.number().default(7),
-            reason: z.string().default("")
+            reason: z.string().default(""),
         }),
     ),
     async (c) => {
         try {
-            const { ip, isEncoded, permanent, banAssociatedAccount, durationInDays, reason } =
-                c.req.valid("json");
+            const {
+                ip,
+                isEncoded,
+                permanent,
+                banAssociatedAccount,
+                durationInDays,
+                reason,
+            } = c.req.valid("json");
             const expiresIn = new Date(Date.now() + durationInDays * 24 * 60 * 60 * 1000);
             const encodedIp = isEncoded ? ip : encodeIP(ip);
 
@@ -142,7 +148,7 @@ ModerationRouter.post(
                     encodedIp,
                     expiresIn,
                     permanent,
-                    reason
+                    reason,
                 })
                 .onConflictDoUpdate({
                     target: bannedIpsTable.encodedIp,
