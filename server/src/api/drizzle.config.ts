@@ -7,5 +7,6 @@ export default defineConfig({
     out: "./src/api/db/drizzle",
     dbCredentials: {
         ...Config.database,
+        ssl: false,
     },
 });

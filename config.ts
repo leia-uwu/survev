@@ -72,8 +72,10 @@ export function getConfig(isProduction: boolean, dir: string) {
         };
     }
 
-    const configPath = path.join(import.meta.dirname, dir, "survev-config.hjson");
-    const legacyConfigPath = path.join(import.meta.dirname, dir, "survev-config.json");
+    const dirname = import.meta?.dirname || __dirname;
+
+    const configPath = path.join(dirname, dir, "survev-config.hjson");
+    const legacyConfigPath = path.join(dirname, dir, "survev-config.json");
 
     let localConfig: PartialConfig = {};
 
