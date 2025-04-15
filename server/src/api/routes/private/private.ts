@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { GameObjectDefs } from "../../../../../shared/defs/gameObjectDefs";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { ItemStatus } from "../../../../../shared/utils/loadout";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
@@ -80,12 +81,18 @@ PrivateRouter.post(
         z.object({
             item: z.string(),
             slug: z.string(),
+            source: z.string().default("daddy-has-privileges"),
         }),
     ),
     async (c) => {
         try {
-            // TODO: make sure that item is a valide game item;
-            const { item, slug } = c.req.valid("json");
+            const { item, slug, source } = c.req.valid("json");
+
+            const def = GameObjectDefs[item];
+
+            if (!def || !("lootImg" in def)) {
+                return c.json({ error: "Invalid item type" }, 400);
+            }
 
             const result = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
@@ -101,7 +108,7 @@ PrivateRouter.post(
             const { items } = result;
 
             items.push({
-                source: "daddy-has-privileges",
+                source,
                 type: item,
                 status: ItemStatus.New,
                 timeAcquired: Date.now(),
