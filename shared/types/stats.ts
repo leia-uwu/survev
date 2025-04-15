@@ -1,5 +1,3 @@
-// TODO: use those typings ig?
-
 import { z } from "zod";
 import { TeamMode } from "../gameConfig";
 

@@ -62,10 +62,7 @@ function getPlayerCardData(
     const texture = emoteDef
         ? emoteImgToSvg(emoteDef.texture)
         : "/img/gui/player-gui.svg";
-    console.log({
-        emoteDef,
-        texture: emoteDef ? emoteImgToSvg(emoteDef.texture) : null,
-    });
+
     let tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
