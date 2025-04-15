@@ -75,7 +75,7 @@ PrivateRouter.post("/delete-expired-sessions", databaseEnabledMiddleware, async 
 });
 
 PrivateRouter.post(
-    "/unlock",
+    "/give_item",
     databaseEnabledMiddleware,
     validateParams(
         z.object({
@@ -123,7 +123,48 @@ PrivateRouter.post(
 
             return c.json({ success: true }, 200);
         } catch (err) {
-            server.logger.warn("/private/unlock: Error unlocking item", err);
+            server.logger.warn("/private/give_item: Error unlocking item", err);
+            return c.json({}, 500);
+        }
+    },
+);
+
+PrivateRouter.post(
+    "/remove_item",
+    databaseEnabledMiddleware,
+    validateParams(
+        z.object({
+            item: z.string(),
+            slug: z.string(),
+        }),
+    ),
+    async (c) => {
+        try {
+            const { item, slug } = c.req.valid("json");
+
+            const result = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    items: true,
+                },
+            });
+
+            if (!result) {
+                return c.json({ error: "No items found for this user." }, 404);
+            }
+
+            const items = result.items.filter((i) => i.type !== item);
+
+            await db
+                .update(usersTable)
+                .set({
+                    items,
+                })
+                .where(eq(usersTable.slug, slug));
+
+            return c.json({ success: true }, 200);
+        } catch (err) {
+            server.logger.warn("/private/remove_item: Error removing item", err);
             return c.json({}, 500);
         }
     },
