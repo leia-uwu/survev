@@ -62,7 +62,7 @@ PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
 });
 
 // TODO: use a cron job instead
-PrivateRouter.post("/delete-expired-sessions", databaseEnabledMiddleware, async (ctx) => {
+PrivateRouter.post("/delete_expired_sessions", databaseEnabledMiddleware, async (ctx) => {
     try {
         await deleteExpiredSessions();
     } catch (err) {

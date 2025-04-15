@@ -13,7 +13,7 @@ export const ModerationRouter = new Hono();
 ModerationRouter.use(databaseEnabledMiddleware);
 
 ModerationRouter.post(
-    "/ban-account",
+    "/ban_account",
     validateParams(
         z.object({
             slug: z.string(),
@@ -58,7 +58,7 @@ ModerationRouter.post(
             return c.json({ message: "User has been banned." }, 200);
         } catch (err) {
             server.logger.warn(
-                "/private/moderation/ban-account: Error banning account",
+                "/private/moderation/ban_account: Error banning account",
                 err,
             );
             return c.json({ error: "An unexpected error occurred." }, 500);
@@ -67,7 +67,7 @@ ModerationRouter.post(
 );
 
 ModerationRouter.post(
-    "/unban-account",
+    "/unban_account",
     validateParams(
         z.object({
             slug: z.string(),
@@ -109,7 +109,7 @@ ModerationRouter.post(
             return c.json({ message: "User has been unbanned." }, 200);
         } catch (err) {
             server.logger.warn(
-                "/private/moderation/unban-account: Error unbanning account",
+                "/private/moderation/unban_account: Error unbanning account",
                 err,
             );
             return c.json({ error: "An unexpected error occurred." }, 500);
@@ -118,7 +118,7 @@ ModerationRouter.post(
 );
 
 ModerationRouter.post(
-    "/ban-ip",
+    "/ban_ip",
     validateParams(
         z.object({
             ip: z.string(),
@@ -183,14 +183,14 @@ ModerationRouter.post(
                 200,
             );
         } catch (err) {
-            server.logger.warn("/private/moderation/ban-ip: Error banning IP", err);
+            server.logger.warn("/private/moderation/ban_ip: Error banning IP", err);
             return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
 
 ModerationRouter.post(
-    "/unban-ip",
+    "/unban_ip",
     validateParams(
         z.object({
             ip: z.string(),
@@ -207,14 +207,14 @@ ModerationRouter.post(
                 .execute();
             return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
         } catch (err) {
-            server.logger.warn("/private/moderation/unban-ip: Error unbanning IP", err);
+            server.logger.warn("/private/moderation/unban_ip: Error unbanning IP", err);
             return c.json({ error: "An unexpected error occurred." }, 500);
         }
     },
 );
 
 ModerationRouter.post(
-    "/get-player-ip",
+    "/get_player_ip",
     validateParams(
         z.object({
             name: z.string(),
@@ -254,7 +254,7 @@ ModerationRouter.post(
             );
         } catch (err) {
             server.logger.warn(
-                "/private/moderation/get-player-ip: Error getting player IP",
+                "/private/moderation/get_player_ip: Error getting player IP",
                 err,
             );
             return c.json({ error: "An unexpected error occurred." }, 500);
@@ -262,13 +262,13 @@ ModerationRouter.post(
     },
 );
 
-ModerationRouter.post("/clear-all-bans", async (c) => {
+ModerationRouter.post("/clear_all_bans", async (c) => {
     try {
         await db.delete(bannedIpsTable).execute();
         return c.json({ message: `All bans have been cleared.` }, 200);
     } catch (err) {
         server.logger.warn(
-            "/private/moderation/clear-all-bans: Error clearing all bans",
+            "/private/moderation/clear_all_bans: Error clearing all bans",
             err,
         );
         return c.json({ error: "An unexpected error occurred." }, 500);
