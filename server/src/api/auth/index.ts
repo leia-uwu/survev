@@ -1,5 +1,4 @@
-import { sha256 } from "@oslojs/crypto/sha2";
-import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
+import { createHash } from "node:crypto";
 import { eq, lt } from "drizzle-orm";
 import { Config } from "../../config";
 import { db } from "../db";
@@ -12,18 +11,16 @@ import {
 
 export const sessionCookieName = "auth_session";
 
-export function generateSessionToken(): string {
-    const bytes = new Uint8Array(20);
-    crypto.getRandomValues(bytes);
-    const token = encodeBase32LowerCaseNoPadding(bytes);
-    return token;
+function toSha256(token: string): string {
+    return createHash("sha256").update(token).digest("hex");
 }
 
 export async function createSession(
     token: string,
     userId: string,
 ): Promise<SessionTableSelect> {
-    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+    const sessionId = toSha256(token);
+
     const session: SessionTableSelect = {
         id: sessionId,
         userId,
@@ -38,7 +35,8 @@ export async function validateSessionToken(
 ): Promise<SessionValidationResult> {
     if (!Config.database.enabled) return { session: null, user: null };
 
-    const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
+    const sessionId = toSha256(token);
+
     const result = await db
         .select({ user: usersTable, session: sessionTable })
         .from(sessionTable)

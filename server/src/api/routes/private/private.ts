@@ -21,7 +21,6 @@ import {
     matchDataTable,
     usersTable,
 } from "../../db/schema";
-import { generateId } from "../user/auth/authUtils";
 import { MOCK_USER_ID } from "../user/auth/mock";
 import { ModerationRouter, logPlayerIPs } from "./ModerationRouter";
 
@@ -195,7 +194,7 @@ PrivateRouter.post(
             const data = c.req.valid("json");
             const matchData: MatchDataTable = {
                 ...{
-                    gameId: generateId(15),
+                    gameId: crypto.randomUUID(),
                     userId: MOCK_USER_ID,
                     createdAt: new Date(),
                     region: "na",

@@ -162,7 +162,7 @@ function getRandomData() {
     const date = new Date();
     return {
         mapId: getRandomItem([MapId.Desert, MapId.Main, MapId.Woods]),
-        gameId: generateId(15),
+        gameId: crypto.randomUUID(),
         createdAt: new Date(date.setDate(date.getDate() - util.randomInt(0, 20))),
         region: getRandomItem(["na", "eu", "as"]),
         teamMode: weightedRandom([

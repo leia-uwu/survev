@@ -21,7 +21,6 @@
     "@hono/node-ws": "^1.1.0",
     "@hono/zod-validator": "^0.2.2",
     "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
     "arctic": "^1.9.2",
     "better-sqlite3": "^11.9.1",
     "dotenv": "^16.4.7",

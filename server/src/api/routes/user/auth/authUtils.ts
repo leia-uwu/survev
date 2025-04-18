@@ -6,7 +6,7 @@ import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
-import { createSession, generateSessionToken, invalidateSession } from "../../../auth";
+import { createSession, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
 
@@ -34,7 +34,7 @@ export function sanitizeSlug(username: string) {
 }
 
 export async function setSessionTokenCookie(userId: string, c: Context) {
-    const sessionToken = generateSessionToken();
+    const sessionToken = crypto.randomUUID();
     const session = await createSession(sessionToken, userId);
 
     setCookie(c, "session", sessionToken, {
