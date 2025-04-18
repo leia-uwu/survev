@@ -23,6 +23,7 @@
     "@oslojs/crypto": "^1.0.1",
     "arctic": "^1.9.2",
     "better-sqlite3": "^11.9.1",
+    "croner": "^9.0.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.38.4",
     "hono": "^4.7.5",

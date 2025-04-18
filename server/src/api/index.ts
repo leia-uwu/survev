@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
+import { Cron } from "croner";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
@@ -20,10 +21,10 @@ import {
     logErrorToWebhook,
 } from "../utils/serverHelpers";
 import { server } from "./apiServer";
-import { validateSessionToken } from "./auth";
+import { deleteExpiredSessions, validateSessionToken } from "./auth";
 import { rateLimitMiddleware, validateParams } from "./auth/middleware";
 import type { SessionTableSelect, UsersTableSelect } from "./db/schema";
-import { isBanned } from "./routes/private/ModerationRouter";
+import { cleanupOldLogs, isBanned } from "./routes/private/ModerationRouter";
 import { PrivateRouter } from "./routes/private/private";
 import { StatsRouter } from "./routes/stats/StatsRouter";
 import { AuthRouter } from "./routes/user/AuthRouter";
@@ -178,6 +179,17 @@ const honoServer = serve({
     port: Config.apiServer.port,
 });
 injectWebSocket(honoServer);
+
+// run clean up scripts every midnight
+new Cron("0 0 * * *", async () => {
+    try {
+        await cleanupOldLogs();
+        await deleteExpiredSessions();
+        server.logger.log("Deleted old logs and expired sessions");
+    } catch (err) {
+        console.error("Failed to run cleanup script");
+    }
+});
 
 server.logger.log(`Survev API Server v${version} - GIT ${GIT_VERSION}`);
 server.logger.log(`Listening on ${Config.apiServer.host}:${Config.apiServer.port}`);

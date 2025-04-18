@@ -275,8 +275,7 @@ ModerationRouter.post("/clear_all_bans", async (c) => {
     }
 });
 
-// TODO: set up a cron job for this
-async function cleanupOldLogs() {
+export async function cleanupOldLogs() {
     try {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         await db.delete(ipLogsTable).where(lt(ipLogsTable.createdAt, thirtyDaysAgo));

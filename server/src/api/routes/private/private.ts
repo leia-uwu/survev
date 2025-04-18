@@ -6,7 +6,6 @@ import { GameObjectDefs } from "../../../../../shared/defs/gameObjectDefs";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
-import { deleteExpiredSessions } from "../../auth";
 import {
     databaseEnabledMiddleware,
     privateMiddleware,
@@ -61,19 +60,6 @@ PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
     } catch (err) {
         server.logger.warn("save_game Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
-    }
-});
-
-// TODO: use a cron job instead
-PrivateRouter.post("/delete_expired_sessions", databaseEnabledMiddleware, async (ctx) => {
-    try {
-        await deleteExpiredSessions();
-    } catch (err) {
-        server.logger.warn(
-            `/private/delete-expired-sessions: Error deleting expired sessinos`,
-            err,
-        );
-        return ctx.json({ error: "An unexpected error occurred." }, 500);
     }
 });
 
