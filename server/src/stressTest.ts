@@ -434,7 +434,7 @@ void (() => {
                     } satisfies FindGameBody),
                 })
             ).json()) as FindGameResponse;
-            if ("error" in response) {
+            if ("error" in response || "banned" in response) {
                 console.log("Failed finding game, error:", response.error);
                 return;
             }

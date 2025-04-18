@@ -123,10 +123,7 @@ class GameProcess implements GameData {
         this.avaliableSlots = mapDef.gameMode.maxPlayers;
     }
 
-    addJoinTokens(
-        tokens: Array<{ token: string; userId: string | null }>,
-        autoFill: boolean,
-    ) {
+    addJoinTokens(tokens: FindGamePrivateBody["playerData"], autoFill: boolean) {
         this.send({
             type: ProcessMsgType.AddJoinToken,
             autoFill,
