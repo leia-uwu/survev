@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, gt } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
@@ -60,6 +60,10 @@ matchHistoryRouter.post(
                         eq(usersTable.id, userId),
                         eq(matchDataTable.teamMode, teamModeFilter as TeamMode).if(
                             teamModeFilter != ALL_TEAM_MODES,
+                        ),
+                        gt(
+                            matchDataTable.createdAt,
+                            new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
                         ),
                     ),
                 )
