@@ -1,4 +1,3 @@
-import { sql } from "drizzle-orm";
 import {
     bigint,
     boolean,
@@ -9,6 +8,7 @@ import {
     serial,
     text,
     timestamp,
+    uuid,
 } from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import { ItemStatus, type Loadout, loadout } from "../../../../shared/utils/loadout";
@@ -25,10 +25,6 @@ export const sessionTable = pgTable("session", {
 });
 
 export type SessionTableSelect = typeof sessionTable.$inferSelect;
-// timestamp().defaultNow() will use the system time zone for some reason
-// which will display with the timezone offset eg in the client match history
-// using this fixes it
-const defaultNow = sql.raw(`timezone('utc', now())`);
 
 export const usersTable = pgTable("users", {
     id: text("id").notNull().primaryKey(),
@@ -38,7 +34,7 @@ export const usersTable = pgTable("users", {
     banReason: text("ban_reason").notNull().default(""),
     username: text("username").notNull().default(""),
     usernameSet: boolean("username_set").notNull().default(false),
-    userCreated: timestamp("user_created").notNull().default(defaultNow),
+    userCreated: timestamp("user_created", { withTimezone: true }).notNull().defaultNow(),
     lastUsernameChangeTime: timestamp("last_username_change_time"),
     linked: boolean("linked").notNull().default(false),
     linkedGoogle: boolean("linked_google").notNull().default(false),
@@ -70,10 +66,10 @@ export const matchDataTable = pgTable(
     {
         userId: text("user_id").default(""),
         userBanned: boolean("user_banned").default(false),
-        createdAt: timestamp("created_at").notNull().default(defaultNow),
+        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         region: text("region").notNull(),
         mapId: integer("map_id").notNull(),
-        gameId: text("game_id").notNull(),
+        gameId: uuid("game_id").notNull(),
         mapSeed: bigint("map_seed", { mode: "number" }).notNull(),
         username: text("username").notNull(),
         playerId: integer("player_id").notNull(),
@@ -88,7 +84,7 @@ export const matchDataTable = pgTable(
         damageDealt: integer("damage_dealt").notNull(),
         damageTaken: integer("damage_taken").notNull(),
         killerId: integer("killer_id").notNull(),
-        killedIds: json("killed_ids").$type<number[]>().notNull(),
+        killedIds: integer("killed_ids").array().notNull(),
     },
     (table) => [
         index("idx_match_data_user_stats").on(
@@ -122,7 +118,7 @@ export const ipLogsTable = pgTable(
     "ip_logs",
     {
         id: serial().primaryKey(),
-        createdAt: timestamp("created_at").notNull().default(defaultNow),
+        createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
         region: text("region").notNull(),
         gameId: text("game_id").notNull(),
         mapId: integer("map_id").notNull(),
@@ -135,7 +131,7 @@ export const ipLogsTable = pgTable(
 );
 
 export const bannedIpsTable = pgTable("banned_ips", {
-    createdAt: timestamp("created_at").notNull().default(defaultNow),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     expiresIn: timestamp("expries_in").notNull(),
     encodedIp: text("encoded_ip").notNull().primaryKey(),
     permanent: boolean("permanent").notNull().default(false),

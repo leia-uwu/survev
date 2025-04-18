@@ -1,5 +1,5 @@
 {
-  "id": "17bab57c-c0dd-4864-a68d-d08c7c3aaaa1",
+  "id": "606005fc-6654-4521-a5b2-d597b7dbde3f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,10 +10,10 @@
       "columns": {
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "timezone('utc', now())"
+          "default": "now()"
         },
         "expries_in": {
           "name": "expries_in",
@@ -33,6 +33,13 @@
           "primaryKey": false,
           "notNull": true,
           "default": false
+        },
+        "reason": {
+          "name": "reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
         }
       },
       "indexes": {},
@@ -55,10 +62,10 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "timezone('utc', now())"
+          "default": "now()"
         },
         "region": {
           "name": "region",
@@ -134,6 +141,65 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.items": {
+      "name": "items",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "time_acquired": {
+          "name": "time_acquired",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source": {
+          "name": "source",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'unlock_new_account'"
+        },
+        "status": {
+          "name": "status",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "items_user_id_users_id_fk": {
+          "name": "items_user_id_users_id_fk",
+          "tableFrom": "items",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.match_data": {
       "name": "match_data",
       "schema": "",
@@ -145,12 +211,19 @@
           "notNull": false,
           "default": "''"
         },
+        "user_banned": {
+          "name": "user_banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "timezone('utc', now())"
+          "default": "now()"
         },
         "region": {
           "name": "region",
@@ -166,7 +239,7 @@
         },
         "game_id": {
           "name": "game_id",
-          "type": "text",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -256,7 +329,7 @@
         },
         "killed_ids": {
           "name": "killed_ids",
-          "type": "json",
+          "type": "integer[]",
           "primaryKey": false,
           "notNull": true
         }
@@ -493,10 +566,10 @@
         },
         "user_created": {
           "name": "user_created",
-          "type": "timestamp",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
-          "default": "timezone('utc', now())"
+          "default": "now()"
         },
         "last_username_change_time": {
           "name": "last_username_change_time",
@@ -531,13 +604,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'{\"outfit\":\"outfitBase\",\"melee\":\"fists\",\"heal\":\"heal_basic\",\"boost\":\"boost_basic\",\"player_icon\":\"\",\"crosshair\":{\"type\":\"crosshair_default\",\"color\":16777215,\"size\":\"1.00\",\"stroke\":\"0.00\"},\"emotes\":[\"emote_happyface\",\"emote_thumbsup\",\"emote_surviv\",\"emote_sadface\",\"\",\"\"]}'::json"
-        },
-        "items": {
-          "name": "items",
-          "type": "json",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "'[]'::json"
         }
       },
       "indexes": {},
