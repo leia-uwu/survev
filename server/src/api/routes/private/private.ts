@@ -109,6 +109,17 @@ PrivateRouter.post(
                 return c.json({ error: "User not found" }, 404);
             }
 
+            const existing = await db.query.itemsTable.findFirst({
+                where: and(eq(itemsTable.userId, userId.id), eq(itemsTable.type, item)),
+                columns: {
+                    type: true,
+                },
+            });
+
+            if (existing) {
+                return c.json({ error: "User already has item" }, 400);
+            }
+
             await db.insert(itemsTable).values({
                 userId: userId.id,
                 type: item,
@@ -148,9 +159,9 @@ PrivateRouter.post(
                 return c.json({ error: "User not found" }, 404);
             }
 
-            await db.delete(itemsTable).where(
-                and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)),
-            );
+            await db
+                .delete(itemsTable)
+                .where(and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)));
 
             return c.json({ success: true }, 200);
         } catch (err) {
