@@ -20,8 +20,8 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/hjson": "^2.4.6",
-    "@types/node": "^22.13.13",
-    "typescript": "^5.8.2"
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
   },
   "workspaces": [
     "client",
