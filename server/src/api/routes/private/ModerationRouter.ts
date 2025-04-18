@@ -285,7 +285,7 @@ export async function cleanupOldLogs() {
 }
 
 export async function isBanned(ip: string, isEncoded = false) {
-    if (!Config.database.enabled) return false;
+    if (!Config.database.enabled) return undefined;
 
     const encodedIp = isEncoded ? ip : encodeIP(ip);
     const banned = await db.query.bannedIpsTable.findFirst({
@@ -293,22 +293,27 @@ export async function isBanned(ip: string, isEncoded = false) {
         columns: {
             permanent: true,
             expiresIn: true,
+            reason: true,
         },
     });
     if (banned) {
-        const { expiresIn, permanent } = banned;
+        const { expiresIn, permanent, reason } = banned;
         if (permanent || expiresIn.getTime() > Date.now()) {
             console.log(`${encodedIp} is banned.`);
-            return true;
+            return {
+                permanent,
+                expiresIn,
+                reason,
+            };
         }
         // unban the ip
         await db
             .delete(bannedIpsTable)
             .where(eq(bannedIpsTable.encodedIp, encodedIp))
             .execute();
-        return false;
+        return undefined;
     }
-    return false;
+    return undefined;
 }
 
 export async function logPlayerIPs(data: SaveGameBody["matchData"]) {

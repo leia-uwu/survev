@@ -84,8 +84,14 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         }
 
         try {
-            if (await isBanned(ip)) {
-                return c.json<FindGameResponse>({ error: "banned" });
+            const banData = await isBanned(ip);
+            if (banData) {
+                return c.json<FindGameResponse>({
+                    banned: true,
+                    reason: banData.reason,
+                    permanent: banData.permanent,
+                    expiresIn: banData.expiresIn,
+                });
             }
         } catch (err) {
             console.error("/api/find_game: Failed to check if IP is banned", err);

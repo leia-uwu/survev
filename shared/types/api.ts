@@ -32,10 +32,24 @@ export type FindGameError =
 export type FindGameResponse =
     | {
           res: FindGameMatchData[];
+          error?: undefined;
+
+          banned?: undefined;
       }
     | {
           error: FindGameError;
+
           res?: undefined;
+          banned?: undefined;
+      }
+    | {
+          banned: true;
+          reason: string;
+          permanent: boolean;
+          expiresIn: Date | string;
+
+          res?: undefined;
+          error?: undefined;
       };
 
 export interface Info {

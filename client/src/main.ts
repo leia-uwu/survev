@@ -52,6 +52,7 @@ class Application {
     playLoading = $(".play-loading-outer");
     errorModal = new MenuModal($("#modal-notification"));
     refreshModal = new MenuModal($("#modal-refresh"));
+    ipBanModal = new MenuModal($("#modal-ip-banned"));
     config = new ConfigManager();
     localization = new Localization();
 
@@ -603,9 +604,13 @@ class Application {
 
             const tryQuickStartGameImpl = () => {
                 this.waitOnAccount(() => {
-                    this.findGame(matchArgs, (err, matchData) => {
+                    this.findGame(matchArgs, (err, matchData, ban) => {
                         if (err) {
                             this.onJoinGameError(err);
+                            return;
+                        }
+                        if (ban) {
+                            this.showIpBanModal(ban);
                             return;
                         }
                         this.joinGame(matchData!);
@@ -627,7 +632,11 @@ class Application {
 
     findGame(
         matchArgs: FindGameBody,
-        cb: (err?: FindGameError | null, matchData?: FindGameMatchData) => void,
+        cb: (
+            err?: FindGameError | null,
+            matchData?: FindGameMatchData,
+            ban?: FindGameResponse & { banned: true },
+        ) => void,
     ) {
         (function findGameImpl(iter, maxAttempts) {
             if (iter >= maxAttempts) {
@@ -648,6 +657,11 @@ class Application {
                 success: function (data: FindGameResponse) {
                     if ("error" in data && data.error != "full") {
                         cb(data.error);
+                        return;
+                    }
+
+                    if ("banned" in data) {
+                        cb(null, undefined, data as FindGameResponse & { banned: true });
                         return;
                     }
 
@@ -706,7 +720,6 @@ class Application {
             full: this.localization.translate("index-failed-finding-game"),
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
             join_game_failed: this.localization.translate("index-failed-joining-game"),
-            banned: this.localization.translate("index-ip-banned"),
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();
@@ -721,6 +734,35 @@ class Application {
 
     showInvalidProtocolModal() {
         this.refreshModal.show(true);
+    }
+
+    showIpBanModal(ban: FindGameResponse & { banned: true }) {
+        $("#modal-ip-banned-reason").text(`Reason: ${ban.reason}`);
+
+        let expiration = "Duration: indefinite";
+        if (!ban.permanent) {
+            const expiresIn = new Date(ban.expiresIn);
+            const timeLeft = expiresIn.getTime() - Date.now();
+
+            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+
+            if (daysLeft > 1) {
+                expiration = `Expires in: ${daysLeft} days`;
+            } else if (hoursLeft > 1) {
+                expiration = `Expires in: ${hoursLeft} hours`;
+            } else {
+                expiration = `Expires in: less than an hour`;
+            }
+        }
+
+        $("#modal-ip-banned-expiration").text(expiration);
+
+        this.ipBanModal.show(true);
+
+        this.quickPlayPendingModeIdx = -1;
+        this.teamMenu.leave("banned");
+        this.refreshUi();
     }
 
     showErrorModal(err: string) {

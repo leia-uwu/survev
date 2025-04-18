@@ -4569,6 +4569,25 @@ input [type="image"]:focus {
   font-size: 18px;
 }
 
+#modal-ip-banned {
+  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+#modal-ip-banned .modal-content {
+  text-decoration: none;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 50%;
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+}
+
+#modal-ip-banned .modal-body {
+  background: #000;
+  color: #fff;
+}
+
 #modal-customize {
   overflow: hidden;
   z-index: 4;
