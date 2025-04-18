@@ -1,10 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
 import { GameObjectDefs } from "../../../../../shared/defs/gameObjectDefs";
 import { TeamMode } from "../../../../../shared/gameConfig";
-import { ItemStatus } from "../../../../../shared/utils/loadout";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import { deleteExpiredSessions } from "../../auth";
@@ -16,7 +15,12 @@ import {
 import { getRedisClient } from "../../cache";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
-import { type MatchDataTable, matchDataTable, usersTable } from "../../db/schema";
+import {
+    type MatchDataTable,
+    itemsTable,
+    matchDataTable,
+    usersTable,
+} from "../../db/schema";
 import { generateId } from "../user/auth/authUtils";
 import { MOCK_USER_ID } from "../user/auth/mock";
 import { ModerationRouter, logPlayerIPs } from "./ModerationRouter";
@@ -94,32 +98,23 @@ PrivateRouter.post(
                 return c.json({ error: "Invalid item type" }, 400);
             }
 
-            const result = await db.query.usersTable.findFirst({
+            const userId = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
                 columns: {
-                    items: true,
+                    id: true,
                 },
             });
 
-            if (!result) {
-                return c.json({ error: "No items found for this user." }, 404);
+            if (!userId) {
+                return c.json({ error: "User not found" }, 404);
             }
 
-            const { items } = result;
-
-            items.push({
-                source,
+            db.insert(itemsTable).values({
+                userId: userId.id,
                 type: item,
-                status: ItemStatus.New,
+                source,
                 timeAcquired: Date.now(),
             });
-
-            await db
-                .update(usersTable)
-                .set({
-                    items,
-                })
-                .where(eq(usersTable.slug, slug));
 
             return c.json({ success: true }, 200);
         } catch (err) {
@@ -142,25 +137,20 @@ PrivateRouter.post(
         try {
             const { item, slug } = c.req.valid("json");
 
-            const result = await db.query.usersTable.findFirst({
+            const user = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
                 columns: {
-                    items: true,
+                    id: true,
                 },
             });
 
-            if (!result) {
-                return c.json({ error: "No items found for this user." }, 404);
+            if (!user) {
+                return c.json({ error: "User not found" }, 404);
             }
 
-            const items = result.items.filter((i) => i.type !== item);
-
-            await db
-                .update(usersTable)
-                .set({
-                    items,
-                })
-                .where(eq(usersTable.slug, slug));
+            db.delete(itemsTable).where(
+                and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)),
+            );
 
             return c.json({ success: true }, 200);
         } catch (err) {

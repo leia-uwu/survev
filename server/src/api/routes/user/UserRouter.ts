@@ -1,4 +1,4 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, inArray, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import {
     type GetPassResponse,
@@ -21,7 +21,7 @@ import { server } from "../../apiServer";
 import { authMiddleware, validateParams } from "../../auth/middleware";
 import { databaseEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
-import { matchDataTable, usersTable } from "../../db/schema";
+import { itemsTable, matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";
 import {
     getTimeUntilNextUsernameChange,
@@ -45,7 +45,6 @@ UserRouter.post("/profile", async (c) => {
             username,
             usernameSet,
             lastUsernameChangeTime,
-            items,
             banned,
             banReason,
         } = user;
@@ -62,6 +61,16 @@ UserRouter.post("/profile", async (c) => {
 
         const timeUntilNextChange =
             getTimeUntilNextUsernameChange(lastUsernameChangeTime);
+
+        const items = await db
+            .select({
+                type: itemsTable.type,
+                timeAcquired: itemsTable.timeAcquired,
+                source: itemsTable.source,
+                status: itemsTable.status,
+            })
+            .from(itemsTable)
+            .where(eq(itemsTable.userId, user.id));
 
         return c.json<ProfileResponse>(
             {
@@ -145,10 +154,17 @@ UserRouter.post("/loadout", validateParams(zLoadoutRequest), async (c) => {
         const user = c.get("user")!;
         const { loadout: userLoadout } = c.req.valid("json");
 
-        const validatedLoadout = loadout.validateWithAvailableItems(
-            userLoadout,
-            user!.items,
-        );
+        const items = await db
+            .select({
+                type: itemsTable.type,
+                timeAcquired: itemsTable.timeAcquired,
+                source: itemsTable.source,
+                status: itemsTable.status,
+            })
+            .from(itemsTable)
+            .where(eq(itemsTable.userId, user.id));
+
+        const validatedLoadout = loadout.validateWithAvailableItems(userLoadout, items);
 
         await db
             .update(usersTable)
@@ -210,30 +226,14 @@ UserRouter.post("/set_item_status", validateParams(zSetItemStatusRequest), async
         const user = c.get("user")!;
         const { itemTypes, status } = c.req.valid("json");
 
-        const result = await db.query.usersTable.findFirst({
-            where: eq(usersTable.id, user.id),
-            columns: {
-                items: true,
-            },
-        });
-
-        if (!result) return c.json({}, 200);
-
-        const { items } = result;
-
-        const updatedItems = items.map((item) => {
-            if (itemTypes.includes(item.type)) {
-                item.status = status;
-            }
-            return item;
-        });
-
         await db
-            .update(usersTable)
+            .update(itemsTable)
             .set({
-                items: updatedItems,
+                status: status,
             })
-            .where(eq(usersTable.id, user.id));
+            .where(
+                and(eq(itemsTable.userId, user.id), inArray(itemsTable.type, itemTypes)),
+            );
 
         return c.json({}, 200);
     } catch (err) {

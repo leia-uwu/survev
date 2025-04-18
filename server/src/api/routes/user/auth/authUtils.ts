@@ -4,12 +4,11 @@ import type { Context } from "hono";
 import { deleteCookie, setCookie } from "hono/cookie";
 import slugify from "slugify";
 import { UnlockDefs } from "../../../../../../shared/defs/gameObjects/unlockDefs";
-import { type Item, ItemStatus } from "../../../../../../shared/utils/loadout";
 import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { createSession, generateSessionToken, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
-import { type UsersTableInsert, usersTable } from "../../../db/schema";
+import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
 
 const random = {
     read(bytes: Uint8Array) {
@@ -119,18 +118,21 @@ export async function handleAuthUser(c: Context, provider: Provider, authId: str
 }
 
 export async function createNewUser(payload: UsersTableInsert) {
+    await db.insert(usersTable).values(payload);
+
     const unlockType = "unlock_new_account";
-    const outfitsToUnlock = UnlockDefs[unlockType].unlocks || [];
-    const items: Item[] = outfitsToUnlock.map((outfit) => {
+    const itemsToUnlock = UnlockDefs[unlockType].unlocks || [];
+
+    const items = itemsToUnlock.map((outfit) => {
         return {
+            userId: payload.id,
             source: unlockType,
             type: outfit,
             timeAcquired: Date.now(),
-            status: ItemStatus.New,
         };
     });
 
-    await db.insert(usersTable).values({ ...payload, items });
+    await db.insert(itemsTable).values(items);
 }
 
 export function getRedirectUri(method: Provider) {

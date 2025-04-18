@@ -11,7 +11,7 @@ import {
     timestamp,
 } from "drizzle-orm/pg-core";
 import type { TeamMode } from "../../../../shared/gameConfig";
-import { type Item, type Loadout, loadout } from "../../../../shared/utils/loadout";
+import { ItemStatus, type Loadout, loadout } from "../../../../shared/utils/loadout";
 
 export const sessionTable = pgTable("session", {
     id: text("id").primaryKey(),
@@ -47,11 +47,23 @@ export const usersTable = pgTable("users", {
         .notNull()
         .default(loadout.validate({} as Loadout))
         .$type<Loadout>(),
-    items: json("items").notNull().$type<Item[]>().default([]),
 });
 
 export type UsersTableInsert = typeof usersTable.$inferInsert;
 export type UsersTableSelect = typeof usersTable.$inferSelect;
+
+export const itemsTable = pgTable("items", {
+    userId: text("user_id")
+        .notNull()
+        .references(() => usersTable.id, {
+            onDelete: "cascade",
+            onUpdate: "cascade",
+        }),
+    type: text("type").notNull(),
+    timeAcquired: bigint("time_acquired", { mode: "number" }).notNull(),
+    source: text("source").notNull().default("unlock_new_account"),
+    status: integer("status").notNull().default(ItemStatus.New),
+});
 
 export const matchDataTable = pgTable(
     "match_data",
