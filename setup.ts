@@ -118,6 +118,16 @@ async function setupDatabase(config: PartialConfig, initial = true) {
 }
 
 async function setupAccounts(config: PartialConfig) {
+    const redirectURI = await prompt<{ value: string }>({
+        message:
+            "Enter the full base URL of the website for oauth2 redirects (eg: https://survev.io)",
+        name: "value",
+        type: "text",
+        required: true,
+    });
+
+    config.oauthRedirectURI = redirectURI.value;
+
     const addGoogle = await prompt<{ value: boolean }>({
         message: "Would you like to add google login support",
         name: "value",
