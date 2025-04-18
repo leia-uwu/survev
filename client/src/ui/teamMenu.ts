@@ -226,17 +226,21 @@ export class TeamMenu {
                     this.leave(errMsg);
                 };
                 this.ws.onopen = () => {
-                    if (this.create) {
-                        this.sendMessage("create", {
-                            roomData: this.roomData,
-                            playerData: this.playerData,
-                        });
-                    } else {
-                        this.sendMessage("join", {
-                            roomUrl: this.roomData.roomUrl,
-                            playerData: this.playerData,
-                        });
-                    }
+                    // HACK
+                    // TODO: remove after https://github.com/honojs/middleware/issues/1129 is fixed
+                    setTimeout(() => {
+                        if (this.create) {
+                            this.sendMessage("create", {
+                                roomData: this.roomData,
+                                playerData: this.playerData,
+                            });
+                        } else {
+                            this.sendMessage("join", {
+                                roomUrl: this.roomData.roomUrl,
+                                playerData: this.playerData,
+                            });
+                        }
+                    }, 100);
                 };
                 this.ws.onmessage = (e) => {
                     if (this.active) {
