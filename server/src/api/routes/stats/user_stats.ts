@@ -6,7 +6,7 @@ import {
     zUserStatsRequest,
 } from "../../../../../shared/types/stats";
 import { server } from "../../apiServer";
-import { databaseEnabledMiddleware } from "../../auth/middleware";
+import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
 import { usersTable } from "../../db/schema";
@@ -25,6 +25,7 @@ const emptyState = {
 UserStatsRouter.post(
     "/",
     databaseEnabledMiddleware,
+    rateLimitMiddleware(40, 60 * 1000),
     validateParams(zUserStatsRequest),
     async (c) => {
         try {

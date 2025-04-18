@@ -18,7 +18,11 @@ import loadout from "../../../../../shared/utils/loadout";
 import { encryptLoadout } from "../../../utils/loadoutHelpers";
 import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
-import { authMiddleware, validateParams } from "../../auth/middleware";
+import {
+    authMiddleware,
+    rateLimitMiddleware,
+    validateParams,
+} from "../../auth/middleware";
 import { databaseEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { itemsTable, matchDataTable, usersTable } from "../../db/schema";
@@ -32,6 +36,7 @@ import {
 export const UserRouter = new Hono<Context>();
 
 UserRouter.use(databaseEnabledMiddleware);
+UserRouter.use(rateLimitMiddleware(40, 60 * 1000));
 UserRouter.use(authMiddleware);
 
 UserRouter.post("/profile", async (c) => {

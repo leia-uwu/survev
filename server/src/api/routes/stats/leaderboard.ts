@@ -10,7 +10,7 @@ import {
 } from "../../../../../shared/types/stats";
 import { Config } from "../../../config";
 import { server } from "../../apiServer";
-import { databaseEnabledMiddleware } from "../../auth/middleware";
+import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
@@ -22,6 +22,7 @@ export const leaderboardRouter = new Hono<Context>();
 leaderboardRouter.post(
     "/",
     databaseEnabledMiddleware,
+    rateLimitMiddleware(40, 60 * 1000),
     validateParams(zLeaderboardsRequest),
     async (c) => {
         try {

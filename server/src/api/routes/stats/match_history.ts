@@ -8,7 +8,7 @@ import {
     zMatchHistoryRequest,
 } from "../../../../../shared/types/stats";
 import { server } from "../../apiServer";
-import { databaseEnabledMiddleware } from "../../auth/middleware";
+import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
@@ -18,6 +18,7 @@ export const matchHistoryRouter = new Hono<Context>();
 matchHistoryRouter.post(
     "/",
     databaseEnabledMiddleware,
+    rateLimitMiddleware(40, 60 * 1000),
     validateParams(zMatchHistoryRequest),
     async (c) => {
         try {

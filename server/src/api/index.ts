@@ -21,7 +21,7 @@ import {
 } from "../utils/serverHelpers";
 import { server } from "./apiServer";
 import { validateSessionToken } from "./auth";
-import { validateParams } from "./auth/middleware";
+import { rateLimitMiddleware, validateParams } from "./auth/middleware";
 import type { SessionTableSelect, UsersTableSelect } from "./db/schema";
 import { isBanned } from "./routes/private/ModerationRouter";
 import { PrivateRouter } from "./routes/private/private";
@@ -63,6 +63,7 @@ app.get("/api/site_info", (c) => {
     return c.json<Info>(server.getSiteInfo(), 200);
 });
 
+// not using the middleware here to not add extra indentation... smh
 const findGameRateLimit = new HTTPRateLimit(5, 3000);
 
 app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
@@ -143,6 +144,7 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
 
 app.post(
     "/api/report_error",
+    rateLimitMiddleware(5, 60 * 1000),
     validateParams(z.object({ loc: z.string(), data: z.any() })),
     async (c) => {
         try {

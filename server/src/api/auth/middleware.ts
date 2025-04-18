@@ -4,6 +4,7 @@ import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { z } from "zod";
 import { validateSessionToken } from ".";
 import { Config } from "../../config";
+import { HTTPRateLimit, getHonoIp } from "../../utils/serverHelpers";
 import { server } from "../apiServer";
 import { deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
 
@@ -75,4 +76,22 @@ export async function privateMiddleware(c: Context, next: Next) {
         return c.json({ error: "Forbidden" }, 403);
     }
     await next();
+}
+
+export function rateLimitMiddleware(limit: number, interval: number) {
+    const rateLimit = new HTTPRateLimit(limit, interval);
+
+    return async function (c: Context, next: Next) {
+        const ip = getHonoIp(c);
+
+        if (!ip) {
+            return c.json({}, 500);
+        }
+
+        if (rateLimit.isRateLimited(ip)) {
+            return c.json({ error: "rate_limited" }, 429);
+        }
+
+        await next();
+    };
 }
