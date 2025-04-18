@@ -66,6 +66,10 @@ declare global {
     const IS_DEV: boolean;
     const GIT_VERSION: string;
     const AIP_PLACEMENT_ID: string;
+
+    const GOOGLE_LOGIN_SUPPORTED: boolean;
+    const DISCORD_LOGIN_SUPPORTED: boolean;
+    const MOCK_LOGIN_SUPPORTED: boolean;
 }
 
 declare module "pixi.js-legacy" {

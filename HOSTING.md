@@ -47,6 +47,7 @@ If you see a notice notifying you of the machine you have just logged into, cong
  * [NGINX](https://nginx.org)
  * [Node.js](https://nodejs.org)
  * [pnpm](https://pnpm.io)
+ * [PostgreSQL](https://www.postgresql.org)
 
 If you are logged in as root, start by making sure sudo is installed:
 ```sh
@@ -69,6 +70,19 @@ And finally, install pnpm:
 npm i -g pnpm
 ```
 
+### Database support (optional)
+
+IF you want to have accounts, leaderboards and IP bans, you will have to install and set-up PostgreSQL database
+
+```sh
+sudo apt -y postgresql
+sudo -u postgres initdb --locale=C.UTF-8 --encoding=UTF8 -D /var/lib/postgres/data --data-checksums
+sudo systemctl enable --now postgresql
+sudo -u postgres createuser survev
+sudo -u postgres createdb survev -O survev
+```
+
+
 ### Building source
 Next, move into `/opt`, clone the repository and traverse into it:
 ```sh
@@ -77,79 +91,12 @@ git clone https://github.com/leia-uwu/survev.git
 cd survev
 ```
 
-Install the necessary dependencies:
-```sh
-pnpm install
-```
-
-Its recommended that you generate an API key for the game server to connect to the API server
-
-If you are only hosting a game server for a different region, you need to get the central API server key
-
-Generate a secure API key from terminal:
-```sh
-openssl rand -base64 32
-```
-
-Configure server:
+Run the initial setup script, this will prompt questions and generate a `survev-config.hjson` file.
+If you want to view the config documentation look at configType.ts file
 
 ```sh
-nano survev-config.json
+pnpm survev-setup
 ```
-And populate it with the following content:
-```json
-{
-    "apiKey": "API_KEY_GOES_HERE",
-    "gameServer": {
-        "apiServerUrl": "API_SERVER_URL"
-    },
-    "regions": {
-        "REGION_ID": {
-            "https": true,
-            "address": "GAME_SERVER_IP_OR_DOMAIN",
-            "l10n": "SERVER_NAME_TRANSLATION"
-        }
-    },
-    "thisRegion": "THIS_REGION_ID"
-}
-```
-API_SERVER_URL should be replaced with the full address (including port and https) of the API Server.
-
-REGION_ID should be replaced with the id of the region (example `na` for north america).
-
-GAME_SERVER_IP_OR_DOMAIN should be the domain or ip of the region game server .
-
-SERVER_NAME_TRANSLATION should be the translation for the server name to display in the client (example: `index-north-america` for `North America`).
-Avaliable translations by default are: index-local, index-north-america, index-europe, index-asia, index-south-america, index-korea
-
-THIS_REGION_ID should be replaced with the region ID this game server is hosting
-
-Example config file:
-```json
-{
-    "apiKey": "j0wo7RY0pYgD6W2mEy2wLa7VE4olUPD1r2hZma8FU6o=",
-    "gameServer": {
-        "apiServerUrl": "https://survev.io"
-    },
-    "regions": {
-        "na": {
-            "https": true,
-            "address": "na.survev.io:8001",
-            "l10n": "index-north-america"
-        },
-        "eu": {
-            "https": true,
-            "address": "eu.survev.io:8001",
-            "l10n": "index-europe"
-        }
-    },
-    "thisRegion": "na"
-}
-```
-
-Save the file using `Ctrl + X`, and press `Y` to confirm the file name.
-
-to see more configuration options, see the file `server/src/config.ts`
 
 Build the client & server:
 ```sh

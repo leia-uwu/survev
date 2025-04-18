@@ -1,17 +1,18 @@
 import $ from "jquery";
 import { GameConfig } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import type { FindGameMatchData } from "../../../shared/types/api";
 import type {
     RoomData,
     ServerToClientTeamMsg,
+    TeamMenuErrorType,
     TeamStateMsg,
-} from "../../../shared/net/team";
+} from "../../../shared/types/team";
 import { api } from "../api";
 import type { AudioManager } from "../audioManager";
 import type { ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import type { MatchData } from "../main";
 import type { PingTest } from "../pingTest";
 import type { SiteInfo } from "../siteInfo";
 import type { Localization } from "./localization";
@@ -28,7 +29,9 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
         kicked: localization.translate("index-team-kicked"),
-    };
+        banned: localization.translate("index-ip-banned"),
+        behind_proxy: "behind_proxy", // this will get passed to the main app to show a modal
+    } as Record<TeamMenuErrorType, string>;
     return typeMap[type as keyof typeof typeMap] || typeMap.lost_conn;
 }
 
@@ -77,7 +80,7 @@ export class TeamMenu {
         public siteInfo: SiteInfo,
         public localization: Localization,
         public audioManager: AudioManager,
-        public joinGameCb: (data: MatchData) => void,
+        public joinGameCb: (data: FindGameMatchData) => void,
         public leaveCb: (err: string) => void,
     ) {
         // Listen for ui modifications
@@ -223,17 +226,21 @@ export class TeamMenu {
                     this.leave(errMsg);
                 };
                 this.ws.onopen = () => {
-                    if (this.create) {
-                        this.sendMessage("create", {
-                            roomData: this.roomData,
-                            playerData: this.playerData,
-                        });
-                    } else {
-                        this.sendMessage("join", {
-                            roomUrl: this.roomData.roomUrl,
-                            playerData: this.playerData,
-                        });
-                    }
+                    // HACK
+                    // TODO: remove after https://github.com/honojs/middleware/issues/1129 is fixed
+                    setTimeout(() => {
+                        if (this.create) {
+                            this.sendMessage("create", {
+                                roomData: this.roomData,
+                                playerData: this.playerData,
+                            });
+                        } else {
+                            this.sendMessage("join", {
+                                roomUrl: this.roomData.roomUrl,
+                                playerData: this.playerData,
+                            });
+                        }
+                    }, 100);
                 };
                 this.ws.onmessage = (e) => {
                     if (this.active) {
@@ -307,7 +314,7 @@ export class TeamMenu {
             }
             case "joinGame":
                 this.joiningGame = true;
-                this.joinGameCb(data as MatchData);
+                this.joinGameCb(data as FindGameMatchData);
                 break;
             case "keepAlive":
                 break;

@@ -36,6 +36,7 @@ import type { Camera } from "../camera";
 import type { DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
+import { errorLogManager } from "../errorLogs";
 import type { Ctx } from "../game";
 import { helpers } from "../helpers";
 import type { SoundHandle } from "../lib/createJS";
@@ -2720,7 +2721,7 @@ export class PlayerBarn {
         const playerIds = factionMode ? this.playerIds : team.playerIds;
 
         if (playerIds.length != playerStatus.players.length) {
-            console.error(
+            errorLogManager.logError(
                 `PlayerIds and playerStatus.players out of sync. OurLen: ${playerIds.length} MsgLen: ${playerStatus.players.length} FactionMode: ${factionMode}`,
             );
             return;
@@ -2787,7 +2788,7 @@ export class PlayerBarn {
     updateGroupStatus(groupId: number, groupStatus: { players: GroupStatus[] }) {
         const info = this.getGroupInfo(groupId);
         if (info.playerIds.length != groupStatus.players.length) {
-            console.error("PlayerIds and groupStatus.players out of sync");
+            errorLogManager.logError("PlayerIds and groupStatus.players out of sync");
             return;
         }
         for (let i = 0; i < info.playerIds.length; i++) {

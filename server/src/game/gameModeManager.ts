@@ -46,6 +46,78 @@ export class GameModeManager {
         }
     }
 
+    // so the game doesn't start when there's only 2 players and one can of them can despawn which would end the game
+    // instead it will await 10 seconds for the second player to not be able to despawn before starting
+    cantDespawnAliveCount(): number {
+        switch (this.mode) {
+            case GameMode.Solo:
+                return this.game.playerBarn.livingPlayers.filter((p) => !p.canDespawn())
+                    .length;
+            case GameMode.Team:
+                return this.game.playerBarn.getAliveGroups().filter((group) => {
+                    return group.players.filter((p) => !p.canDespawn()).length > 0;
+                }).length;
+            case GameMode.Faction:
+                return this.game.playerBarn.getAliveTeams().filter((team) => {
+                    return team.players.filter((p) => !p.canDespawn()).length;
+                }).length;
+        }
+    }
+
+    // used when saving the game match data
+    getPlayersSortedByRank(): Array<{ player: Player; rank: number }> {
+        const players = [...this.game.playerBarn.players];
+
+        switch (this.mode) {
+            case GameMode.Solo: {
+                return players
+                    .sort((a, b) => {
+                        return b.killedIndex - a.killedIndex;
+                    })
+                    .map((player, idx) => {
+                        return {
+                            player,
+                            rank: idx + 1,
+                        };
+                    });
+            }
+            case GameMode.Team:
+            case GameMode.Faction: {
+                // the logic is basically the exact same for both
+                // just uses team instead of group on faction...
+
+                const key = this.mode === GameMode.Faction ? "teams" : "groups";
+
+                // calculate each group killed index
+                // by basing it on the last player to die killed index
+                const groups = this.game.playerBarn[key].map((group) => {
+                    return {
+                        killedIndex:
+                            group.players.sort((a, b) => {
+                                return b.killedIndex - a.killedIndex;
+                            })[0].killedIndex ?? Infinity,
+                        players: group.players,
+                    };
+                });
+
+                groups.sort((a, b) => b.killedIndex - a.killedIndex);
+
+                let data: Array<{ player: Player; rank: number }> = [];
+
+                for (let i = 0; i < groups.length; i++) {
+                    for (const player of groups[i].players) {
+                        data.push({
+                            player,
+                            rank: i + 1,
+                        });
+                    }
+                }
+
+                return data;
+            }
+        }
+    }
+
     /** true if game needs to end */
     handleGameEnd(): boolean {
         if (!this.game.started || this.aliveCount() > 1) return false;
@@ -73,7 +145,7 @@ export class GameModeManager {
     }
 
     isGameStarted(): boolean {
-        return this.aliveCount() > 1;
+        return this.cantDespawnAliveCount() > 1;
     }
 
     updateAliveCounts(aliveCounts: number[]): void {

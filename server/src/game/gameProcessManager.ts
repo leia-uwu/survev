@@ -1,94 +1,26 @@
 import { type ChildProcess, fork } from "child_process";
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
 import { Config } from "../config";
-import type { FindGameBody, GameSocketData } from "../gameServer";
 import { Logger } from "../utils/logger";
-import type {
-    FindGameResponse,
-    GameData,
-    GameManager,
-    ServerGameConfig,
-} from "./gameManager";
+import {
+    type FindGamePrivateBody,
+    type GameData,
+    type GameSocketData,
+    type ProcessMsg,
+    ProcessMsgType,
+    type ServerGameConfig,
+} from "../utils/types";
+import type { GameManager } from "./gameManager";
 
 let path: string;
-let args: string[];
 if (process.env.NODE_ENV === "production") {
-    path = "dist/server/src/game/gameProcess.js";
-    args = ["--enable-source-maps"];
+    path = "dist/gameProcess.js";
 } else {
     path = "src/game/gameProcess.ts";
-    args = [];
 }
-
-export enum ProcessMsgType {
-    Create,
-    Created,
-    KeepAlive,
-    UpdateData,
-    AddJoinToken,
-    SocketMsg,
-    SocketClose,
-}
-
-export interface CreateGameMsg {
-    type: ProcessMsgType.Create;
-    config: ServerGameConfig;
-    id: string;
-}
-
-export interface GameCreatedMsg {
-    type: ProcessMsgType.Created;
-}
-
-export interface KeepAliveMsg {
-    type: ProcessMsgType.KeepAlive;
-}
-
-export interface UpdateDataMsg extends GameData {
-    type: ProcessMsgType.UpdateData;
-}
-
-export interface AddJoinTokenMsg {
-    type: ProcessMsgType.AddJoinToken;
-    token: string;
-    autoFill: boolean;
-    playerCount: number;
-}
-
-/**
- * Used for server to send websocket msgs to game
- * And game to send websocket msgs to clients
- * msgs is an array to batch all msgs created in the same game net tick
- * into the same send call
- */
-export interface SocketMsgsMsg {
-    type: ProcessMsgType.SocketMsg;
-    msgs: Array<{
-        socketId: string;
-        data: ArrayBuffer;
-    }>;
-}
-
-/**
- * Sent by the server to the game when the socket is closed
- * Or by the game to the server when the game wants to close the socket
- */
-export interface SocketCloseMsg {
-    type: ProcessMsgType.SocketClose;
-    socketId: string;
-}
-
-export type ProcessMsg =
-    | CreateGameMsg
-    | GameCreatedMsg
-    | KeepAliveMsg
-    | UpdateDataMsg
-    | AddJoinTokenMsg
-    | SocketMsgsMsg
-    | SocketCloseMsg;
 
 class GameProcess implements GameData {
     process: ChildProcess;
@@ -114,7 +46,7 @@ class GameProcess implements GameData {
 
     constructor(manager: GameProcessManager, id: string, config: ServerGameConfig) {
         this.manager = manager;
-        this.process = fork(path, args, {
+        this.process = fork(path, [], {
             serialization: "advanced",
         });
 
@@ -191,23 +123,23 @@ class GameProcess implements GameData {
         this.avaliableSlots = mapDef.gameMode.maxPlayers;
     }
 
-    addJoinToken(token: string, autoFill: boolean, playerCount: number) {
+    addJoinTokens(tokens: FindGamePrivateBody["playerData"], autoFill: boolean) {
         this.send({
             type: ProcessMsgType.AddJoinToken,
-            token,
             autoFill,
-            playerCount,
+            tokens,
         });
         this.avaliableSlots--;
     }
 
-    handleMsg(data: ArrayBuffer, socketId: string) {
+    handleMsg(data: ArrayBuffer, socketId: string, ip: string) {
         this.send({
             type: ProcessMsgType.SocketMsg,
             msgs: [
                 {
                     socketId,
                     data,
+                    ip,
                 },
             ],
         });
@@ -279,7 +211,7 @@ export class GameProcessManager implements GameManager {
             }
         }
 
-        const id = randomBytes(20).toString("hex");
+        const id = randomUUID();
         if (!gameProc) {
             gameProc = new GameProcess(this, id, config);
 
@@ -337,7 +269,7 @@ export class GameProcessManager implements GameManager {
         return this.processById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGamePrivateBody): Promise<string> {
         const mode = Config.modes[body.gameModeIdx];
 
         let game = this.processes
@@ -353,8 +285,6 @@ export class GameProcessManager implements GameManager {
                 return a.startedTime - b.startedTime;
             })[0];
 
-        const joinToken = randomBytes(20).toString("hex");
-
         if (!game) {
             game = await this.newGame({
                 teamMode: mode.teamMode,
@@ -367,21 +297,15 @@ export class GameProcessManager implements GameManager {
         if (!game.created) {
             return new Promise((resolve) => {
                 game.onCreatedCbs.push((game) => {
-                    game.addJoinToken(joinToken, body.autoFill, body.playerCount);
-                    resolve({
-                        gameId: game.id,
-                        data: joinToken,
-                    });
+                    game.addJoinTokens(body.playerData, body.autoFill);
+                    resolve(game.id);
                 });
             });
         }
 
-        game.addJoinToken(joinToken, body.autoFill, body.playerCount);
+        game.addJoinTokens(body.playerData, body.autoFill);
 
-        return {
-            gameId: game.id,
-            data: joinToken,
-        };
+        return game.id;
     }
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {
@@ -397,7 +321,7 @@ export class GameProcessManager implements GameManager {
     onMsg(socketId: string, msg: ArrayBuffer): void {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.processById.get(data.gameId)?.handleMsg(msg, socketId);
+        this.processById.get(data.gameId)?.handleMsg(msg, socketId, data.ip);
     }
 
     onClose(socketId: string) {

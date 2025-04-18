@@ -96,7 +96,7 @@ export class Localization {
         return this.locale;
     }
 
-    translate(key: string) {
+    translate(key: string): string {
         return this.translations[this.locale][key] || this.translations.en[key] || "";
     }
 

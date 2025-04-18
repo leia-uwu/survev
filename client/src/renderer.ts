@@ -1,6 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { v2 } from "../../shared/utils/v2";
 import type { Camera } from "./camera";
+import { errorLogManager } from "./errorLogs";
 import type { Game } from "./game";
 import type { Map } from "./map";
 
@@ -76,7 +77,7 @@ export class Renderer {
                 zOrd,
                 zIdx,
             });
-            console.error(str);
+            errorLogManager.logError(str);
         }
         if (obj.__layerIdx === undefined) {
             obj.__layerIdx = -1;

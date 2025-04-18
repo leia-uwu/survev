@@ -1,10 +1,12 @@
 import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 const mapDef: PartialMapDef = {
-    mapId: 6,
+    mapId: MapId.Halloween,
+
     desc: {
         name: "Halloween",
         icon: "img/gui/pumpkin-play.svg",
