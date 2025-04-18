@@ -66,6 +66,7 @@ class Player {
         public socket: WSContext<SocketData>,
         public teamMenu: TeamMenu,
         public userId: string | null,
+        public ip: string,
     ) {
         // disconnect if didn't join a room in 5 seconds
         this.disconnectTimeout = setTimeout(() => {
@@ -250,6 +251,7 @@ class Room {
             return {
                 token,
                 userId: p.userId,
+                ip: p.ip,
             };
         });
 
@@ -422,7 +424,7 @@ export class TeamMenu {
                             ws.close();
                             return;
                         }
-                        teamMenu.onOpen(ws as WSContext<SocketData>, userId);
+                        teamMenu.onOpen(ws as WSContext<SocketData>, userId, ip!);
                     },
 
                     onMessage(event, ws) {
@@ -455,8 +457,8 @@ export class TeamMenu {
         );
     }
 
-    onOpen(ws: WSContext<SocketData>, userId: string | null) {
-        const player = new Player(ws, this, userId);
+    onOpen(ws: WSContext<SocketData>, userId: string | null, ip: string) {
+        const player = new Player(ws, this, userId, ip);
         ws.raw!.player = player;
     }
 

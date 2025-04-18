@@ -123,6 +123,7 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
                 {
                     token,
                     userId,
+                    ip,
                 },
             ],
         });

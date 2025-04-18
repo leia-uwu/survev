@@ -5,6 +5,7 @@ import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import { fetchApiServer } from "../utils/serverHelpers";
 import {
+    type FindGamePrivateBody,
     ProcessMsgType,
     type SaveGameBody,
     type ServerGameConfig,
@@ -31,6 +32,7 @@ import { PluginManager } from "./pluginManager";
 export interface JoinTokenData {
     expiresAt: number;
     userId: string | null;
+    findGameIp: string;
     groupData: {
         autoFill: boolean;
         playerCount: number;
@@ -381,10 +383,7 @@ export class Game {
         }
     }
 
-    addJoinTokens(
-        tokens: Array<{ token: string; userId: string | null }>,
-        autoFill: boolean,
-    ) {
+    addJoinTokens(tokens: FindGamePrivateBody["playerData"], autoFill: boolean) {
         const groupData = {
             playerCount: tokens.length,
             groupHashToJoin: "",
@@ -396,6 +395,7 @@ export class Game {
                 expiresAt: Date.now() + 10000,
                 userId: token.userId,
                 groupData,
+                findGameIp: token.ip,
             });
         }
     }
@@ -459,6 +459,7 @@ export class Game {
                 killedIds: player.killedIds,
                 rank: rank,
                 ip: player.ip,
+                findGameIp: player.findGameIp,
             };
         });
 

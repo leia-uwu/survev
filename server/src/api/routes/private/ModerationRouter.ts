@@ -227,6 +227,7 @@ ModerationRouter.post(
             const result = await db
                 .select({
                     ip: ipLogsTable.encodedIp,
+                    findGameIp: ipLogsTable.findGameIp,
                     name: ipLogsTable.username,
                     region: ipLogsTable.region,
                 })
@@ -246,9 +247,13 @@ ModerationRouter.post(
 
             return c.json(
                 {
-                    message: result.map(
-                        ({ ip, name, region }) => `[${region}] ${name}'s IP is ${ip}`,
-                    ),
+                    message: result.map(({ ip, findGameIp, name, region }) => {
+                        if (ip === findGameIp) {
+                            return `[${region}] ${name}'s IP is ${ip}`;
+                        }
+
+                        return `[${region}] ${name}'s IP is ${findGameIp} - in game: ${ip}`;
+                    }),
                 },
                 200,
             );
@@ -321,6 +326,7 @@ export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
         const logsData = data.map((matchData) => ({
             ...matchData,
             encodedIp: encodeIP(matchData.ip),
+            findGameEncodedIp: encodeIP(matchData.findGameIp),
         }));
         await db.insert(ipLogsTable).values(logsData);
     } catch (err) {

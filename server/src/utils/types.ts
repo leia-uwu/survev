@@ -23,7 +23,7 @@ export const zUpdateRegionBody = z.object({
 export type UpdateRegionBody = z.infer<typeof zUpdateRegionBody>;
 
 export interface SaveGameBody {
-    matchData: (MatchDataTable & { ip: string })[];
+    matchData: (MatchDataTable & { ip: string; findGameIp: string })[];
 }
 
 export interface ServerGameConfig {
@@ -50,6 +50,7 @@ export const zFindGamePrivateBody = z.object({
         z.object({
             token: z.string(),
             userId: z.string().nullable(),
+            ip: z.string(),
         }),
     ),
 });
@@ -96,10 +97,7 @@ export interface UpdateDataMsg extends GameData {
 export interface AddJoinTokenMsg {
     type: ProcessMsgType.AddJoinToken;
     autoFill: boolean;
-    tokens: Array<{
-        token: string;
-        userId: string | null;
-    }>;
+    tokens: FindGamePrivateBody["playerData"];
 }
 
 /**

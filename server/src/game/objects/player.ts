@@ -174,6 +174,7 @@ export class PlayerBarn {
             socketId,
             joinMsg,
             ip,
+            joinData.findGameIp,
             joinData.userId,
         );
 
@@ -1153,6 +1154,9 @@ export class Player extends BaseGameObject {
 
     userId: string | null = null;
     ip: string;
+    // see comment on server/src/api/schema.ts
+    // about logging find_game IP's
+    findGameIp: string;
 
     constructor(
         game: Game,
@@ -1161,6 +1165,7 @@ export class Player extends BaseGameObject {
         socketId: string,
         joinMsg: net.JoinMsg,
         ip: string,
+        findGameIp: string,
         userId: string | null,
     ) {
         super(game, pos);
@@ -1171,6 +1176,7 @@ export class Player extends BaseGameObject {
 
         this.socketId = socketId;
         this.ip = ip;
+        this.findGameIp = findGameIp;
         this.userId = userId;
 
         this.name = validateUserName(joinMsg.name).validName;
