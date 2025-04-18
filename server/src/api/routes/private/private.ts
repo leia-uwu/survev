@@ -109,7 +109,7 @@ PrivateRouter.post(
                 return c.json({ error: "User not found" }, 404);
             }
 
-            db.insert(itemsTable).values({
+            await db.insert(itemsTable).values({
                 userId: userId.id,
                 type: item,
                 source,
@@ -148,7 +148,7 @@ PrivateRouter.post(
                 return c.json({ error: "User not found" }, 404);
             }
 
-            db.delete(itemsTable).where(
+            await db.delete(itemsTable).where(
                 and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)),
             );
 
