@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Open Source Surviv.io Server",
   "scripts": {
-    "initial-setup": "pnpm install && tsx setup.ts",
+    "survev-setup": "pnpm install && tsx setup.ts",
     "dev:server": "cd server && pnpm dev",
     "dev:api": "cd server && pnpm dev:api",
     "dev:game": "cd server && pnpm dev:game",
