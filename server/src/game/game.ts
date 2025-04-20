@@ -1,5 +1,6 @@
 import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
+import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
@@ -157,9 +158,10 @@ export class Game {
     }
 
     update(): void {
-        const now = Date.now();
+        const now = performance.now();
         if (!this.now) this.now = now;
-        const dt = (now - this.now) / 1000;
+        const dt = math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
+
         this.now = now;
 
         if (!this.started) {
@@ -191,7 +193,7 @@ export class Game {
             // Record performance and start the next tick
             // THIS TICK COUNTER IS WORKING CORRECTLY!
             // It measures the time it takes to calculate a tick, not the time between ticks.
-            const tickTime = Date.now() - this.now;
+            const tickTime = performance.now() - this.now;
             this.tickTimes.push(tickTime);
 
             this.perfTicker += dt;
