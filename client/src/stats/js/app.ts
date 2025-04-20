@@ -2,13 +2,15 @@ import $ from "jquery";
 // TODO(performance): only load needed bootstrap components
 import "bootstrap";
 import slugify from "slugify";
+import { ConfigManager } from "../../config";
 import { device } from "../../device";
 import { type AcceptedLocales, Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
 import language from "./templates/langauge.ejs";
 
-import { ConfigManager } from "../../config";
+import "bootstrap/dist/css/bootstrap.css";
+import "../../../css/stats/app.css";
 
 const templates = {
     language,
