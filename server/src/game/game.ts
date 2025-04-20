@@ -1,4 +1,4 @@
-import { TeamMode } from "../../../shared/gameConfig";
+import { GameConfig, TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
@@ -377,6 +377,15 @@ export class Game {
         if (this.over) return;
         const didGameEnd: boolean = this.modeManager.handleGameEnd();
         if (didGameEnd) {
+            for (const player of this.playerBarn.livingPlayers) {
+                this.playerBarn.addEmote(
+                    player.__id,
+                    player.pos,
+                    player.loadout.emotes[GameConfig.EmoteSlot.Win],
+                    false,
+                );
+            }
+
             this.over = true;
             this.updateData();
             setTimeout(() => {
