@@ -36,7 +36,7 @@ export const PerkProperties = {
         healthRegen: 0.5, // per second
     },
     field_medic: {
-        speedBoost: 1.5,
+        speedBoost: 1,
     },
     tree_climbing: {
         waterSpeedBoost: 2,
