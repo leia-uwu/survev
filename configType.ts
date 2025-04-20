@@ -207,6 +207,12 @@ export interface ConfigType {
          * Can also run `openssl rand -base64 32` to generate one
          */
         SURVEV_LOADOUT_SECRET: string;
+
+        /**
+         * Used to encode IP addresses on the database
+         */
+        SURVEV_IP_SECRET: string;
+
         /**
          * Discord client ID.
          * If this and the secret ID are present the discord login button will be enabled client-side.

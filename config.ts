@@ -51,6 +51,7 @@ export function getConfig(isProduction: boolean, dir: string) {
         secrets: {
             SURVEV_API_KEY: "",
             SURVEV_LOADOUT_SECRET: "",
+            SURVEV_IP_SECRET: "",
         },
         cachingEnabled: false,
         rateLimitsEnabled: isProduction,
@@ -98,6 +99,7 @@ export function getConfig(isProduction: boolean, dir: string) {
                 secrets: {
                     SURVEV_API_KEY: randomBytes(64).toString("base64"),
                     SURVEV_LOADOUT_SECRET: randomBytes(32).toString("base64"),
+                    SURVEV_IP_SECRET: randomBytes(32).toString("base64"),
                 },
             };
         }
@@ -113,6 +115,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             secrets: {
                 SURVEV_API_KEY: randomBytes(64).toString("base64"),
                 SURVEV_LOADOUT_SECRET: randomBytes(32).toString("base64"),
+                SURVEV_IP_SECRET: randomBytes(32).toString("base64"),
             },
         };
 
