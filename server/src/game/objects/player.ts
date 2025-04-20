@@ -2539,6 +2539,11 @@ export class Player extends BaseGameObject {
         this.downedDamageTicker = GameConfig.player.downedDamageBuffer;
         this.boost = 0;
         this.health = 100;
+
+        if (this.game.gas.currentRad <= 0.1) {
+            this.health = 50;
+        }
+
         this.animType = GameConfig.Anim.None;
         this.setDirty();
 
