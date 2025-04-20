@@ -2407,6 +2407,8 @@ export class Player extends BaseGameObject {
         if (this._health < 0) this._health = 0;
         if (this.dead) return;
         if (this.downed && this.downedDamageTicker > 0) return;
+        // cobalt players on role picker menu
+        if (this.game.map.perkMode && !this.role) return;
 
         const sourceIsPlayer = params.source?.__type === ObjectType.Player;
 
@@ -3107,6 +3109,7 @@ export class Player extends BaseGameObject {
         this.ack = msg.seq;
 
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
 
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
@@ -4029,6 +4032,7 @@ export class Player extends BaseGameObject {
 
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
@@ -4160,6 +4164,7 @@ export class Player extends BaseGameObject {
 
     emoteFromMsg(msg: net.EmoteMsg) {
         if (this.dead) return;
+        if (this.game.map.perkMode && !this.role) return;
         if (this.emoteHardTicker > 0) return;
 
         const emoteMsg = msg as net.EmoteMsg;
