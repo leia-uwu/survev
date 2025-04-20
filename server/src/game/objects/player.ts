@@ -245,7 +245,7 @@ export class PlayerBarn {
             const player = this.players[i];
             player.update(dt);
 
-            if (sendWinEmote) {
+            if (!player.dead && sendWinEmote) {
                 player.emoteFromSlot(EmoteSlot.Win);
             }
         }
