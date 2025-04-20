@@ -1,4 +1,6 @@
 import { isIP } from "net";
+import type { Context } from "hono";
+import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
@@ -18,8 +20,21 @@ export function cors(res: HttpResponse): void {
         .writeHeader("Access-Control-Max-Age", "3600");
 }
 
+export function getHonoIp(c: Context, proxyHeader?: string): string | undefined {
+    const ip = proxyHeader
+        ? c.req.header(proxyHeader)
+        : c.env?.incoming?.socket?.remoteAddress;
+
+    if (!ip || isIP(ip) == 0) return undefined;
+    if (ip.includes("::ffff:")) return ip.split("::ffff:")[1];
+    return ip;
+}
+
 export function forbidden(res: HttpResponse): void {
-    res.writeStatus("403 Forbidden").end("403 Forbidden");
+    res.cork(() => {
+        if (res.aborted) return;
+        res.writeStatus("403 Forbidden").end("403 Forbidden");
+    });
 }
 
 export function returnJson(res: HttpResponse, data: Record<string, unknown>): void {
@@ -91,25 +106,52 @@ const badWordsFilter = [
     /ch[i1líĩî|!]nks?/i,
 ];
 
-export function validateUserName(name: string) {
-    if (!name || typeof name !== "string") return "Player";
+export function checkForBadWords(name: string) {
+    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
+
+    for (const regex of badWordsFilter) {
+        if (name.match(regex) || santized.match(regex)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const allowedCharsRegex =
+    /[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g;
+
+export function validateUserName(name: string): {
+    originalWasInvalid: boolean;
+    validName: string;
+} {
+    const randomNumber = Math.random().toString(10).slice(2, 6);
+
+    const defaultName = Config.randomizeDefaultPlayerName
+        ? `Player#${randomNumber}`
+        : "Player";
+
+    if (!name || typeof name !== "string")
+        return {
+            originalWasInvalid: true,
+            validName: defaultName,
+        };
 
     name = name
         .trim()
         .substring(0, Constants.PlayerNameMaxLen)
         // remove extended ascii etc
-        .replace(/[^A-Za-z 0-9 \.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]*/g, "");
+        .replace(allowedCharsRegex, "");
 
-    if (!name.length) return "Player";
+    if (!name.length || checkForBadWords(name))
+        return {
+            originalWasInvalid: true,
+            validName: defaultName,
+        };
 
-    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
-
-    for (const regex of badWordsFilter) {
-        if (name.match(regex) || santized.match(regex)) {
-            return "Player";
-        }
-    }
-    return name;
+    return {
+        originalWasInvalid: false,
+        validName: name,
+    };
 }
 
 const textDecoder = new TextDecoder();
@@ -119,7 +161,7 @@ const textDecoder = new TextDecoder();
  */
 export function getIp(res: HttpResponse, req: HttpRequest, proxyHeader?: string) {
     const ip = proxyHeader
-        ? req.getHeader(proxyHeader)
+        ? req.getHeader(proxyHeader.toLowerCase())
         : textDecoder.decode(res.getRemoteAddressAsText());
 
     if (!ip || isIP(ip) == 0) return undefined;
@@ -256,5 +298,113 @@ export class HTTPRateLimit {
         } else {
             return ++ipData.count > this.limit;
         }
+    }
+}
+
+const proxyCheck = Config.secrets.PROXYCHECK_KEY
+    ? new ProxyCheck({
+          api_key: Config.secrets.PROXYCHECK_KEY,
+      })
+    : undefined;
+
+const proxyCheckCache = new Map<
+    string,
+    {
+        info: IPAddressInfo;
+        expiresAt: number;
+    }
+>();
+
+export async function isBehindProxy(ip: string): Promise<boolean> {
+    if (!proxyCheck) return false;
+
+    let info: IPAddressInfo | undefined = undefined;
+    const cached = proxyCheckCache.get(ip);
+    if (cached && cached.expiresAt > Date.now()) {
+        info = cached.info;
+    }
+    if (!info) {
+        try {
+            const proxyRes = await proxyCheck.checkIP(ip);
+            switch (proxyRes.status) {
+                case "ok":
+                case "warning":
+                    info = proxyRes[ip];
+                    if (proxyRes.status === "warning") {
+                        console.warn(`ProxyCheck warning, res:`, proxyRes);
+                    }
+                    break;
+                case "denied":
+                case "error":
+                    console.error(`Failed to check for ip ${ip}:`, proxyRes);
+                    break;
+            }
+        } catch (error) {
+            console.error(`Proxycheck error:`, error);
+            return true;
+        }
+    }
+    if (!info) {
+        return true;
+    }
+    proxyCheckCache.set(ip, {
+        info,
+        expiresAt: Date.now() + 60 * 60 * 24, // a day
+    });
+
+    return info.proxy === "yes" || info.vpn === "yes";
+}
+
+export async function fetchApiServer<
+    Body extends object = object,
+    Res extends object = object,
+>(route: string, body: Body): Promise<Res | undefined> {
+    const url = `${Config.gameServer.apiServerUrl}/${route}`;
+
+    try {
+        const res = await fetch(url, {
+            method: "post",
+            headers: {
+                "content-type": "application/json",
+                "survev-api-key": Config.secrets.SURVEV_API_KEY,
+            },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(5000),
+        });
+
+        if (res.ok) {
+            return res as Res;
+        }
+
+        console.warn(`Error fetching API server ${route}`, res.status, res.statusText);
+    } catch (err) {
+        console.warn(`Error fetching API server ${route}`, err);
+    }
+
+    return undefined;
+}
+
+// @TODO: format the errors sent better
+export function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
+    if (!Config.errorLoggingWebhook) return;
+    try {
+        const payload = {
+            from,
+            region: `[${Config.gameServer.thisRegion.toUpperCase()}]`,
+            timestamp: new Date().toISOString(),
+            messages: messages.map((msg) =>
+                typeof msg === "object" ? JSON.stringify(msg) : String(msg),
+            ),
+        };
+
+        fetch(Config.errorLoggingWebhook, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+    } catch (err) {
+        console.warn("Failed to log error to webhook", err);
     }
 }

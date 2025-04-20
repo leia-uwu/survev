@@ -21,6 +21,8 @@ export class Group {
     maxPlayers: number;
     reservedSlots = 0;
 
+    totalCount = 0;
+
     canJoin(players: number) {
         return (
             this.maxPlayers - this.reservedSlots - players >= 0 &&
@@ -59,6 +61,7 @@ export class Group {
         player.playerStatusDirty = true;
         this.players.push(player);
         this.livingPlayers.push(player);
+        this.totalCount++;
         this.allDeadOrDisconnected = false;
         this.checkPlayers();
     }

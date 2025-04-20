@@ -1,23 +1,50 @@
 {
   "name": "@survev/server",
   "private": true,
+  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "start:api": "NODE_ENV=production node --enable-source-maps dist/server/src/apiServer.js --api-server",
-    "start:game": "NODE_ENV=production node --enable-source-maps dist/server/src/gameServer.js --game-server",
-    "start:dev": "NODE_ENV=production node --enable-source-maps dist/server/src/devServer.js",
-    "dev": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/devServer.ts",
-    "dev:api": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/apiServer.ts --api-server",
-    "dev:game": "node -r ts-node/register --watch --watch-preserve-output --watch-path=../shared --watch-path=./src src/gameServer.ts --game-server"
+    "build": "tsx src/build.ts",
+    "typecheck": "tsc",
+    "start:api": "node --enable-source-maps dist/index.js",
+    "start:game": "node --enable-source-maps dist/gameServer.js",
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\"",
+    "dev:api": "tsx watch --clear-screen=false --include ../survev-config.hjson src/api/index.ts",
+    "dev:game": "tsx watch --clear-screen=false --include ../survev-config.hjson src/gameServer.ts",
+    "db:generate": "drizzle-kit generate --config=src/api/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=src/api/drizzle.config.ts",
+    "db:seed": "tsx src/api/db/seed.ts",
+    "db:studio": "drizzle-kit studio --config=src/api/drizzle.config.ts",
+    "db:wipe": "rm -rf src/api/db/drizzle && tsx src/api/db/wipe.ts"
   },
   "dependencies": {
+    "@hono/node-server": "^1.14.1",
+    "@hono/node-ws": "^1.1.1",
+    "@hono/zod-validator": "^0.2.2",
+    "@oslojs/crypto": "^1.0.1",
+    "arctic": "^1.9.2",
+    "better-sqlite3": "^11.9.1",
+    "croner": "^9.0.0",
+    "dotenv": "^16.5.0",
+    "drizzle-orm": "^0.38.4",
+    "hono": "^4.7.7",
     "nanotimer": "^0.3.15",
-    "typescript": "^5.8.2",
-    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.51.0"
+    "pg": "^8.14.1",
+    "proxycheck-ts": "^0.0.11",
+    "redis": "^4.7.0",
+    "slugify": "^1.6.6",
+    "typescript": "^5.8.3",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.51.0",
+    "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/nanotimer": "^0.3.2",
-    "@types/node": "^22.13.13",
-    "ts-node": "^10.9.2"
+    "@types/node": "^22.14.1",
+    "@types/pg": "^8.11.13",
+    "concurrently": "^9.1.2",
+    "drizzle-kit": "^0.30.6",
+    "esbuild": "^0.25.2",
+    "tsx": "^4.19.3",
+    "unique-username-generator": "^1.4.0"
   }
 }

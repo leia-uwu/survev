@@ -1,11 +1,17 @@
-import { GameConfig, TeamMode } from "../../../shared/gameConfig";
+import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";
 import { Logger } from "../utils/logger";
-import type { ServerGameConfig } from "./gameManager";
+import { fetchApiServer } from "../utils/serverHelpers";
+import {
+    type FindGamePrivateBody,
+    ProcessMsgType,
+    type SaveGameBody,
+    type ServerGameConfig,
+    type UpdateDataMsg,
+} from "../utils/types";
 import { GameModeManager } from "./gameModeManager";
-import { ProcessMsgType, type UpdateDataMsg } from "./gameProcessManager";
 import { Grid } from "./grid";
 import { GameMap } from "./map";
 import { AirdropBarn } from "./objects/airdrop";
@@ -23,17 +29,15 @@ import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
 
-export interface GroupData {
-    hash: string;
-    autoFill: boolean;
-}
-
 export interface JoinTokenData {
-    autoFill: boolean;
-    playerCount: number;
-    availableUses: number;
     expiresAt: number;
-    groupHashToJoin: string;
+    userId: string | null;
+    findGameIp: string;
+    groupData: {
+        autoFill: boolean;
+        playerCount: number;
+        groupHashToJoin: string;
+    };
 }
 
 export class Game {
@@ -42,6 +46,7 @@ export class Game {
     allowJoin = true;
     over = false;
     startedTime = 0;
+    startTicker = 0;
     id: string;
     teamMode: TeamMode;
     mapName: string;
@@ -97,7 +102,7 @@ export class Game {
     constructor(
         id: string,
         config: ServerGameConfig,
-        readonly sendSocketMsg: (id: string, data: ArrayBuffer) => void,
+        readonly sendSocketMsg: (id: string, data: Uint8Array) => void,
         readonly closeSocket: (id: string) => void,
         readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
@@ -156,6 +161,13 @@ export class Game {
         if (!this.now) this.now = now;
         const dt = (now - this.now) / 1000;
         this.now = now;
+
+        if (!this.started) {
+            this.started = this.modeManager.isGameStarted();
+            if (this.started) {
+                this.gas.advanceGasStage();
+            }
+        }
 
         if (this.started) this.startedTime += dt;
 
@@ -283,7 +295,7 @@ export class Game {
         };
     }
 
-    handleMsg(buff: ArrayBuffer | Buffer, socketId: string): void {
+    handleMsg(buff: ArrayBuffer | Buffer, socketId: string, ip: string): void {
         if (!(buff instanceof ArrayBuffer)) return;
 
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
@@ -304,7 +316,7 @@ export class Game {
         if (!msg) return;
 
         if (type === net.MsgType.Join && !player) {
-            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg);
+            this.playerBarn.addPlayer(socketId, msg as net.JoinMsg, ip);
             return;
         }
 
@@ -350,7 +362,7 @@ export class Game {
         player.spectating = undefined;
         player.dir = v2.create(0, 0);
         player.setPartDirty();
-        if (player.timeAlive < GameConfig.player.minActiveTime && !player.downed) {
+        if (player.canDespawn()) {
             player.game.playerBarn.removePlayer(player);
         }
     }
@@ -371,14 +383,21 @@ export class Game {
         }
     }
 
-    addJoinToken(id: string, autoFill: boolean, playerCount: number) {
-        this.joinTokens.set(id, {
-            autoFill,
-            playerCount,
-            availableUses: playerCount,
-            expiresAt: Date.now() + 15000,
+    addJoinTokens(tokens: FindGamePrivateBody["playerData"], autoFill: boolean) {
+        const groupData = {
+            playerCount: tokens.length,
             groupHashToJoin: "",
-        });
+            autoFill,
+        };
+
+        for (const token of tokens) {
+            this.joinTokens.set(token.token, {
+                expiresAt: Date.now() + 10000,
+                userId: token.userId,
+                groupData,
+                findGameIp: token.ip,
+            });
+        }
     }
 
     updateData() {
@@ -405,5 +424,82 @@ export class Game {
         }
         this.logger.log("Game Ended");
         this.updateData();
+        this._saveGameToDatabase();
+    }
+
+    private async _saveGameToDatabase() {
+        const players = this.modeManager.getPlayersSortedByRank();
+        /**
+         * teamTotal is for total teams that started the match, i hope?
+         *
+         * it also seems to be unused by the client so we could also remove it?
+         */
+        const teamTotal = new Set(players.map(({ player }) => player.teamId)).size;
+
+        const values: SaveGameBody["matchData"] = players.map(({ player, rank }) => {
+            return {
+                // *NOTE: userId is optional; we save the game stats for non logged users too
+                userId: player.userId,
+                region: Config.gameServer.thisRegion,
+                username: player.name,
+                playerId: player.matchDataId,
+                teamMode: this.teamMode,
+                teamCount: player.group?.totalCount ?? 1,
+                teamTotal: teamTotal,
+                teamId: player.teamId,
+                timeAlive: Math.round(player.timeAlive),
+                died: player.dead,
+                kills: player.kills,
+                damageDealt: Math.round(player.damageDealt),
+                damageTaken: Math.round(player.damageTaken),
+                killerId: player.killedBy?.matchDataId || 0,
+                gameId: this.id,
+                mapId: this.map.mapId,
+                mapSeed: this.map.seed,
+                killedIds: player.killedIds,
+                rank: rank,
+                ip: player.ip,
+                findGameIp: player.findGameIp,
+            };
+        });
+
+        // only save the game if it has more than 2 players lol
+        if (values.length < 2) return;
+
+        // FIXME: maybe move this to the parent game server process?
+        // to avoid blocking the game from being GC'd until this request is done
+        // and opening a database in each process if it fails
+        // etc
+        const res = await fetchApiServer<SaveGameBody, { error: string }>(
+            "private/save_game",
+            {
+                matchData: values,
+            },
+        );
+
+        if (!res || res.error) {
+            this.logger.warn(`Failed to save game data, saving locally instead`);
+
+            // we dump the game  to a local db if we failed to save;
+            // avoid importing sqlite and creating the database at process startup
+            // since this code should rarely run anyway
+            const sqliteDb = (await import("better-sqlite3")).default(
+                "lost_game_data.db",
+            );
+
+            sqliteDb
+                .prepare(`
+                    CREATE TABLE IF NOT EXISTS lost_game_data (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        data TEXT NOT NULL,
+                        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                `)
+                .run();
+
+            sqliteDb
+                .prepare("INSERT INTO lost_game_data (data) VALUES (?)")
+                .run(JSON.stringify(values));
+        }
     }
 }

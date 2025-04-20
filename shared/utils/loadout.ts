@@ -1,18 +1,35 @@
-import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
-import type { UnlockDefs } from "../../../shared/defs/gameObjects/unlockDefs";
-import { GameConfig } from "../../../shared/gameConfig";
-import type { Crosshair } from "../crosshair";
-import { deepEqual } from "../lib/deepEqual";
+import { z } from "zod";
 
-export interface Loadout {
-    player_icon: string;
-    outfit: string;
-    heal: string;
-    boost: string;
-    melee: string;
-    emotes: string[];
-    crosshair: Crosshair;
-}
+import { GameObjectDefs } from "../defs/gameObjectDefs";
+import { UnlockDefs } from "../defs/gameObjects/unlockDefs";
+import { GameConfig } from "../gameConfig";
+import { deepEqual } from "./deepEqual";
+
+export type Item = {
+    type: string;
+    timeAcquired: number;
+    source: string;
+    status?: ItemStatus;
+    ackd?: ItemStatus.Ackd;
+};
+
+export const loadoutSchema = z.object({
+    outfit: z.string(),
+    melee: z.string(),
+    heal: z.string(),
+    boost: z.string(),
+    player_icon: z.string(),
+    crosshair: z.object({
+        type: z.string(),
+        color: z.number(),
+        size: z.string(),
+        stroke: z.string(),
+    }),
+    emotes: z.array(z.string()).length(6),
+});
+
+export type Loadout = z.infer<typeof loadoutSchema>;
+export type Crosshair = Loadout["crosshair"];
 
 export enum ItemStatus {
     New,
@@ -20,21 +37,17 @@ export enum ItemStatus {
     Ackd,
 }
 
-const loadout = {
+export const loadout = {
     ItemStatus,
-    validate: function (userLoadout: Loadout) {
-        const getGameType = function (
-            type: string,
-            gameType: string,
-            defaultValue: string,
-        ) {
+    validate: (userLoadout: Loadout): Loadout => {
+        const getGameType = (type: string, gameType: string, defaultValue: string) => {
             const def = GameObjectDefs[gameType];
             if (def && def.type == type) {
                 return gameType;
             }
             return defaultValue;
         };
-        const getFloat = function (flt: string, defaultValue: number) {
+        const getFloat = (flt: string, defaultValue: number) => {
             const val = parseFloat(flt);
             if (Number.isNaN(val)) {
                 return defaultValue;
@@ -68,14 +81,8 @@ const loadout = {
                 color:
                     parseInt(mergedLoadout.crosshair.color as unknown as string) ||
                     0xffffff,
-                size: getFloat(
-                    mergedLoadout.crosshair.size as unknown as string,
-                    1,
-                ).toFixed(2) as unknown as number,
-                stroke: getFloat(
-                    mergedLoadout.crosshair.stroke as unknown as string,
-                    0,
-                ).toFixed(2) as unknown as number,
+                size: getFloat(mergedLoadout.crosshair.size, 1).toFixed(2),
+                stroke: getFloat(mergedLoadout.crosshair.stroke, 0).toFixed(2),
             },
             emotes: [] as string[],
         };
@@ -90,45 +97,40 @@ const loadout = {
         }
         return validatedLoadout;
     },
-    /* not used
-    validateWithAvailableItems: function(userLoadout, userItems) {
-        const checkTypeExists = function(type, items) {
-            if (
-                type &&
-                items.findIndex((x) => {
-                    return x.type == type;
-                }) !== -1
-            ) {
+    validateWithAvailableItems: (userLoadout: Loadout, userItems: { type: string }[]) => {
+        const unlockedItems = new Set([
+            ...(userItems?.map((item) => item.type) || []),
+            ...UnlockDefs.unlock_default.unlocks,
+        ]);
+        const checkTypeExists = (type: string) => {
+            if (type && unlockedItems.has(type)) {
                 return type;
             }
             return "";
         };
-        const loadout = {
-            crosshair: {},
-            emotes: [],
-            ...userLoadout
+        const newLoadout: Loadout = {
+            ...{
+                crosshair: {},
+                emotes: [],
+            },
+            ...userLoadout,
         };
-        const itemsToCheck = ["outfit", "melee", "heal", "boost", "player_icon"];
+        const itemsToCheck = ["outfit", "melee", "heal", "boost", "player_icon"] as const;
 
-        itemsToCheck.forEach(item => {
-            loadout[item] = checkTypeExists(loadout[item], userItems);
+        itemsToCheck.forEach((item) => {
+            newLoadout[item] = checkTypeExists(newLoadout[item]);
         });
 
-        loadout.crosshair.type = checkTypeExists(loadout.crosshair.type, userItems);
+        newLoadout.crosshair.type = checkTypeExists(newLoadout.crosshair.type);
 
-        loadout.emotes = loadout.emotes.map(emote => checkTypeExists(loadout.emotes[emote], userItems));
+        newLoadout.emotes = newLoadout.emotes.map((emote) => checkTypeExists(emote));
 
-        return loadout.validate(loadout);
+        return loadout.validate(newLoadout);
     },
-    */
-    defaultLoadout: function () {
-        return loadout.validate({} as Loadout);
-    },
-    modified: function (a: Loadout, b: Loadout) {
-        return !deepEqual(a, b);
-    },
-    getUserAvailableItems: function (heroItems: unknown[]) {
-        const items = [];
+    defaultLoadout: () => loadout.validate({} as Loadout),
+    modified: (a: Loadout, b: Loadout) => !deepEqual(a, b),
+    getUserAvailableItems: (heroItems: Item[]) => {
+        const items: typeof heroItems = [];
         // Add default items
         const unlockDefaultDef =
             GameObjectDefs.unlock_default as unknown as (typeof UnlockDefs)["unlock_default"];

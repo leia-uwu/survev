@@ -1,32 +1,15 @@
-import { randomBytes } from "crypto";
+import { randomUUID } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
-import type { MapDefs } from "../../../shared/defs/mapDefs";
-import type { TeamMode } from "../../../shared/gameConfig";
 import { Config } from "../config";
-import type { FindGameBody, GameSocketData } from "../gameServer";
+import type {
+    FindGamePrivateBody,
+    GameData,
+    GameSocketData,
+    ServerGameConfig,
+} from "../utils/types";
 import { Game } from "./game";
-
-export interface ServerGameConfig {
-    readonly mapName: keyof typeof MapDefs;
-    readonly teamMode: TeamMode;
-}
-
-export interface GameData {
-    id: string;
-    teamMode: TeamMode;
-    mapName: string;
-    canJoin: boolean;
-    aliveCount: number;
-    startedTime: number;
-    stopped: boolean;
-}
-
-export interface FindGameResponse {
-    gameId: string;
-    data: string;
-}
 
 export abstract class GameManager {
     abstract sockets: Map<string, WebSocket<GameSocketData>>;
@@ -35,7 +18,7 @@ export abstract class GameManager {
 
     abstract getById(id: string): GameData | undefined;
 
-    abstract findGame(body: FindGameBody): Promise<FindGameResponse>;
+    abstract findGame(body: FindGamePrivateBody): Promise<string>;
 
     abstract onOpen(socketId: string, socket: WebSocket<GameSocketData>): void;
 
@@ -115,7 +98,7 @@ export class SingleThreadGameManager implements GameManager {
     }
 
     async newGame(config: ServerGameConfig): Promise<Game> {
-        const id = randomBytes(20).toString("hex");
+        const id = randomUUID();
         const game = new Game(
             id,
             config,
@@ -139,7 +122,7 @@ export class SingleThreadGameManager implements GameManager {
         return this.gamesById.get(id);
     }
 
-    async findGame(body: FindGameBody): Promise<FindGameResponse> {
+    async findGame(body: FindGamePrivateBody): Promise<string> {
         const config = Config.modes[body.gameModeIdx];
 
         let game = this.games
@@ -162,13 +145,9 @@ export class SingleThreadGameManager implements GameManager {
             });
         }
 
-        const id = randomBytes(20).toString("hex");
-        game.addJoinToken(id, body.autoFill, body.playerCount);
+        game.addJoinTokens(body.playerData, body.autoFill);
 
-        return {
-            gameId: game.id,
-            data: id,
-        };
+        return game.id;
     }
 
     onOpen(socketId: string, socket: WebSocket<GameSocketData>): void {
@@ -184,7 +163,7 @@ export class SingleThreadGameManager implements GameManager {
     onMsg(socketId: string, msg: ArrayBuffer): void {
         const data = this.sockets.get(socketId)?.getUserData();
         if (!data) return;
-        this.gamesById.get(data.gameId)?.handleMsg(msg, socketId);
+        this.gamesById.get(data.gameId)?.handleMsg(msg, socketId, data.ip);
     }
 
     onClose(socketId: string) {

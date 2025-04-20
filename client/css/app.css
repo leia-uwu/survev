@@ -2144,6 +2144,7 @@ a:active {
   z-index: 1;
 }
 
+/*
 @media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   .account-buttons-wrapper {
     background-color: transparent !important;
@@ -2151,6 +2152,7 @@ a:active {
     width: 60% !important;
   }
 }
+*/
 
 @media (max-width: 850px), (max-width: 900px) and (min-resolution: 3dppx) {
   #modal-account-avatar > .modal-content {
@@ -2471,6 +2473,12 @@ a:active {
 }
 
 .btn-login-facebook {
+  background-color: #3b579d;
+  border-bottom: 2px solid #253763;
+  box-shadow: inset 0 -2px #253763;
+}
+
+.btn-login-mock {
   background-color: #3b579d;
   border-bottom: 2px solid #253763;
   box-shadow: inset 0 -2px #253763;
@@ -4559,6 +4567,25 @@ input [type="image"]:focus {
 
 #modal-refresh .modal-footer .close-footer {
   font-size: 18px;
+}
+
+#modal-ip-banned {
+  background-color: #000;
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+#modal-ip-banned .modal-content {
+  text-decoration: none;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 50%;
+  animation-name: fadeIn;
+  animation-duration: 0.2s;
+}
+
+#modal-ip-banned .modal-body {
+  background: #000;
+  color: #fff;
 }
 
 #modal-customize {

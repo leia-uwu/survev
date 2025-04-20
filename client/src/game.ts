@@ -175,7 +175,6 @@ export class Game {
                     joinMessage.isMobile = device.mobile || window.mobile!;
                     joinMessage.bot = false;
                     joinMessage.loadout = this.m_config.get("loadout")!;
-
                     this.m_sendMessage(net.MsgType.Join, joinMessage, 8192);
                 };
                 this.m_ws.onmessage = (e) => {

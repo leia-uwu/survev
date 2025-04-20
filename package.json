@@ -1,9 +1,13 @@
 {
   "name": "survev",
   "version": "0.0.22",
+  "type": "module",
   "description": "Open Source Surviv.io Server",
   "scripts": {
+    "survev-setup": "pnpm install && tsx setup.ts",
     "dev:server": "cd server && pnpm dev",
+    "dev:api": "cd server && pnpm dev:api",
+    "dev:game": "cd server && pnpm dev:game",
     "dev:client": "cd client && pnpm dev",
     "lint": "biome check --write",
     "lint:ci": "biome check"
@@ -15,13 +19,19 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^22.13.13",
-    "typescript": "^5.8.2"
+    "@types/hjson": "^2.4.6",
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
   },
   "workspaces": [
     "client",
     "server",
     "shared"
   ],
-  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c",
+  "dependencies": {
+    "enquirer": "^2.4.1",
+    "hjson": "^3.2.2",
+    "tsx": "^4.19.3"
+  }
 }

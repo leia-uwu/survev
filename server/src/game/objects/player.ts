@@ -20,7 +20,6 @@ import type { OutfitDef } from "../../../../shared/defs/gameObjects/outfitDefs";
 import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import type { RoleDef } from "../../../../shared/defs/gameObjects/roleDefs";
 import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwableDefs";
-import { UnlockDefs } from "../../../../shared/defs/gameObjects/unlockDefs";
 import {
     type Action,
     type Anim,
@@ -37,6 +36,7 @@ import { assert, util } from "../../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../../shared/utils/v2";
 import { Config } from "../../config";
 import { IDAllocator } from "../../utils/IDAllocator";
+import { setLoadout } from "../../utils/loadoutHelpers";
 import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
@@ -103,6 +103,10 @@ export class PlayerBarn {
 
     bagSizes: (typeof GameConfig)["bagSizes"];
 
+    nextMatchDataId = 1;
+
+    nextKilledNumber = 0;
+
     constructor(readonly game: Game) {
         this.bagSizes = util.mergeDeep(
             {},
@@ -118,17 +122,17 @@ export class PlayerBarn {
         return livingPlayers[util.randomInt(0, livingPlayers.length - 1)];
     }
 
-    addPlayer(socketId: string, joinMsg: net.JoinMsg) {
+    addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now() || joinData.availableUses <= 0) {
+        if (!joinData || joinData.expiresAt < Date.now()) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
             }
             return;
         }
-        joinData.availableUses -= 1;
+        this.game.joinTokens.delete(joinMsg.matchPriv);
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
@@ -163,7 +167,16 @@ export class PlayerBarn {
             layer = 0;
         }
 
-        const player = new Player(this.game, pos, layer, socketId, joinMsg);
+        const player = new Player(
+            this.game,
+            pos,
+            layer,
+            socketId,
+            joinMsg,
+            ip,
+            joinData.findGameIp,
+            joinData.userId,
+        );
 
         this.socketIdToPlayer.set(socketId, player);
 
@@ -208,13 +221,6 @@ export class PlayerBarn {
         }
         this.aliveCountDirty = true;
         this.game.pluginManager.emit("playerJoin", player);
-
-        if (!this.game.started) {
-            this.game.started = this.game.modeManager.isGameStarted();
-            if (this.game.started) {
-                this.game.gas.advanceGasStage();
-            }
-        }
 
         this.game.updateData();
 
@@ -379,20 +385,21 @@ export class PlayerBarn {
         this.teams.push(team);
     }
 
-    getGroupAndTeam(joinData: JoinTokenData):
+    getGroupAndTeam({ groupData }: JoinTokenData):
         | {
               group?: Group;
               team?: Team;
           }
         | undefined {
         if (!this.game.isTeamMode) return undefined;
-        let group = this.groupsByHash.get(joinData.groupHashToJoin);
+
+        let group = this.groupsByHash.get(groupData.groupHashToJoin);
         let team = this.game.map.factionMode ? this.getSmallestTeam() : undefined;
 
-        if (!group && joinData.autoFill) {
+        if (!group && groupData.autoFill) {
             const groups = team ? team.getGroups() : this.groups;
             group = groups.find((group) => {
-                return group.autoFill && group.canJoin(joinData.playerCount);
+                return group.autoFill && group.canJoin(groupData.playerCount);
             });
         }
 
@@ -400,17 +407,17 @@ export class PlayerBarn {
         // but keeping it just in case
         // since more than 4 players in a group crashes the client
         if (!group || group.players.length >= this.game.teamMode) {
-            group = this.addGroup(joinData.autoFill);
+            group = this.addGroup(groupData.autoFill);
         }
 
         // only reserve slots on the first time this join token is used
         // since the playerCount counts for other people from the team menu
         // using the same token
-        if (group.hash !== joinData.groupHashToJoin) {
-            group.reservedSlots += joinData.playerCount;
+        if (group.hash !== groupData.groupHashToJoin) {
+            group.reservedSlots += groupData.playerCount;
         }
 
-        joinData.groupHashToJoin = group.hash;
+        groupData.groupHashToJoin = group.hash;
 
         // pre-existing group not created during this function call
         // players who join from the same group need the same team
@@ -613,7 +620,7 @@ export class Player extends BaseGameObject {
         return this.weaponManager.activeWeapon;
     }
 
-    _disconnected = false;
+    private _disconnected = false;
 
     get disconnected(): boolean {
         return this._disconnected;
@@ -1119,6 +1126,12 @@ export class Player extends BaseGameObject {
 
     damageTaken = 0;
     damageDealt = 0;
+
+    // infinity since we aren't dead yet ;)
+    // this is used for sorting and getting player ranks
+    // first player to die is 0, second is 1 etc
+    killedIndex = Infinity;
+
     kills = 0;
     timeAlive = 0;
 
@@ -1132,20 +1145,41 @@ export class Player extends BaseGameObject {
 
     obstacleOutfit?: Obstacle;
 
+    /**
+     * Only used for match data saving!
+     * __id is for the game itself, __id can be reused when a player despawns
+     * which can break the matchData
+     */
+    matchDataId: number;
+
+    userId: string | null = null;
+    ip: string;
+    // see comment on server/src/api/schema.ts
+    // about logging find_game IP's
+    findGameIp: string;
+
     constructor(
         game: Game,
         pos: Vec2,
         layer: number,
         socketId: string,
         joinMsg: net.JoinMsg,
+        ip: string,
+        findGameIp: string,
+        userId: string | null,
     ) {
         super(game, pos);
+
+        this.matchDataId = game.playerBarn.nextMatchDataId++;
 
         this.layer = layer;
 
         this.socketId = socketId;
+        this.ip = ip;
+        this.findGameIp = findGameIp;
+        this.userId = userId;
 
-        this.name = validateUserName(joinMsg.name);
+        this.name = validateUserName(joinMsg.name).validName;
 
         this.isMobile = joinMsg.isMobile;
 
@@ -1209,54 +1243,7 @@ export class Player extends BaseGameObject {
             this.addPerk(perk.type, perk.droppable);
         }
 
-        /**
-         * Checks if an item is present in the player's loadout
-         */
-        const isItemInLoadout = (item: string, category: string) => {
-            if (!UnlockDefs.unlock_default.unlocks.includes(item)) return false;
-
-            const def = GameObjectDefs[item];
-            if (!def || def.type !== category) return false;
-
-            return true;
-        };
-
-        if (
-            isItemInLoadout(joinMsg.loadout.outfit, "outfit") &&
-            joinMsg.loadout.outfit !== "outfitBase"
-        ) {
-            this.setOutfit(joinMsg.loadout.outfit);
-        } else {
-            this.setOutfit(defaultItems.outfit);
-        }
-
-        if (
-            isItemInLoadout(joinMsg.loadout.melee, "melee") &&
-            joinMsg.loadout.melee != "fists"
-        ) {
-            this.weapons[GameConfig.WeaponSlot.Melee].type = joinMsg.loadout.melee;
-        }
-
-        const loadout = this.loadout;
-
-        if (isItemInLoadout(joinMsg.loadout.heal, "heal")) {
-            loadout.heal = joinMsg.loadout.heal;
-        }
-        if (isItemInLoadout(joinMsg.loadout.boost, "boost")) {
-            loadout.boost = joinMsg.loadout.boost;
-        }
-
-        const emotes = joinMsg.loadout.emotes;
-        for (let i = 0; i < emotes.length; i++) {
-            const emote = emotes[i];
-            if (i > GameConfig.EmoteSlot.Count) break;
-
-            if (emote === "" || !isItemInLoadout(emote, "emote")) {
-                continue;
-            }
-
-            loadout.emotes[i] = emote;
-        }
+        setLoadout(joinMsg, this);
 
         this.weaponManager.showNextThrowable();
         this.recalculateScale();
@@ -2589,11 +2576,13 @@ export class Player extends BaseGameObject {
     }
 
     killedBy: Player | undefined;
+    killedIds: number[] = [];
 
     kill(params: DamageParams): void {
         if (this.dead) return;
         if (this.downed) this.downed = false;
         this.dead = true;
+        this.killedIndex = this.game.playerBarn.nextKilledNumber++;
         this.boost = 0;
         this.actionType = GameConfig.Action.None;
         this.actionSeq++;
@@ -2638,7 +2627,9 @@ export class Player extends BaseGameObject {
         if (params.source instanceof Player) {
             const source = params.source;
             this.killedBy = source;
+
             if (source !== this && source.teamId !== this.teamId) {
+                source.killedIds.push(this.matchDataId);
                 source.kills++;
 
                 if (source.isKillLeader) {
@@ -2655,7 +2646,6 @@ export class Player extends BaseGameObject {
                     this.game.playerBarn.addEmote(0, this.pos, "ping_woodsking", true);
                 }
             }
-
             killMsg.killerId = source.__id;
             killMsg.killCreditId = source.__id;
             killMsg.killerKills = source.kills;
@@ -2675,7 +2665,7 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < 12; i++) {
                 const velocity = v2.mul(v2.randomUnit(), util.random(2, 5));
                 this.game.projectileBarn.addProjectile(
-                    this.playerId,
+                    this.__id,
                     martyrNadeType,
                     this.pos,
                     1,
@@ -2905,6 +2895,12 @@ export class Player extends BaseGameObject {
             return undefined;
         };
         return findAliveKiller(this.killedBy);
+    }
+
+    canDespawn() {
+        return (
+            this.timeAlive < GameConfig.player.minActiveTime && !this.dead && !this.downed
+        );
     }
 
     isReloading() {
@@ -4510,7 +4506,7 @@ export class Player extends BaseGameObject {
         this.sendData(stream.getBuffer());
     }
 
-    sendData(buffer: ArrayBuffer | Uint8Array): void {
+    sendData(buffer: Uint8Array): void {
         this.game.sendSocketMsg(this.socketId, buffer);
     }
 }

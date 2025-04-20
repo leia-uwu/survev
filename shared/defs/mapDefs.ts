@@ -15,6 +15,21 @@ import { Woods } from "./maps/woodsDefs";
 import { WoodsSnow } from "./maps/woodsSnowDefs";
 import { WoodsSpring } from "./maps/woodsSpringDefs";
 import { WoodsSummer } from "./maps/woodsSummerDefs";
+import type { MapId } from "./types/misc";
+
+export type Atlas =
+    | "gradient"
+    | "loadout"
+    | "shared"
+    | "main"
+    | "desert"
+    | "faction"
+    | "halloween"
+    | "potato"
+    | "snow"
+    | "woods"
+    | "cobalt"
+    | "savannah";
 
 export const MapDefs = {
     main: Main,
@@ -35,22 +50,8 @@ export const MapDefs = {
     turkey: Turkey,
 } satisfies Record<string, MapDef>;
 
-export type Atlas =
-    | "gradient"
-    | "loadout"
-    | "shared"
-    | "main"
-    | "desert"
-    | "faction"
-    | "halloween"
-    | "potato"
-    | "snow"
-    | "woods"
-    | "cobalt"
-    | "savannah";
-
 export interface MapDef {
-    mapId: number;
+    mapId: MapId;
     desc: {
         name: string;
         icon: string;
