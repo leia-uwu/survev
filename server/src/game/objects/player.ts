@@ -234,7 +234,6 @@ export class PlayerBarn {
         let sendWinEmoji = false;
         if (this.game.over && !this.sentWinEmotes) {
             this.sendWinEmojiTicker -= dt;
-            console.log(this.sendWinEmojiTicker);
             if (this.sendWinEmojiTicker <= 0) {
                 sendWinEmoji = true;
                 this.sentWinEmotes = true;

@@ -79,7 +79,7 @@ PrivateRouter.post(
 
             const def = GameObjectDefs[item];
 
-            if (!def || !("lootImg" in def)) {
+            if (!def) {
                 return c.json({ error: "Invalid item type" }, 400);
             }
 
