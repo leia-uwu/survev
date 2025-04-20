@@ -1,5 +1,5 @@
 {
-  "id": "606005fc-6654-4521-a5b2-d597b7dbde3f",
+  "id": "34c224cc-04dc-4476-b9fa-588269d6d6e7",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -106,6 +106,12 @@
         },
         "ip": {
           "name": "ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "find_game_ip": {
+          "name": "find_game_ip",
           "type": "text",
           "primaryKey": false,
           "notNull": true
