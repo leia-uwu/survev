@@ -91,6 +91,9 @@ export class PlayerBarn {
         time: number;
     }> = [];
 
+    sendWinEmojiTicker = 0;
+    sentWinEmotes = false;
+
     teams: Team[] = [];
     groups: Group[] = [];
     groupsByHash = new Map<string, Group>();
@@ -228,8 +231,28 @@ export class PlayerBarn {
     }
 
     update(dt: number) {
+        let sendWinEmoji = false;
+        if (this.game.over && !this.sentWinEmotes) {
+            this.sendWinEmojiTicker -= dt;
+            console.log(this.sendWinEmojiTicker);
+            if (this.sendWinEmojiTicker <= 0) {
+                sendWinEmoji = true;
+                this.sentWinEmotes = true;
+            }
+        }
+
         for (let i = 0; i < this.players.length; i++) {
-            this.players[i].update(dt);
+            const player = this.players[i];
+            player.update(dt);
+
+            if (sendWinEmoji) {
+                this.addEmote(
+                    player.__id,
+                    player.pos,
+                    player.loadout.emotes[GameConfig.EmoteSlot.Win],
+                    false,
+                );
+            }
         }
 
         // doing this after updates ensures that gameover msgs sent are always accurate

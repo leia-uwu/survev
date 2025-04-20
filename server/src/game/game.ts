@@ -1,4 +1,4 @@
-import { GameConfig, TeamMode } from "../../../shared/gameConfig";
+import { TeamMode } from "../../../shared/gameConfig";
 import * as net from "../../../shared/net/net";
 import { math } from "../../../shared/utils/math";
 import { v2 } from "../../../shared/utils/v2";
@@ -46,8 +46,9 @@ export class Game {
     stopped = false;
     allowJoin = true;
     over = false;
+    sentWinEMotes = false;
     startedTime = 0;
-    startTicker = 0;
+    stopTicker = 0;
     id: string;
     teamMode: TeamMode;
     mapName: string;
@@ -163,6 +164,14 @@ export class Game {
         const dt = math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
 
         this.now = now;
+
+        if (this.over) {
+            this.stopTicker -= dt;
+            if (this.stopTicker <= 0) {
+                this.stop();
+                return;
+            }
+        }
 
         if (!this.started) {
             this.started = this.modeManager.isGameStarted();
@@ -376,21 +385,16 @@ export class Game {
     checkGameOver(): void {
         if (this.over) return;
         const didGameEnd: boolean = this.modeManager.handleGameEnd();
-        if (didGameEnd) {
-            for (const player of this.playerBarn.livingPlayers) {
-                this.playerBarn.addEmote(
-                    player.__id,
-                    player.pos,
-                    player.loadout.emotes[GameConfig.EmoteSlot.Win],
-                    false,
-                );
-            }
 
+        if (didGameEnd) {
             this.over = true;
+
+            // send win emoji after 1 second
+            this.playerBarn.sendWinEmojiTicker = 1;
+            // stop game after 2
+            this.stopTicker = 2;
+
             this.updateData();
-            setTimeout(() => {
-                this.stop();
-            }, 750);
         }
     }
 
