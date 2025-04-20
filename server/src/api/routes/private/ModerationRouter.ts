@@ -17,7 +17,7 @@ ModerationRouter.post(
     validateParams(
         z.object({
             slug: z.string(),
-            banReason: z.string().default("Banned for cheating."),
+            banReason: z.string().default("Cheating"),
         }),
     ),
     async (c) => {
@@ -40,20 +40,7 @@ ModerationRouter.post(
                 return c.json({ error: "User is already banned." }, 400);
             }
 
-            await db
-                .update(usersTable)
-                .set({
-                    banned: true,
-                    banReason,
-                })
-                .where(eq(usersTable.id, user.id));
-
-            // NOTE: some lb queries join with the userTable so we do
-            // this so it's easier to filter them
-            await db
-                .update(matchDataTable)
-                .set({ userBanned: true })
-                .where(eq(matchDataTable.userId, user.id));
+            await banAccount(user.id, banReason);
 
             return c.json({ message: "User has been banned." }, 200);
         } catch (err) {
@@ -126,7 +113,7 @@ ModerationRouter.post(
             permanent: z.boolean().default(false),
             banAssociatedAccount: z.boolean().default(true),
             durationInDays: z.number().default(7),
-            reason: z.string().default(""),
+            reason: z.string().default("Cheating"),
         }),
     ),
     async (c) => {
@@ -154,6 +141,8 @@ ModerationRouter.post(
                     target: bannedIpsTable.encodedIp,
                     set: {
                         expiresIn: expiresIn,
+                        reason: reason,
+                        permanent: permanent,
                     },
                 });
 
@@ -165,20 +154,18 @@ ModerationRouter.post(
                     },
                 });
                 if (user?.userId) {
-                    await db
-                        .update(usersTable)
-                        .set({
-                            banned: true,
-                            banReason: reason,
-                        })
-                        .where(eq(usersTable.id, user.userId));
+                    await banAccount(user.userId, reason);
                 }
             }
-            if (permanent)
-                return c.json({ message: `IP ${ip} has been permanently banned.` }, 200);
+            if (permanent) {
+                return c.json(
+                    { message: `IP ${encodedIp} has been permanently banned.` },
+                    200,
+                );
+            }
             return c.json(
                 {
-                    message: `IP ${ip} has been banned for ${durationInDays} days.`,
+                    message: `IP ${encodedIp} has been banned for ${durationInDays} days.`,
                 },
                 200,
             );
@@ -279,6 +266,23 @@ ModerationRouter.post("/clear_all_bans", async (c) => {
         return c.json({ error: "An unexpected error occurred." }, 500);
     }
 });
+
+async function banAccount(userId: string, banReason: string) {
+    await db
+        .update(usersTable)
+        .set({
+            banned: true,
+            banReason,
+        })
+        .where(eq(usersTable.id, userId));
+
+    // NOTE: some lb queries join with the userTable so we do
+    // this so it's easier to filter them
+    await db
+        .update(matchDataTable)
+        .set({ userBanned: true })
+        .where(eq(matchDataTable.userId, userId));
+}
 
 export async function cleanupOldLogs() {
     try {
