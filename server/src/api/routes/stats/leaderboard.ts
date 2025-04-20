@@ -196,7 +196,7 @@ function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
 
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? (executionTime / 1000).toFixed(2) + "s" : executionTime.toFixed(2) + "ms"} | Params: ${JSON.stringify(params)}`;
+    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? `${(executionTime / 1000).toFixed(2)}s` : `${executionTime.toFixed(2)}ms`} | Params: ${JSON.stringify(params)}`;
 
     fetch(Config.errorLoggingWebhook, {
         method: "POST",

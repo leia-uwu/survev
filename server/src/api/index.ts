@@ -194,7 +194,7 @@ new Cron("0 0 * * *", async () => {
         await deleteExpiredSessions();
         server.logger.log("Deleted old logs and expired sessions");
     } catch (err) {
-        console.error("Failed to run cleanup script");
+        console.error("Failed to run cleanup script", err);
     }
 });
 
