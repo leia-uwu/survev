@@ -364,12 +364,12 @@ export const Main: MapDef = {
             { name: "ot38_dual", count: 1, weight: 1 },
         ],
         tier_guns_common_sniper: [
-            { name: "blr81", count: 1, weight: 1 },
+            { name: "blr", count: 1, weight: 1 },
             { name: "mosin", count: 1, weight: 0.1 },
         ],
         tier_guns_common_healer: [
             { name: "mk12", count: 1, weight: 1 },
-            { name: "m39_emr", count: 1, weight: 1 },
+            { name: "m39", count: 1, weight: 1 },
         ],
         tier_guns_common_demo: [
             { name: "m870", count: 1, weight: 1 },
