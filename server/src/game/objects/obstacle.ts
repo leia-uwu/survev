@@ -550,7 +550,7 @@ export class Obstacle extends BaseGameObject {
 
     unlock(): void {
         this.interact(undefined, true);
-        this.game.playerBarn.addEmote(0, this.pos, "ping_unlock", true);
+        this.game.playerBarn.addMapPing("ping_unlock", this.pos);
     }
 
     useButton(): void {

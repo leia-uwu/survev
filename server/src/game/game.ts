@@ -390,7 +390,7 @@ export class Game {
             this.over = true;
 
             // send win emoji after 1 second
-            this.playerBarn.sendWinEmojiTicker = 1;
+            this.playerBarn.sendWinEmoteTicker = 1;
             // stop game after 2
             this.stopTicker = 2;
 

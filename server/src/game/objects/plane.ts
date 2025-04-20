@@ -196,7 +196,7 @@ export class PlaneBarn {
             airstrikeInterval,
         );
         this.airstrikeZones.push(zone);
-        this.game.playerBarn.addEmote(0, pos, "ping_airstrike", true);
+        this.game.playerBarn.addMapPing("ping_airstrike", pos);
     }
 
     canDropSpecialAirdrop(): boolean {

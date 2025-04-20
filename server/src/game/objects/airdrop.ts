@@ -18,7 +18,7 @@ export class AirdropBarn {
     addAirdrop(pos: Vec2, type: string) {
         const airdrop = new Airdrop(this.game, pos, type);
         this.airdrops.push(airdrop);
-        this.game.playerBarn.addEmote(0, pos, "ping_airdrop", true);
+        this.game.playerBarn.addMapPing("ping_airdrop", pos);
         this.game.objectRegister.register(airdrop);
     }
 
