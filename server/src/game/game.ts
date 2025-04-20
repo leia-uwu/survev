@@ -234,7 +234,7 @@ export class Game {
         return (
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
-            this.gas.stage < 2
+            this.startedTime < 60
         );
     }
 
