@@ -100,10 +100,10 @@ export class SiteInfo {
                     }
                 }
 
-                if (!style.enabled) {
-                    btn.addClass("btn-disabled-main");
-                }
+                btn.toggle(style.enabled);
             }
+            const supportsTeam = this.info.modes.some((s) => s.enabled && s.teamMode > 1);
+            $("#btn-join-team, #btn-create-team").toggle(supportsTeam);
 
             // Region pops
             const pops = this.info.pops;
