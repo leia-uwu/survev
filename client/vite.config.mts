@@ -135,7 +135,7 @@ export default defineConfig(({ mode }) => {
                     entryFileNames: "js/app-[hash].js",
                     chunkFileNames: "js/[name]-[hash].js",
                     manualChunks(id, _chunkInfo) {
-                        if (id.includes("node_modules")) {
+                        if (id.includes("node_modules") && !id.includes(".css")) {
                             return "vendor";
                         }
                     },
