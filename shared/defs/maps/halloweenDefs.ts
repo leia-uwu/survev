@@ -194,8 +194,6 @@ const mapDef: PartialMapDef = {
             { name: "outfitCrab", count: 1, weight: 1 },
             { name: "outfitStumpAxe", count: 1, weight: 1 },
         ],
-        // seems to be unused? so adding this to suppress the warning
-        tier_pumpkin_candy: [{ name: "", weight: 1, count: 1 }],
     },
     mapGen: {
         map: {

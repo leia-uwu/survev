@@ -207,6 +207,18 @@ export const Main: MapDef = {
             { name: "awc", count: 1, weight: 1 },
             { name: "pkp", count: 1, weight: 1 },
         ],
+        tier_eye_stone: [
+            { name: "vector45", count: 1, weight: 1 },
+            { name: "45acp", count: 1, weight: 1 },
+            { name: "garand", count: 1, weight: 1 },
+            { name: "strobe", count: 1, weight: 1 },
+            { name: "healthkit", count: 1, weight: 1 },
+            { name: "painkiller", count: 1, weight: 1 },
+            { name: "m4a1", count: 1, weight: 0.7 },
+            { name: "m249", count: 1, weight: 0.2 },
+            { name: "awc", count: 1, weight: 0.1 },
+            { name: "pkp", count: 1, weight: 0.1 },
+        ],
         tier_sledgehammer: [{ name: "sledgehammer", count: 1, weight: 1 }],
         tier_chest_04: [
             { name: "p30l", count: 1, weight: 40 }, // ?
@@ -529,6 +541,8 @@ export const Main: MapDef = {
             { name: "outfitVerde", count: 1, weight: 0.1 },
             { name: "outfitDesertCamo", count: 1, weight: 0.1 },
         ],
+        // seems to be unused? so adding this to suppress the warning
+        tier_pumpkin_candy: [{ name: "", weight: 1, count: 1 }],
         tier_pumpkin_perks: [{ name: "halloween_mystery", count: 1, weight: 1 }],
         tier_xp_uncommon: [
             { name: "xp_book_tallow", count: 1, weight: 1 },
