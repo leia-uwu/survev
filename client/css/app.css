@@ -2586,7 +2586,7 @@ a:active {
 
 .account-details {
   display: flex;
-  height: 40px;
+/*   height: 40px; */
   padding: 6px;
   width: 100%;
 }
