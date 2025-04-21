@@ -5,10 +5,12 @@
   "description": "Open Source Surviv.io Server",
   "scripts": {
     "survev-setup": "pnpm install && tsx setup.ts",
+    "dev": "concurrently \"pnpm run dev:api\" \"pnpm run dev:game\" \"pnpm run dev:client\"",
     "dev:server": "cd server && pnpm dev",
     "dev:api": "cd server && pnpm dev:api",
     "dev:game": "cd server && pnpm dev:game",
     "dev:client": "cd client && pnpm dev",
+    "stressTest": "cd server && pnpm stressTest",
     "lint": "biome check --write",
     "lint:ci": "biome check"
   },
@@ -21,6 +23,7 @@
     "@biomejs/biome": "^1.9.4",
     "@types/hjson": "^2.4.6",
     "@types/node": "^22.14.1",
+    "concurrently": "^9.1.2",
     "typescript": "^5.8.3"
   },
   "workspaces": [
