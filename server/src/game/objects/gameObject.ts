@@ -149,6 +149,7 @@ export abstract class BaseGameObject {
     declare __id: number;
     declare __arrayIdx: number;
     __gridCells: Vec2[] = [];
+    __gridQueryId = 0;
     abstract bounds: AABB;
 
     readonly game: Game;

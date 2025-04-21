@@ -1,10 +1,11 @@
-import { type AABB, type Collider, coldet } from "../../../shared/utils/coldet";
+import type { AABB, Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 
 interface GameObject {
     __gridCells: Vec2[];
+    __gridQueryId: number;
     bounds: AABB;
     pos: Vec2;
 }
@@ -20,6 +21,8 @@ export class Grid<T extends GameObject = GameObject> {
     //                        X     Y     Object
     //                      __^__ __^__   __^__
     private readonly _grid: Array<Array<Set<T>>>;
+
+    private nextQueryId = 0;
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
@@ -79,7 +82,28 @@ export class Grid<T extends GameObject = GameObject> {
      * @return An array with the objects near this collider
      */
     intersectCollider(coll: Collider): T[] {
-        return [...this.intersectColliderSet(coll)];
+        const aabb = collider.toAabb(coll);
+
+        const min = this._roundToCells(aabb.min);
+        const max = this._roundToCells(aabb.max);
+
+        const objects: T[] = [];
+
+        const queryId = this.nextQueryId++;
+
+        for (let x = min.x; x <= max.x; x++) {
+            const xRow = this._grid[x];
+            for (let y = min.y; y <= max.y; y++) {
+                const cell = xRow[y];
+                for (const object of cell) {
+                    if (object.__gridQueryId === queryId) continue;
+                    object.__gridQueryId = queryId;
+                    objects.push(object);
+                }
+            }
+        }
+
+        return objects;
     }
 
     /**
@@ -115,9 +139,63 @@ export class Grid<T extends GameObject = GameObject> {
         return [...this._grid[pos.x][pos.y]];
     }
 
-    // TODO: optimize this
     intersectLineSegment(a: Vec2, b: Vec2): T[] {
-        return this.intersectCollider(coldet.lineSegmentToAabb(a, b));
+        // Bresenham's line algorithm for finding only cells that intersect the line
+
+        const start = this._roundToCells(a);
+        const end = this._roundToCells(b);
+
+        const diff = v2.sub(b, a);
+
+        const gridDeltaX = end.x > start.x ? 1 : -1;
+        const gridDeltaY = end.y > start.y ? 1 : -1;
+
+        const deltaX =
+            Math.abs(diff.x) > 0.00001
+                ? (gridDeltaX * this.cellSize) / diff.x
+                : Number.MAX_VALUE;
+        const deltaY =
+            Math.abs(diff.y) > 0.00001
+                ? (gridDeltaY * this.cellSize) / diff.y
+                : Number.MAX_VALUE;
+
+        const relativeX = math.mod(a.x / this.cellSize, 1);
+        const relativeY = math.mod(a.y / this.cellSize, 1);
+
+        let x = deltaX * (gridDeltaX > 0 ? 1 - relativeX : relativeX);
+        let y = deltaY * (gridDeltaY > 0 ? 1 - relativeY : relativeY);
+
+        const objects: T[] = [];
+        const queryId = this.nextQueryId++;
+
+        while (true) {
+            const cell = this._grid[start.x][start.y];
+
+            for (const object of cell) {
+                if (object.__gridQueryId === queryId) continue;
+
+                object.__gridQueryId = queryId;
+                objects.push(object);
+            }
+            if (start.x == end.x && start.y == end.y) {
+                break;
+            }
+            if (x < y) {
+                x += deltaX;
+                start.x += gridDeltaX;
+                if (start.x < 0 || start.x > this.width) {
+                    break;
+                }
+            } else {
+                y += deltaY;
+                start.y += gridDeltaY;
+                if (start.y < 0 || start.y > this.height) {
+                    break;
+                }
+            }
+        }
+
+        return objects;
     }
 
     /**
