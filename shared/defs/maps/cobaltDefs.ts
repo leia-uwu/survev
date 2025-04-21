@@ -115,7 +115,6 @@ const mapDef: PartialMapDef = {
                 outhouse_01: 5,
                 loot_tier_1: 24,
                 loot_tier_beach: 4,
-                class_shell_01: 15,
             },
         ],
         fixedSpawns: [
@@ -149,6 +148,7 @@ const mapDef: PartialMapDef = {
                 },
                 stone_04: 1,
                 club_complex_01: 1,
+                class_shell_01: 40,
                 cache_log_13: 1, // recorder crate
             },
         ],
