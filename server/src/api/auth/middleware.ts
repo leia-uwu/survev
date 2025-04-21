@@ -82,7 +82,7 @@ export function rateLimitMiddleware(limit: number, interval: number) {
     const rateLimit = new HTTPRateLimit(limit, interval);
 
     return async function (c: Context, next: Next) {
-        const ip = getHonoIp(c);
+        const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
         if (!ip) {
             return c.json({}, 500);
