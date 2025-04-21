@@ -452,11 +452,7 @@ export class WeaponManager {
         }
 
         if (this.isInfinite(weaponDef)) {
-            weapon.ammo += math.clamp(
-                amountToReload,
-                0,
-                spaceLeft,
-            );
+            weapon.ammo += math.clamp(amountToReload, 0, spaceLeft);
         } else if (inv[weaponDef.ammo] < spaceLeft) {
             // 27/30, inv = 2
             if (trueAmmoStats.trueMaxClip != amountToReload) {
@@ -470,11 +466,7 @@ export class WeaponManager {
             }
         } else {
             // 27/30, inv = 100
-            weapon.ammo += math.clamp(
-                amountToReload,
-                0,
-                spaceLeft,
-            );
+            weapon.ammo += math.clamp(amountToReload, 0, spaceLeft);
             inv[weaponDef.ammo] -= math.clamp(amountToReload, 0, spaceLeft);
         }
 
@@ -483,10 +475,7 @@ export class WeaponManager {
             inv[weaponDef.ammo] == 0 && !this.isInfinite(weaponDef)
                 ? weapon.ammo
                 : trueAmmoStats.trueMaxClip;
-        if (
-            trueAmmoStats.trueMaxClip != amountToReload &&
-            weapon.ammo != realMaxClip
-        ) {
+        if (trueAmmoStats.trueMaxClip != amountToReload && weapon.ammo != realMaxClip) {
             this.player.reloadAgain = true;
         }
 
