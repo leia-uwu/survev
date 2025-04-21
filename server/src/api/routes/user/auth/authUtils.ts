@@ -21,16 +21,22 @@ export function generateId(length: number) {
 }
 
 export function sanitizeSlug(username: string) {
-    username = username.toLowerCase().trim();
+    let slug = slugify(
+        username
+            .toLowerCase()
+            .trim()
+            .replace(/[\.,\?""!@#\$%\^&\*\(\)-_=\+;:<>\/\\\|\}\{\[\]`~]/g, "-"),
+        {
+            trim: true,
+            strict: true,
+        },
+    );
 
-    if (username === "" || checkForBadWords(username)) {
-        username = `Player ${generateId(6)}`;
+    if (!slug || checkForBadWords(slug)) {
+        slug = `player_${generateId(6).toLowerCase()}`;
     }
 
-    return slugify(username, {
-        trim: true,
-        strict: true,
-    });
+    return slug;
 }
 
 export async function setSessionTokenCookie(userId: string, c: Context) {
