@@ -189,7 +189,9 @@ app.ws<GameSocketData>("/play", {
             disconnectReason = "behind_proxy";
         }
 
+        if (res.aborted) return;
         res.cork(() => {
+            if (res.aborted) return;
             res.upgrade(
                 {
                     gameId,
