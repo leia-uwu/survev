@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
+import type { MapDefs } from "../../../shared/defs/mapDefs";
 import { Config } from "../config";
 import type {
     FindGamePrivateBody,
@@ -65,8 +66,6 @@ export class SingleThreadGameManager implements GameManager {
                 this.netSync();
             }, 1000 / Config.netSyncTps);
         }
-
-        this.newGame(Config.modes[0]);
     }
 
     update(): void {
@@ -123,25 +122,22 @@ export class SingleThreadGameManager implements GameManager {
     }
 
     async findGame(body: FindGamePrivateBody): Promise<string> {
-        const config = Config.modes[body.gameModeIdx];
-
         let game = this.games
             .filter((game) => {
                 return (
                     game.canJoin &&
-                    game.teamMode === config.teamMode &&
-                    game.mapName === config.mapName
+                    game.teamMode === body.teamMode &&
+                    game.mapName === body.mapName
                 );
             })
             .sort((a, b) => {
                 return a.startedTime - b.startedTime;
             })[0];
 
-        const mode = Config.modes[body.gameModeIdx];
         if (!game) {
             game = await this.newGame({
-                teamMode: mode.teamMode,
-                mapName: mode.mapName,
+                teamMode: body.teamMode,
+                mapName: body.mapName as keyof typeof MapDefs,
             });
         }
 

@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 import type { WebSocket } from "uWebSockets.js";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import type { TeamMode } from "../../../shared/gameConfig";
-import { Config } from "../config";
 import { Logger } from "../utils/logger";
 import {
     type FindGamePrivateBody,
@@ -162,8 +161,6 @@ export class GameProcessManager implements GameManager {
     readonly logger = new Logger("Game Process Manager");
 
     constructor() {
-        this.newGame(Config.modes[0]);
-
         process.on("beforeExit", () => {
             for (const gameProc of this.processes) {
                 gameProc.process.kill();
@@ -270,15 +267,13 @@ export class GameProcessManager implements GameManager {
     }
 
     async findGame(body: FindGamePrivateBody): Promise<string> {
-        const mode = Config.modes[body.gameModeIdx];
-
         let game = this.processes
             .filter((proc) => {
                 return (
                     proc.canJoin &&
                     proc.avaliableSlots > 0 &&
-                    proc.teamMode === mode.teamMode &&
-                    proc.mapName === mode.mapName
+                    proc.teamMode === body.teamMode &&
+                    proc.mapName === body.mapName
                 );
             })
             .sort((a, b) => {
@@ -287,8 +282,8 @@ export class GameProcessManager implements GameManager {
 
         if (!game) {
             game = await this.newGame({
-                teamMode: mode.teamMode,
-                mapName: mode.mapName,
+                teamMode: body.teamMode,
+                mapName: body.mapName as keyof typeof MapDefs,
             });
         }
 

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import enquirer from "enquirer";
 import hjson from "hjson";
+import { configFileName } from "./config";
 import type { PartialConfig } from "./configType";
 import { util } from "./shared/utils/util";
 
@@ -348,7 +349,7 @@ async function setupDevelopmentConfig(config: PartialConfig) {
     await setupDatabase(config, false);
 }
 
-const configPath = path.join(import.meta.dirname, "survev-config.hjson");
+const configPath = path.join(import.meta.dirname, configFileName);
 
 async function loadExistingConfig(config: PartialConfig) {
     if (!fs.existsSync(configPath)) return;

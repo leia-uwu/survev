@@ -93,15 +93,6 @@ class Player {
     }
 }
 
-function allowedGameModeIdxs() {
-    return Config.modes
-        .map((_, i) => i)
-        .filter((i) => {
-            const mode = Config.modes[i];
-            return mode.enabled && mode.teamMode > 1;
-        });
-}
-
 class Room {
     players: Player[] = [];
 
@@ -111,7 +102,7 @@ class Room {
         lastError: "",
         region: "",
         autoFill: true,
-        enabledGameModeIdxs: allowedGameModeIdxs(),
+        enabledGameModeIdxs: [],
         gameModeIdx: 1,
         maxPlayers: 4,
     };
@@ -122,6 +113,7 @@ class Room {
         initialData: ClientRoomData,
     ) {
         this.data.roomUrl = `#${id}`;
+        this.data.enabledGameModeIdxs = teamMenu.allowedGameModeIdxs();
 
         this.setProps(initialData);
     }
@@ -183,17 +175,17 @@ class Room {
 
         let gameModeIdx = props.gameModeIdx;
 
+        const modes = this.teamMenu.server.modes;
+
         if (!this.data.enabledGameModeIdxs.includes(gameModeIdx)) {
             // we don't allow creating teams if there's no valid team mode
             // so this will never be -1
-            gameModeIdx = Config.modes.findIndex(
-                (mode) => mode.enabled && mode.teamMode > 1,
-            );
+            gameModeIdx = modes.findIndex((mode) => mode.enabled && mode.teamMode > 1);
         }
 
         this.data.gameModeIdx = gameModeIdx;
 
-        this.data.maxPlayers = Config.modes[gameModeIdx].teamMode;
+        this.data.maxPlayers = modes[gameModeIdx].teamMode;
         this.data.autoFill = props.autoFill;
 
         // kick players that don't fit on the new max players
@@ -255,8 +247,14 @@ class Room {
             };
         });
 
+        const mode = this.teamMenu.server.modes[this.data.gameModeIdx];
+        if (!mode || !mode.enabled) {
+            return;
+        }
+
         const res = await this.teamMenu.server.findGame({
-            gameModeIdx: this.data.gameModeIdx,
+            mapName: mode.mapName,
+            teamMode: mode.teamMode,
             autoFill: this.data.autoFill,
             region: region,
             version: data.version,
@@ -354,6 +352,15 @@ export class TeamMenu {
                 }
             }
         }, 1000);
+    }
+
+    allowedGameModeIdxs() {
+        return this.server.modes
+            .map((_, i) => i)
+            .filter((i) => {
+                const mode = this.server.modes[i];
+                return mode.enabled && mode.teamMode > 1;
+            });
     }
 
     init(app: Hono, upgradeWebSocket: UpgradeWebSocket) {
@@ -486,7 +493,7 @@ export class TeamMenu {
             switch (msg.type) {
                 case "create": {
                     // don't allow creating a team if there's no team mode enabled
-                    if (!allowedGameModeIdxs().length) {
+                    if (!this.allowedGameModeIdxs().length) {
                         player.send("error", { type: "create_failed" });
                         break;
                     }

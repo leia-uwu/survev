@@ -60,19 +60,12 @@ class GameServer {
             };
         }
 
-        const mode = Config.modes[data.gameModeIdx];
-
-        if (!mode || !mode.enabled) {
-            return {
-                error: "full",
-            };
-        }
-
         const gameId = await this.manager.findGame({
             region: data.region,
             version: data.version,
             autoFill: data.autoFill,
-            gameModeIdx: data.gameModeIdx,
+            mapName: data.mapName,
+            teamMode: data.teamMode,
             playerData: data.playerData,
         });
 

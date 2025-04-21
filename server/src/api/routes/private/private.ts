@@ -2,8 +2,11 @@ import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import type { Context } from "../..";
+import { saveConfig } from "../../../../../config";
 import { GameObjectDefs } from "../../../../../shared/defs/gameObjectDefs";
+import { MapDefs } from "../../../../../shared/defs/mapDefs";
 import { TeamMode } from "../../../../../shared/gameConfig";
+import { serverConfigPath } from "../../../config";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
 import { server } from "../../apiServer";
 import {
@@ -40,6 +43,46 @@ PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
         return c.json({ error: "Error processing request" }, 500);
     }
 });
+
+PrivateRouter.post(
+    "/set_game_mode",
+    validateParams(
+        z.object({
+            index: z.number(),
+            teamMode: z.nativeEnum(TeamMode),
+            mapName: z.string(),
+            enabled: z.boolean().default(true),
+        }),
+    ),
+    (c) => {
+        try {
+            const { index, mapName, teamMode, enabled } = c.req.valid("json");
+
+            if (!MapDefs[mapName as keyof typeof MapDefs]) {
+                return c.json({ error: "Invalid map name" }, 400);
+            }
+
+            if (!server.modes[index]) {
+                return c.json({ error: "Invalid mode index" }, 400);
+            }
+
+            server.modes[index] = {
+                mapName: mapName as keyof typeof MapDefs,
+                teamMode,
+                enabled,
+            };
+
+            saveConfig(serverConfigPath, {
+                modes: server.modes,
+            });
+
+            return c.json({}, 200);
+        } catch (err) {
+            server.logger.warn("set_game_mode Error processing request", err);
+            return c.json({ error: "Error processing request" }, 500);
+        }
+    },
+);
 
 PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
     try {

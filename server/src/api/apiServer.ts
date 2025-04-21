@@ -60,6 +60,8 @@ export class ApiServer {
 
     regions: Record<string, Region> = {};
 
+    modes = [...Config.modes];
+
     constructor() {
         for (const region in Config.regions) {
             this.regions[region] = new Region(region);
@@ -72,7 +74,7 @@ export class ApiServer {
 
     getSiteInfo(): Info {
         const data: Info = {
-            modes: Config.modes,
+            modes: this.modes,
             pops: {},
             youtube: { name: "", link: "" },
             twitch: [],
@@ -102,11 +104,6 @@ export class ApiServer {
     async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
         if (body.version !== GameConfig.protocolVersion) {
             return { error: "invalid_protocol" };
-        }
-
-        const mode = Config.modes[body.gameModeIdx];
-        if (!mode || !mode.enabled) {
-            return { error: "full" };
         }
 
         if (body.region in this.regions) {

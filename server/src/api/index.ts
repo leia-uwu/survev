@@ -114,10 +114,16 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             }
         }
 
+        const mode = server.modes[body.gameModeIdx];
+        if (!mode || !mode.enabled) {
+            return c.json<FindGameResponse>({ error: "full" });
+        }
+
         const data = await server.findGame({
             region: body.region,
             version: body.version,
-            gameModeIdx: body.gameModeIdx,
+            mapName: mode.mapName,
+            teamMode: mode.teamMode,
             autoFill: true,
             playerData: [
                 {
