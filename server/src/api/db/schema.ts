@@ -130,7 +130,7 @@ export const ipLogsTable = pgTable(
         // since one could exploit that to never get banned
         // by requesting it with a different IP than the in-game one
         findGameIp: text("find_game_ip").notNull(),
-        findGameEncodedIp: text("find_game_ip").notNull(),
+        findGameEncodedIp: text("find_game_encoded_ip").notNull(),
     },
     (table) => [index("name_created_at_idx").on(table.username, table.createdAt)],
 );

@@ -17,6 +17,7 @@ CREATE TABLE "ip_logs" (
 	"encoded_ip" text NOT NULL,
 	"ip" text NOT NULL,
 	"find_game_ip" text NOT NULL
+	"find_game_encoded_ip" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "items" (

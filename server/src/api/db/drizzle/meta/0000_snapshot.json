@@ -115,6 +115,12 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "find_game_encoded_ip": {
+          "name": "find_game_encoded_ip",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {
