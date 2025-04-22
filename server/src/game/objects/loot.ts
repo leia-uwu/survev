@@ -261,6 +261,14 @@ export class Loot extends BaseGameObject {
         v2.set(this.pos, v2.add(this.pos, v2.mul(this.vel, dt)));
         this.vel = v2.mul(this.vel, 1 / (1 + dt * LOOT_DRAG));
 
+        // cap speed to 100
+        const sqrLen = v2.lengthSqr(this.vel);
+        if (sqrLen > 100 * 100) {
+            const len = Math.sqrt(sqrLen);
+            const thisDir = v2.div(this.vel, len > 0.000001 ? len : 1);
+            this.vel = v2.mul(thisDir, 100);
+        }
+
         let objs = this.game.grid.intersectCollider(this.collider);
 
         for (let i = 0; i < objs.length; i++) {
