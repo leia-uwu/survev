@@ -61,10 +61,10 @@ leaderboardRouter.post(
 const MAX_RESULT_COUNT = 100;
 
 const typeToQuery: Record<LeaderboardRequest["type"], string> = {
-    kills: "match_data.kills",
+    kills: "SUM(match_data.kills)",
     most_damage_dealt: "MAX(match_data.damage_dealt)",
-    kpg: "SUM(match_data.kills) / COUNT(DISTINCT match_data.game_id)",
-    most_kills: "MAX(match_data.kills)",
+    kpg: "ROUND(SUM(match_data.kills) * 1.0 / COUNT(*), 1)",
+    most_kills: "match_data.kills",
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
@@ -76,10 +76,13 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
     const minGames = type === "kpg" ? MinGames[type][interval] : 1;
 
+    const usernameQuery =
+        type === "most_kills" ? "match_data.username" : "users.username";
+
     // SQL 🤮, migrate to drizzle once stable
     const query = sql.raw(`
     SELECT
-        match_data.username,
+        ${usernameQuery} AS username,
         match_data.map_id AS map_id,
         match_data.region,
         COUNT(DISTINCT(match_data.game_id)) as games,
@@ -89,17 +92,17 @@ async function soloLeaderboardQuery(params: LeaderboardRequest) {
     FROM match_data
     LEFT JOIN users ON match_data.user_id = users.id
     WHERE team_mode = ${teamMode}
-      ${userNotBannedQuery}
-      ${loggedPlayersFilterQuery}
-      ${intervalFilterQuery}
-      ${mapIdFilterQuery}
+        ${userNotBannedQuery}
+        ${loggedPlayersFilterQuery}
+        ${intervalFilterQuery}
+        ${mapIdFilterQuery}
     GROUP BY
-      map_id,
-      match_data.kills,
-      match_data.username,
-      match_data.region,
-      match_data.team_mode,
-      users.slug    
+        map_id,
+        users.slug,
+        match_data.region,
+        match_data.team_mode,
+        ${type === "most_kills" ? "match_data.kills," : ""}
+        ${usernameQuery}
     HAVING COUNT(DISTINCT(match_data.game_id)) >= ${minGames}
     ORDER BY val DESC
     LIMIT ${MAX_RESULT_COUNT};
