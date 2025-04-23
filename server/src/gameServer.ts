@@ -135,7 +135,7 @@ app.post("/api/find_game", async (res, req) => {
 });
 
 const gameHTTPRateLimit = new HTTPRateLimit(5, 1000);
-const gameWsRateLimit = new WebSocketRateLimit(500, 1000, 10);
+const gameWsRateLimit = new WebSocketRateLimit(500, 1000, 5);
 
 app.ws<GameSocketData>("/play", {
     idleTimeout: 30,
