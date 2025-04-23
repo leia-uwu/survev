@@ -429,6 +429,10 @@ export class TeamMenu {
                     try {
                         const account = await validateSessionToken(sessionId);
                         userId = account.user?.id || null;
+
+                        if (account.user?.banned) {
+                            userId = null;
+                        }
                     } catch (err) {
                         console.error(`TeamMenu: Failed to validate session:`, err);
                         userId = null;

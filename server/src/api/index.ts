@@ -123,6 +123,10 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
             try {
                 const account = await validateSessionToken(sessionId);
                 userId = account.user?.id || null;
+
+                if (account.user?.banned) {
+                    userId = null;
+                }
             } catch (err) {
                 console.error("/api/find_game: Failed to validate session", err);
                 userId = null;
