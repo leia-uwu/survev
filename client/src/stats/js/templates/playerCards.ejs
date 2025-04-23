@@ -17,7 +17,10 @@
               <div class='player-image' style='background-image: url("<%= env.profile.avatarTexture %>")'></div>
           </div>
           <div class='col-md-5 col-sm-10 col-9'>
-              <div class="card-player-name mt-3 ml-md-5 ml-sm-1 ml-xs-1"><%= env.profile.username %></div>
+              <div class='card-player-name ml-md-5 ml-sm-1 ml-xs-1 <%= env.profile.banned ? "" : "mt-3"%>'><%= env.profile.username %></div>
+              <% if (env.profile.banned) { %>
+                <div class='card-player-banned ml-md-5' data-l10n='stats-banned'>(Account banned)</div>
+              <% } %>
           </div>
           <div class='col-md-6 col-12'>
             <table class='player-stats-overview'>

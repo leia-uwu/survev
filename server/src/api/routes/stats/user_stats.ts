@@ -35,6 +35,7 @@ UserStatsRouter.post(
                 where: eq(usersTable.slug, slug),
                 columns: {
                     id: true,
+                    banned: true,
                 },
             });
 

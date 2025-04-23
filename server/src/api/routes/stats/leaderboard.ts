@@ -170,7 +170,7 @@ async function multiplePlayersQuery({
             id: usersTable.id,
         })
         .from(usersTable)
-        .where(inArray(usersTable.id, userIds));
+        .where(and(inArray(usersTable.id, userIds), eq(usersTable.banned, false)));
 
     const slugMap = Object.fromEntries(
         slugsFromUserIds.map(({ id, slug }) => [id, slug]),

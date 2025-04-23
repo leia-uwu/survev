@@ -52,6 +52,7 @@ export default {
     "stats-damage-dealt": "Damage Dealt",
     "stats-damage-taken": "Damage Taken",
     "stats-survived": "survived",
+    "stats-banned": "(Account banned)",
     "game-backpack00": "Pouch",
     "game-backpack01": "Small Pack",
     "game-backpack02": "Regular Pack",

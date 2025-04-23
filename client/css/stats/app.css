@@ -415,6 +415,13 @@ a.nav-link-bright:hover {
   white-space: nowrap;
 }
 
+.card-player-banned {
+  color: gold;
+  font-size: 18px;
+  text-shadow: 1px 1px 1px black;
+  font-weight: bold;
+}
+
 table.player-stats-overview {
   width: 100%;
 }
