@@ -133,13 +133,8 @@ export default defineConfig(({ mode }) => {
                         }
                         return "assets/[name]-[hash][extname]";
                     },
-                    entryFileNames: "js/app-[hash].js",
-                    chunkFileNames: "js/[name]-[hash].js",
-                    manualChunks(id, _chunkInfo) {
-                        if (id.includes("node_modules") && !id.includes(".css")) {
-                            return "vendor";
-                        }
-                    },
+                    entryFileNames: "js/[hash].js",
+                    chunkFileNames: "js/[hash].js",
                 },
             },
         },
