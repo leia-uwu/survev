@@ -42,6 +42,10 @@ export default defineConfig(({ mode }) => {
 
     const selectedTheme = SplashThemes[Config.clientTheme];
 
+    process.env.VITE_ADIN_PLAY_SCRIPT = "";
+    process.env.VITE_AIP_PLACEMENT_ID = "";
+    process.env.VITE_TURNSTILE_SCRIPT = "";
+
     if (Config.secrets.AIP_ID) {
         process.env.VITE_ADIN_PLAY_SCRIPT = `
     <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.secrets.AIP_PLACEMENT_ID}/tag.min.js"></script>
