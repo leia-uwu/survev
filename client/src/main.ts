@@ -766,8 +766,8 @@ class Application {
             const expiresIn = new Date(ban.expiresIn);
             const timeLeft = expiresIn.getTime() - Date.now();
 
-            const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-            const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60));
+            const daysLeft = Math.round(timeLeft / (1000 * 60 * 60 * 24));
+            const hoursLeft = Math.round(timeLeft / (1000 * 60 * 60));
 
             if (daysLeft > 1) {
                 expiration = `Expires in: ${daysLeft} days`;
