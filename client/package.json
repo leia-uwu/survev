@@ -12,7 +12,7 @@
     "@taufik-nurrohman/color-picker": "1.4.2",
     "base64-js": "^1.5.1",
     "bit-buffer": "^0.2.5",
-    "bootstrap": "4.1.1",
+    "bootstrap": "^4.6.2",
     "ejs": "^3.1.10",
     "jquery": "^3.7.1",
     "pixi.js-legacy": "^7.4.3",
