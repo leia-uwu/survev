@@ -414,22 +414,34 @@ export async function fetchApiServer<
 // @TODO: format the errors sent better
 export function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
     if (!Config.errorLoggingWebhook) return;
+
     try {
-        const payload = {
-            from,
-            region: `[${Config.gameServer.thisRegion.toUpperCase()}]`,
-            timestamp: new Date().toISOString(),
-            messages: messages.map((msg) =>
-                typeof msg === "object" ? JSON.stringify(msg) : String(msg),
-            ),
-        };
+        const msg = messages
+            .map((msg) => {
+                if (msg instanceof Error) {
+                    return `\`\`\`${msg.cause}\n${msg.stack}\`\`\``;
+                }
+                if (typeof msg == "object") {
+                    return `\`\`\`json\n${JSON.stringify(msg, null, 2)}\`\`\``;
+                }
+                return `\`${msg}\``;
+            })
+            .join("\n");
+
+        let content = `Error from: \`${from}\`
+Region: \`${Config.gameServer.thisRegion}\`
+Timestamp: \`${new Date().toISOString()}\`
+`;
+        content += msg;
 
         fetch(Config.errorLoggingWebhook, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(payload),
+            body: JSON.stringify({
+                content,
+            }),
         });
     } catch (err) {
         // dont use defaultLogger.error here to not log it recursively :)
