@@ -886,17 +886,17 @@ export class Player extends BaseGameObject {
                 if (newOutfit) this.setOutfit(newOutfit);
             }
 
-            // armor
-            if (this.helmet && !this.hasRoleHelmet) {
-                this.dropArmor(this.helmet);
-            }
-
             const roleHelmet =
                 roleDef.defaultItems.helmet instanceof Function
                     ? roleDef.defaultItems.helmet(clampedTeamId)
                     : roleDef.defaultItems.helmet;
 
             if (roleHelmet) {
+                // armor
+                if (this.helmet && !this.hasRoleHelmet) {
+                    this.dropArmor(this.helmet);
+                }
+
                 this.helmet = roleHelmet;
                 this.hasRoleHelmet = true;
             }
@@ -907,7 +907,9 @@ export class Player extends BaseGameObject {
                 }
                 this.chest = roleDef.defaultItems.chest;
             }
-            this.backpack = roleDef.defaultItems.backpack;
+            if (roleDef.defaultItems.backpack) {
+                this.backpack = roleDef.defaultItems.backpack;
+            }
 
             // weapons
             for (let i = 0; i < roleDef.defaultItems.weapons.length; i++) {
