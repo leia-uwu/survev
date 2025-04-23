@@ -24,30 +24,29 @@ type EventHandlers = {
     [E in keyof Events]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
 };
 
-function readDirectory(dir: string): string[] {
+export function readDirectory(dir: string): string[] {
     let results: string[] = [];
     const files = fs.readdirSync(dir);
 
     for (const file of files) {
         const filePath = path.resolve(dir, file);
         const stat = fs.statSync(filePath);
-
         if (stat?.isDirectory()) {
             const res = readDirectory(filePath);
             results = results.concat(res);
-        } else results.push(filePath);
+        } else if (filePath.endsWith(".ts") || filePath.endsWith(".js")) {
+            results.push(filePath);
+        }
     }
 
     return results;
 }
 
-const pluginDir = path.join(import.meta.dirname, "../plugins/");
+export const pluginDir = path.join(import.meta.dirname, "./plugins/");
 
 let pluginPaths: string[] = [];
 if (fs.existsSync(pluginDir)) {
-    pluginPaths = readDirectory(pluginDir).filter(
-        (path) => path.endsWith(".ts") || path.endsWith(".js"),
-    );
+    pluginPaths = readDirectory(pluginDir);
 }
 
 export abstract class GamePlugin {
@@ -88,14 +87,11 @@ export class PluginManager {
 
     async loadPlugins() {
         for (const path of pluginPaths) {
+            this.game.logger.log("Loading plugin", path);
             const plugin = ((await import(path)) as { default: new () => GamePlugin })
                 .default;
 
             this.loadPlugin(plugin);
         }
-    }
-
-    unloadPlugins() {
-        this._plugins.clear();
     }
 }

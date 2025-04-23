@@ -44,7 +44,7 @@ export interface JoinTokenData {
 export class Game {
     started = false;
     stopped = false;
-    allowJoin = true;
+    allowJoin = false;
     over = false;
     sentWinEMotes = false;
     startedTime = 0;
@@ -149,8 +149,8 @@ export class Game {
 
     async init() {
         await this.pluginManager.loadPlugins();
-        this.pluginManager.emit("gameCreated", this);
         this.map.init();
+        this.pluginManager.emit("gameCreated", this);
 
         this.allowJoin = true;
         this.logger.log(`Created in ${Date.now() - this.start} ms`);
@@ -159,6 +159,7 @@ export class Game {
     }
 
     update(): void {
+        if (!this.allowJoin) return;
         const now = performance.now();
         if (!this.now) this.now = now;
         const dt = math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
@@ -220,6 +221,8 @@ export class Game {
     }
 
     netSync() {
+        if (!this.allowJoin) return;
+
         // serialize objects and send msgs
         this.objectRegister.serializeObjs();
         this.playerBarn.sendMsgs();
