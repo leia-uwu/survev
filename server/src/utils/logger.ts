@@ -138,7 +138,8 @@ export class Logger {
         if (!logCfg.debugLogs) return;
         this.log(
             undefined,
-            styleText("[DEBUG]", ColorStyles.foreground.magenta.normal),
+            // not a typo, just want it to align with the others :D
+            styleText("[DEBG]", ColorStyles.foreground.magenta.normal),
             ...message,
         );
     }

@@ -37,10 +37,6 @@ export function getConfig(isProduction: boolean, dir: string) {
         gameTps: 100,
         netSyncTps: 33,
         processMode: isDev ? "single" : "multi",
-        perfLogging: {
-            enabled: isDev,
-            time: 10,
-        },
         logging: {
             logDate: true,
             infoLogs: true,

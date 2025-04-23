@@ -57,6 +57,12 @@ export class Game {
     pluginManager = new PluginManager(this);
     modeManager: GameModeManager;
 
+    tickTimeWarnThreshold = (1000 / Config.gameTps) * 4;
+    gameTickWarnings = 0;
+
+    netSyncWarnThreshold = (1000 / Config.netSyncTps) * 4;
+    netSyncWarnings = 0;
+
     grid: Grid<GameObject>;
     objectRegister: ObjectRegister;
 
@@ -199,15 +205,31 @@ export class Game {
         this.decalBarn.update(dt);
         this.planeBarn.update(dt);
 
-        if (Config.perfLogging.enabled) {
-            // Record performance and start the next tick
-            // THIS TICK COUNTER IS WORKING CORRECTLY!
-            // It measures the time it takes to calculate a tick, not the time between ticks.
-            const tickTime = performance.now() - this.now;
+        const tickTime = performance.now() - this.now;
+
+        if (tickTime > 1000) {
+            this.logger.error(`Tick took over 1 second! ${tickTime.toFixed(2)}ms`);
+        } else if (tickTime > this.tickTimeWarnThreshold) {
+            this.logger.warn(
+                `Tick took over ${this.tickTimeWarnThreshold}ms! ${tickTime.toFixed(2)}ms`,
+            );
+            this.gameTickWarnings++;
+
+            if (this.gameTickWarnings > 20) {
+                this.logger.warn(
+                    `Server is overloaded! Increasing tickTimeWarnThreshold.`,
+                );
+
+                this.gameTickWarnings = 0;
+                this.tickTimeWarnThreshold *= 2;
+            }
+        }
+
+        if (Config.logging.debugLogs) {
             this.tickTimes.push(tickTime);
 
             this.perfTicker += dt;
-            if (this.perfTicker >= Config.perfLogging.time) {
+            if (this.perfTicker >= 15) {
                 this.perfTicker = 0;
                 const mspt =
                     this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
@@ -222,6 +244,8 @@ export class Game {
 
     netSync() {
         if (!this.allowJoin) return;
+
+        const start = performance.now();
 
         // serialize objects and send msgs
         this.objectRegister.serializeObjs();
@@ -240,6 +264,25 @@ export class Game {
         this.mapIndicatorBarn.flush();
 
         this.msgsToSend.stream.index = 0;
+
+        const syncTime = performance.now() - start;
+        if (syncTime > 1000) {
+            this.logger.error(`Tick took over 1 second! ${syncTime.toFixed(2)}ms`);
+        } else if (syncTime > this.netSyncWarnThreshold) {
+            this.logger.warn(
+                `Tick took over ${this.netSyncWarnThreshold}ms! ${syncTime.toFixed(2)}ms`,
+            );
+            this.netSyncWarnings++;
+
+            if (this.netSyncWarnings > 20) {
+                this.logger.warn(
+                    `Server is overloaded! Increasing netSyncWarnThreshold.`,
+                );
+
+                this.netSyncWarnings = 0;
+                this.netSyncWarnThreshold *= 2;
+            }
+        }
     }
 
     get canJoin(): boolean {

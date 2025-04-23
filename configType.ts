@@ -152,17 +152,6 @@ export interface ConfigType {
     processMode: "single" | "multi";
 
     /**
-     * Game performance logging.
-     */
-    perfLogging: {
-        enabled: boolean;
-        /**
-         * Seconds between each game performance log.
-         */
-        time: number;
-    };
-
-    /**
      * Server logger configuration
      */
     logging: {

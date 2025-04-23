@@ -198,7 +198,7 @@ setInterval(() => {
     for (const regionId in server.regions) {
         const region = server.regions[regionId];
         if (Date.now() - region.lastUpdateTime > 60000) {
-            server.logger.error(
+            server.logger.warn(
                 `Region ${regionId} has not sent player count in more than 60 seconds`,
             );
             region.playerCount = 0;
