@@ -1,3 +1,4 @@
+import { styleText } from "util";
 import { type MapDef, MapDefs } from "../../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type {
@@ -257,6 +258,20 @@ export class GameMap {
         staggerCount: number;
     }> = [];
 
+    loggingTimes: number[] = [];
+
+    timerStart() {
+        this.loggingTimes.push(performance.now());
+    }
+
+    timerEnd(msg: string) {
+        const now = performance.now();
+        const old = this.loggingTimes.pop();
+
+        const time = `${Math.round(now - old!)}ms`.padEnd(6);
+        this.game.logger.debug(styleText(["green"], time), msg);
+    }
+
     constructor(game: Game) {
         this.game = game;
 
@@ -337,12 +352,15 @@ export class GameMap {
 
         this.riverMasks = [];
 
+        this.timerStart();
         this.generateRiverMasks();
+        this.timerEnd("Generating river masks");
 
         if (this.factionMode) {
             this.factionModeSplitOri = util.randomInt(0, 1) as 0 | 1;
         }
 
+        this.timerStart();
         this.generateTerrain();
 
         this.msg.rivers = this.riverDescs;
@@ -355,11 +373,13 @@ export class GameMap {
             this.riverDescs,
             this.seed,
         );
+        this.timerEnd("Generating terrain");
 
         this.normalRivers = [];
         this.lakes = [];
         this.riverAreas = new Map();
 
+        this.timerStart();
         this.shoreArea = math.polygonArea(this.terrain.shore);
         this.grassArea = math.polygonArea(this.terrain.grass);
 
@@ -380,8 +400,11 @@ export class GameMap {
                 water: waterArea,
             });
         }
+        this.timerEnd("Calculating map areas");
 
+        this.timerStart();
         this.generateObjects();
+        this.timerEnd("Generating all objects");
 
         this.mapStream.stream.index = 0;
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
@@ -705,6 +728,7 @@ export class GameMap {
     generateObjects(): void {
         const mapDef = this.mapDef;
 
+        this.timerStart();
         for (const customSpawnRule of mapDef.mapGen.customSpawnRules.locationSpawns) {
             const center = v2.create(
                 customSpawnRule.pos.x * this.width,
@@ -720,6 +744,7 @@ export class GameMap {
                 return true;
             });
         }
+        this.timerEnd("Generating custom spawn rules");
 
         // @NOTE: see comment on defs/maps/baseDefs.ts about single item arrays
         const fixedSpawns = { ...mapDef.mapGen.fixedSpawns[0] };
@@ -759,6 +784,7 @@ export class GameMap {
                 return importantSpawns.indexOf(b) - importantSpawns.indexOf(a);
             });
 
+        this.timerStart();
         //buildings that contain bridges such as ocean/river shacks and river town
         const bridgeTypes = [];
         for (let i = 0; i < types.length; i++) {
@@ -785,19 +811,22 @@ export class GameMap {
                 this.genFromMapDef(type, count);
             }
         }
+        this.timerEnd("Generating map def bridges");
 
         if (this.riverDescs.length) {
             //
             // Generate bridges
             //
 
+            this.timerStart();
             this.generateBridges(mapDef);
+            this.timerEnd("Generating random bridges");
 
             //
             // Generate river cabins
             //
-
             if (this.mapDef.mapGen.map.rivers.spawnCabins) {
+                this.timerStart();
                 let cabinsToSpawn = 1;
                 for (let i = 0; i < this.normalRivers.length; i++) {
                     const river = this.normalRivers[i];
@@ -812,11 +841,13 @@ export class GameMap {
                 for (let i = 0; i < cabinsToSpawn; i++) {
                     this.genRiverCabin();
                 }
+                this.timerEnd("Generating river cabins");
             }
 
             //
             // Generate river rocks and bushes
             //
+            this.timerStart();
             const riverObjs: Record<string, number> = {
                 stone_03: 0.9,
                 bush_04: 0.4,
@@ -832,8 +863,10 @@ export class GameMap {
                     }
                 }
             }
+            this.timerEnd("Generating river obstacles");
         }
 
+        this.timerStart();
         for (let i = 0; i < types.length; i++) {
             const type = types[i];
             let count = fixedSpawns[type];
@@ -848,11 +881,14 @@ export class GameMap {
                 this.genFromMapDef(type, count);
             }
         }
+        this.timerEnd("Generating fixed spawns");
 
+        this.timerStart();
         const densitySpawns = mapDef.mapGen.densitySpawns[0];
         for (const type in densitySpawns) {
             this.genDensitySpawn(type, densitySpawns[type]);
         }
+        this.timerEnd("Generating density spawns");
     }
 
     genDensitySpawn(type: string, density: number) {
