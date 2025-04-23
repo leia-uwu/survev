@@ -49,9 +49,9 @@ PrivateRouter.post(
     validateParams(
         z.object({
             index: z.number(),
-            teamMode: z.nativeEnum(TeamMode),
-            mapName: z.string(),
-            enabled: z.boolean().default(true),
+            teamMode: z.nativeEnum(TeamMode).optional(),
+            mapName: z.string().optional(),
+            enabled: z.boolean().optional(),
         }),
     ),
     (c) => {
@@ -67,9 +67,9 @@ PrivateRouter.post(
             }
 
             server.modes[index] = {
-                mapName: mapName as keyof typeof MapDefs,
-                teamMode,
-                enabled,
+                mapName: (mapName ?? server.modes[index].mapName) as keyof typeof MapDefs,
+                teamMode: teamMode ?? server.modes[index].teamMode,
+                enabled: enabled ?? server.modes[index].enabled,
             };
 
             saveConfig(serverConfigPath, {
