@@ -1290,27 +1290,6 @@ export class Player extends BaseGameObject {
         this.recalculateScale();
     }
 
-    override serializeFull(): void {
-        if (!this.activeWeapon) {
-            console.error(
-                "Invalid active weapon, curIdx:",
-                this.curWeapIdx,
-                "lastIdx:",
-                this.weaponManager.lastWeaponIdx,
-                "weaps:",
-                this.weapons,
-            );
-            this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
-            this.weaponManager.setCurWeapIndex(
-                GameConfig.WeaponSlot.Melee,
-                undefined,
-                undefined,
-                true,
-            );
-        }
-        super.serializeFull();
-    }
-
     update(dt: number): void {
         if (this.dead) return;
         this.timeAlive += dt;
@@ -1780,25 +1759,6 @@ export class Player extends BaseGameObject {
                         this.pickupLoot(closestLoot);
                         break;
                 }
-            }
-
-            // hacky hack to figure out the crash!!
-            if (!this.activeWeapon) {
-                console.error(
-                    "Mobile auto pickup: invalid active weapon, curIdx:",
-                    this.curWeapIdx,
-                    "lastIdx:",
-                    this.weaponManager.lastWeaponIdx,
-                    "weaps:",
-                    this.weapons,
-                );
-                this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
-                this.weaponManager.setCurWeapIndex(
-                    GameConfig.WeaponSlot.Melee,
-                    undefined,
-                    undefined,
-                    true,
-                );
             }
 
             const obstacles = this.getInteractableObstacles();
@@ -3373,27 +3333,6 @@ export class Player extends BaseGameObject {
             }
         }
 
-        // hacky hack to figure out the crash!!
-        if (!this.activeWeapon) {
-            console.error(
-                "InputMsg: invalid active weapon, curIdx:",
-                this.curWeapIdx,
-                "lastIdx:",
-                this.weaponManager.lastWeaponIdx,
-                "weaps:",
-                this.weapons,
-                "inputs:",
-                msg.inputs.map((input) => GameConfig.Input[input]).join(", "),
-            );
-            this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
-            this.weaponManager.setCurWeapIndex(
-                GameConfig.WeaponSlot.Melee,
-                undefined,
-                undefined,
-                true,
-            );
-        }
-
         // no exceptions for any perks or roles
         if (this.downed) return;
 
@@ -4188,29 +4127,6 @@ export class Player extends BaseGameObject {
 
         if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
             this.weaponManager.tryReload();
-        }
-
-        // hacky hack to figure out the crash!!
-        if (!this.activeWeapon) {
-            console.error(
-                "DropItemMsg: invalid active weapon, curIdx:",
-                this.curWeapIdx,
-                "lastIdx:",
-                this.weaponManager.lastWeaponIdx,
-                "weaps:",
-                this.weapons,
-                "item:",
-                dropMsg.item,
-                "weapIdx:",
-                dropMsg.weapIdx,
-            );
-            this.weapons[GameConfig.WeaponSlot.Melee].type ||= "fists";
-            this.weaponManager.setCurWeapIndex(
-                GameConfig.WeaponSlot.Melee,
-                undefined,
-                undefined,
-                true,
-            );
         }
     }
 
