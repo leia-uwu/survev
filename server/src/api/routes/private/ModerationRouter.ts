@@ -205,11 +205,33 @@ ModerationRouter.post(
     validateParams(
         z.object({
             name: z.string(),
+            useAccountSlug: z.boolean().default(false),
         }),
     ),
     async (c) => {
         try {
-            const { name } = c.req.valid("json");
+            const { name, useAccountSlug } = c.req.valid("json");
+
+            let userId: string | null = null;
+
+            if (useAccountSlug) {
+                const user = await db.query.usersTable.findFirst({
+                    where: eq(usersTable.slug, name),
+                    columns: {
+                        id: true,
+                    },
+                });
+
+                if (!user?.id) {
+                    return c.json(
+                        {
+                            message: `User not found`,
+                        },
+                        200,
+                    );
+                }
+                userId = user.id;
+            }
 
             const result = await db
                 .select({
@@ -219,7 +241,11 @@ ModerationRouter.post(
                     region: ipLogsTable.region,
                 })
                 .from(ipLogsTable)
-                .where(eq(ipLogsTable.username, name))
+                .where(
+                    userId
+                        ? eq(ipLogsTable.userId, userId)
+                        : eq(ipLogsTable.username, name),
+                )
                 .orderBy(desc(ipLogsTable.createdAt))
                 .limit(10);
 
