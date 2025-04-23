@@ -20,11 +20,15 @@ ModerationRouter.post(
         z.object({
             slug: z.string(),
             banReason: z.string().default("Cheating"),
+            banAssociatedIps: z.boolean().default(true),
+            ipBanDuration: z.number().default(7),
+            ipBanPermanent: z.boolean().default(false),
         }),
     ),
     async (c) => {
         try {
-            const { slug, banReason } = c.req.valid("json");
+            const { slug, banReason, banAssociatedIps, ipBanDuration, ipBanPermanent } =
+                c.req.valid("json");
 
             const user = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
@@ -43,6 +47,48 @@ ModerationRouter.post(
             }
 
             await banAccount(user.id, banReason);
+
+            if (banAssociatedIps) {
+                const ips = await db
+                    .select({
+                        encodedIp: ipLogsTable.encodedIp,
+                        findGameEncodedIp: ipLogsTable.findGameEncodedIp,
+                    })
+                    .from(ipLogsTable)
+                    .where(eq(ipLogsTable.userId, user.id))
+                    .groupBy(ipLogsTable.encodedIp, ipLogsTable.findGameEncodedIp);
+
+                const expiresIn = new Date(
+                    Date.now() + ipBanDuration * 24 * 60 * 60 * 1000,
+                );
+
+                const bans = [
+                    ...new Set(
+                        ips
+                            .map((data) => [data.encodedIp, data.findGameEncodedIp])
+                            .flat(),
+                    ),
+                ].map((encodedIp) => {
+                    return {
+                        expiresIn: expiresIn,
+                        encodedIp,
+                        permanent: ipBanPermanent,
+                        reason: banReason,
+                    };
+                });
+
+                await db
+                    .insert(bannedIpsTable)
+                    .values(bans)
+                    .onConflictDoUpdate({
+                        target: bannedIpsTable.encodedIp,
+                        set: {
+                            expiresIn: expiresIn,
+                            reason: banReason,
+                            permanent: ipBanPermanent,
+                        },
+                    });
+            }
 
             return c.json({ message: "User has been banned." }, 200);
         } catch (err) {
