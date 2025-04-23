@@ -123,6 +123,7 @@ export interface SocketMsgsMsg {
 export interface SocketCloseMsg {
     type: ProcessMsgType.SocketClose;
     socketId: string;
+    reason?: string;
 }
 
 export type ProcessMsg =

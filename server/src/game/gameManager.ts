@@ -3,6 +3,7 @@ import { platform } from "os";
 import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
+import * as net from "../../../shared/net/net";
 import { Config } from "../config";
 import type {
     FindGamePrivateBody,
@@ -104,9 +105,16 @@ export class SingleThreadGameManager implements GameManager {
             (id, data) => {
                 this.sockets.get(id)?.send(data, true, false);
             },
-            (id) => {
+            (id, reason) => {
                 const socket = this.sockets.get(id);
                 if (socket && !socket.getUserData().closed) {
+                    if (reason) {
+                        const disconnectMsg = new net.DisconnectMsg();
+                        disconnectMsg.reason = reason;
+                        const stream = new net.MsgStream(new ArrayBuffer(128));
+                        stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+                        socket.send(stream.getBuffer());
+                    }
                     socket.close();
                 }
             },

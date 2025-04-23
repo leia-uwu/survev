@@ -38,10 +38,11 @@ process.on("message", async (msg: ProcessMsg) => {
                     ip: "",
                 });
             },
-            (id) => {
+            (id, reason) => {
                 sendMsg({
                     type: ProcessMsgType.SocketClose,
                     socketId: id,
+                    reason,
                 });
             },
             (msg) => {

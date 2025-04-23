@@ -146,29 +146,13 @@ export class PlayerBarn {
                     (joinData.userId !== null && p.userId === joinData.userId),
             );
             if (count.length >= 3) {
-                const disconnectMsg = new net.DisconnectMsg();
-                disconnectMsg.reason = "rate_limited";
-                const stream = new net.MsgStream(new ArrayBuffer(128));
-                stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
-                this.game.sendSocketMsg(socketId, stream.getBuffer());
-
-                setTimeout(() => {
-                    this.game.closeSocket(socketId);
-                }, 250);
+                this.game.closeSocket(socketId, "rate_limited");
                 return;
             }
         }
 
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
-            const disconnectMsg = new net.DisconnectMsg();
-            disconnectMsg.reason = "index-invalid-protocol";
-            const stream = new net.MsgStream(new ArrayBuffer(128));
-            stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
-            this.game.sendSocketMsg(socketId, stream.getBuffer());
-
-            setTimeout(() => {
-                this.game.closeSocket(socketId);
-            }, 250);
+            this.game.closeSocket(socketId, "index-invalid-protocol");
             return;
         }
 

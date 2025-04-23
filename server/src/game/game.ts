@@ -105,7 +105,7 @@ export class Game {
         id: string,
         config: ServerGameConfig,
         readonly sendSocketMsg: (id: string, data: Uint8Array) => void,
-        readonly closeSocket: (id: string) => void,
+        readonly closeSocket: (id: string, reason?: string) => void,
         readonly sendData?: (data: UpdateDataMsg) => void,
     ) {
         this.id = id;
