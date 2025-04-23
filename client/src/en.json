@@ -86,6 +86,7 @@
   "index-failed-creating-team": "Failed creating team.",
   "index-failed-finding-game": "Failed finding game.",
   "index-failed-joining-game": "Failed joining game.",
+  "index-rate-limited": "Rate limited.",
   "index-lost-connection": "Lost connection to team.",
   "index-host-closed": "Host closed the connection.",
   "index-invalid-protocol": "Old client version.",

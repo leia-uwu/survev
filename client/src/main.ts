@@ -316,6 +316,9 @@ class Application {
                 if (errMsg == "index-invalid-protocol") {
                     this.showInvalidProtocolModal();
                 }
+                if (errMsg == "rate_limited") {
+                    this.onJoinGameError(errMsg);
+                }
                 if (errMsg) {
                     this.showErrorModal(errMsg);
                 }
@@ -731,6 +734,7 @@ class Application {
             invalid_protocol: this.localization.translate("index-invalid-protocol"),
             invalid_captcha: this.localization.translate("index-invalid-captcha"),
             join_game_failed: this.localization.translate("index-failed-joining-game"),
+            rate_limited: this.localization.translate("index-rate-limited"),
         };
         if (err == "invalid_protocol") {
             this.showInvalidProtocolModal();

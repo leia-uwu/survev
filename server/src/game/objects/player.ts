@@ -138,6 +138,27 @@ export class PlayerBarn {
         }
         this.game.joinTokens.delete(joinMsg.matchPriv);
 
+        if (Config.rateLimitsEnabled) {
+            const count = this.players.filter(
+                (p) =>
+                    p.ip === ip ||
+                    p.findGameIp == joinData.findGameIp ||
+                    (joinData.userId !== null && p.userId === joinData.userId),
+            );
+            if (count.length >= 3) {
+                const disconnectMsg = new net.DisconnectMsg();
+                disconnectMsg.reason = "rate_limited";
+                const stream = new net.MsgStream(new ArrayBuffer(128));
+                stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
+                this.game.sendSocketMsg(socketId, stream.getBuffer());
+
+                setTimeout(() => {
+                    this.game.closeSocket(socketId);
+                }, 250);
+                return;
+            }
+        }
+
         if (joinMsg.protocol !== GameConfig.protocolVersion) {
             const disconnectMsg = new net.DisconnectMsg();
             disconnectMsg.reason = "index-invalid-protocol";
