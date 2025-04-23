@@ -296,14 +296,6 @@ setInterval(() => {
     server.sendData();
 }, 20 * 1000);
 
-setInterval(() => {
-    const memoryUsage = process.memoryUsage().rss;
-
-    const perfString = `Memory usage: ${Math.round((memoryUsage / 1024 / 1024) * 100) / 100} MB`;
-
-    server.logger.log(perfString);
-}, 60000);
-
 app.listen(Config.gameServer.host, Config.gameServer.port, () => {
     server.logger.log(`Survev Game Server v${version} - GIT ${GIT_VERSION}`);
     server.logger.log(`Listening on ${Config.gameServer.host}:${Config.gameServer.port}`);
