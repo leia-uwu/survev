@@ -19,6 +19,7 @@ import {
     getHonoIp,
     isBehindProxy,
     logErrorToWebhook,
+    verifyTurnsStile,
 } from "../utils/serverHelpers";
 import { server } from "./apiServer";
 import { deleteExpiredSessions, validateSessionToken } from "./auth";
@@ -98,6 +99,20 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         }
 
         const body = c.req.valid("json");
+        if (server.captchaEnabled) {
+            if (!body.turnstileToken) {
+                return c.json<FindGameResponse>({ error: "invalid_captcha" });
+            }
+
+            try {
+                if (!(await verifyTurnsStile(body.turnstileToken, ip))) {
+                    return c.json<FindGameResponse>({ error: "invalid_captcha" });
+                }
+            } catch (err) {
+                console.error("/api/find_game: Failed verifying turnstile: ", err);
+                return c.json<FindGameResponse>({ error: "join_game_failed" }, 500);
+            }
+        }
 
         const token = randomUUID();
         let userId: string | null = null;

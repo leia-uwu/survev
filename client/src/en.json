@@ -91,6 +91,7 @@
   "index-invalid-protocol": "Old client version.",
   "index-ip-banned": "Your IP has been banned.",
   "index-behind-proxy": "Proxies and VPNs are not allowed, please disable them.",
+  "index-invalid-captcha": "Failed verifying captcha.",
   "index-view-more": "View More",
   "index-back-to-main": "Back to Main Menu",
   "index-most-kills": "Most kills",

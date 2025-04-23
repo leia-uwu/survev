@@ -62,6 +62,8 @@ export class ApiServer {
 
     modes = [...Config.modes];
 
+    captchaEnabled = Config.captchaEnabled;
+
     constructor() {
         for (const region in Config.regions) {
             this.regions[region] = new Region(region);
@@ -80,6 +82,7 @@ export class ApiServer {
             twitch: [],
             country: "US",
             gitRevision: GIT_VERSION,
+            captchaEnabled: this.captchaEnabled,
         };
 
         for (const region in this.regions) {

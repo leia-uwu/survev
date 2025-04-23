@@ -70,6 +70,9 @@ importers:
       codefend:
         specifier: ^3.2.0
         version: 3.2.0
+      turnstile-types:
+        specifier: ^1.2.3
+        version: 1.2.3
       vite:
         specifier: ^6.3.2
         version: 6.3.2(@types/node@22.14.1)(terser@5.39.0)(tsx@4.19.3)
@@ -2446,6 +2449,9 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
+  turnstile-types@1.2.3:
+    resolution: {integrity: sha512-EDjhDB9TDwda2JRbhzO/kButPio3JgrC3gXMVAMotxldybTCJQVMvPNJ89rcAiN9vIrCb2i1E+VNBCqB8wue0A==}
+
   typescript@5.8.3:
     resolution: {integrity: sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==}
     engines: {node: '>=14.17'}
@@ -4568,6 +4574,8 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  turnstile-types@1.2.3: {}
 
   typescript@5.8.3: {}
 

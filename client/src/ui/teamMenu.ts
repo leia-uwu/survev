@@ -6,6 +6,7 @@ import type {
     RoomData,
     ServerToClientTeamMsg,
     TeamMenuErrorType,
+    TeamPlayGameMsg,
     TeamStateMsg,
 } from "../../../shared/types/team";
 import { api } from "../api";
@@ -28,6 +29,7 @@ function errorTypeToString(type: string, localization: Localization) {
         find_game_error: localization.translate("index-failed-finding-game"),
         find_game_full: localization.translate("index-failed-finding-game"),
         find_game_invalid_protocol: localization.translate("index-invalid-protocol"),
+        find_game_invalid_captcha: localization.translate("index-invalid-captcha"),
         kicked: localization.translate("index-team-kicked"),
         banned: localization.translate("index-ip-banned"),
         behind_proxy: "behind_proxy", // this will get passed to the main app to show a modal
@@ -360,12 +362,16 @@ export class TeamMenu {
             if (paramZone !== undefined && paramZone.length > 0) {
                 zones = [paramZone];
             }
-            const matchArgs = {
+            const matchArgs: TeamPlayGameMsg["data"] = {
                 version,
                 region,
                 zones,
             };
-            this.sendMessage("playGame", matchArgs);
+
+            helpers.verifyTurnstile(this.siteInfo.info.captchaEnabled, (token) => {
+                matchArgs.turnstileToken = token;
+                this.sendMessage("playGame", matchArgs);
+            });
             this.roomData.findingGame = true;
             this.refreshUi();
         }
@@ -408,6 +414,13 @@ export class TeamMenu {
         ) {
             $("#modal-refresh").fadeIn(200);
             this.displayedInvalidProtocolModal = true;
+        }
+
+        // Set captcha to enabled if we fail the captcha
+        // This can happen if it was disabled when the page loaded which would meant it was sending an empty token
+        // And we only fetch the state when the page loads...
+        if (this.roomData.lastError === "find_game_invalid_captcha") {
+            this.siteInfo.info.captchaEnabled = true;
         }
 
         // Show/hide team connecting/contents

@@ -212,4 +212,18 @@ export const helpers = {
         }
         return r32() + r32();
     },
+    verifyTurnstile: function (enabled: boolean, cb: (token: string) => void) {
+        if (!enabled || !window.turnstile) {
+            cb("");
+            return;
+        }
+        window.turnstile.render("#start-turnstile-container", {
+            sitekey: TURNSTILE_SITE_KEY,
+            appearance: "interaction-only",
+            callback: (token: string) => {
+                cb(token);
+                window.turnstile.remove("#start-turnstile-container");
+            },
+        });
+    },
 };

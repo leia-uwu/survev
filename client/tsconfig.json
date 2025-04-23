@@ -18,7 +18,7 @@
     "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment",
-    "types": ["vite/client"]
+    "types": ["vite/client", "turnstile-types"]
   },
   "include": [
     "src/**/*.ts",

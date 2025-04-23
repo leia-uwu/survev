@@ -84,6 +84,31 @@ PrivateRouter.post(
     },
 );
 
+PrivateRouter.post(
+    "/toggle_captcha",
+    validateParams(
+        z.object({
+            enabled: z.boolean(),
+        }),
+    ),
+    (c) => {
+        try {
+            const { enabled } = c.req.valid("json");
+
+            server.captchaEnabled = enabled;
+
+            saveConfig(serverConfigPath, {
+                captchaEnabled: enabled,
+            });
+
+            return c.json({ state: enabled }, 200);
+        } catch (err) {
+            server.logger.warn("toggle_captcha Error processing request", err);
+            return c.json({ error: "Error processing request" }, 500);
+        }
+    },
+);
+
 PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
     try {
         const data = (await c.req.json()) as SaveGameBody;

@@ -8,6 +8,7 @@ export const zFindGameBody = z.object({
     playerCount: z.number(),
     autoFill: z.boolean(),
     gameModeIdx: z.number(),
+    turnstileToken: z.string().optional(),
 });
 
 export type FindGameBody = z.infer<typeof zFindGameBody>;
@@ -27,7 +28,8 @@ export type FindGameError =
     | "join_game_failed"
     | "rate_limited"
     | "banned"
-    | "behind_proxy";
+    | "behind_proxy"
+    | "invalid_captcha";
 
 export type FindGameResponse =
     | {
@@ -55,6 +57,7 @@ export type FindGameResponse =
 export interface Info {
     country: string;
     gitRevision: string;
+    captchaEnabled: boolean;
     modes: Array<{
         mapName: string;
         teamMode: TeamMode;

@@ -243,6 +243,16 @@ export interface ConfigType {
         PROXYCHECK_KEY?: string;
 
         /**
+         * Turnstile captcha secret key.
+         */
+        TURNSTILE_SECRET_KEY?: string;
+
+        /**
+         * Turnstile captcha site key.
+         */
+        TURNSTILE_SITE_KEY?: string;
+
+        /**
          * Adin play ID: API key used for Adin play ads.
          * Setting both this and AIP_PLACEMENT_ID will enable ads on the client.
          *
@@ -263,6 +273,14 @@ export interface ConfigType {
      * This requires a Redis server to be set up with the API server.
      */
     cachingEnabled: boolean;
+
+    /**
+     * If the turnstile captcha state is enabled.
+     * Used by the API server and will be returned on site_info API.
+     *
+     * Requires the turnstile keys on secrets object.
+     */
+    captchaEnabled: boolean;
 
     /**
      * Enables IP rate limits.

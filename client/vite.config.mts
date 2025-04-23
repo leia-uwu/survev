@@ -42,8 +42,8 @@ export default defineConfig(({ mode }) => {
 
     const selectedTheme = SplashThemes[Config.clientTheme];
 
-    const AdsVars = {
-        VITE_ADIN_PLAY_SCRIPT: `
+    if (Config.secrets.AIP_ID) {
+        process.env.VITE_ADIN_PLAY_SCRIPT = `
     <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.secrets.AIP_PLACEMENT_ID}/tag.min.js"></script>
     <script>
         window.aiptag = window.aiptag || { cmd: [] };
@@ -57,21 +57,18 @@ export default defineConfig(({ mode }) => {
             buttonPosition: "bottom-left", // bottom-left, bottom-right, top-left, top-right
         };
     </script>
-    `,
-        VITE_AIP_PLACEMENT_ID: Config.secrets.AIP_PLACEMENT_ID,
-    };
+    `;
+        process.env.VITE_AIP_PLACEMENT_ID = Config.secrets.AIP_PLACEMENT_ID;
+    }
 
-    if (!Config.secrets.AIP_ID) {
-        for (const key in AdsVars) {
-            AdsVars[key] = "";
-        }
+    if (Config.secrets.TURNSTILE_SITE_KEY) {
+        process.env.VITE_TURNSTILE_SCRIPT = `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>`;
     }
 
     process.env = {
         ...process.env,
         VITE_GAME_VERSION: version,
         VITE_BACKGROUND_IMG: selectedTheme.SPLASH_BG,
-        ...AdsVars,
     };
 
     const plugins: Plugin[] = [ejsPlugin()];
@@ -166,6 +163,7 @@ export default defineConfig(({ mode }) => {
                 Config.secrets.DISCORD_CLIENT_ID && Config.secrets.DISCORD_SECRET_ID,
             ),
             MOCK_LOGIN_SUPPORTED: JSON.stringify(Config.debug.allowMockAccount),
+            TURNSTILE_SITE_KEY: JSON.stringify(Config.secrets.TURNSTILE_SITE_KEY),
         },
         plugins,
         json: {

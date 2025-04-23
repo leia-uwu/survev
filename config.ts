@@ -55,6 +55,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             SURVEV_LOADOUT_SECRET: "",
             SURVEV_IP_SECRET: "",
         },
+        captchaEnabled: false,
         cachingEnabled: false,
         rateLimitsEnabled: isProduction,
         randomizeDefaultPlayerName: false,

@@ -355,6 +355,28 @@ export async function isBehindProxy(ip: string): Promise<boolean> {
     return info.proxy === "yes" || info.vpn === "yes";
 }
 
+export async function verifyTurnsStile(token: string, ip: string): Promise<boolean> {
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    const result = await fetch(url, {
+        body: JSON.stringify({
+            secret: Config.secrets.TURNSTILE_SECRET_KEY,
+            response: token,
+            remoteip: ip,
+        }),
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    const outcome = await result.json();
+
+    if (!outcome.success) {
+        return false;
+    }
+    return true;
+}
+
 export async function fetchApiServer<
     Body extends object = object,
     Res extends object = object,
