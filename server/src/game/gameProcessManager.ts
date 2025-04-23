@@ -177,7 +177,9 @@ export class GameProcessManager implements GameManager {
                     this.logger.log(
                         `Game ${gameProc.id} did not send a message in more 10 seconds, killing`,
                     );
-                    this.killProcess(gameProc);
+                    // sigquit can dump a core of the process
+                    // useful for debugging infinite loops
+                    this.killProcess(gameProc, "SIGQUIT");
                 } else if (
                     gameProc.stopped &&
                     Date.now() - gameProc.stoppedTime > 60000
@@ -239,7 +241,7 @@ export class GameProcessManager implements GameManager {
         }
     }
 
-    killProcess(gameProc: GameProcess): void {
+    killProcess(gameProc: GameProcess, signal: NodeJS.Signals = "SIGTERM"): void {
         for (const [, socket] of this.sockets) {
             const data = socket.getUserData();
             if (data.closed) continue;
@@ -248,7 +250,7 @@ export class GameProcessManager implements GameManager {
         }
 
         // send SIGTERM, if still hasn't terminated after 5 seconds, send SIGKILL >:3
-        gameProc.process.kill();
+        gameProc.process.kill(signal);
         setTimeout(() => {
             if (!gameProc.process.killed) {
                 gameProc.process.kill("SIGKILL");
