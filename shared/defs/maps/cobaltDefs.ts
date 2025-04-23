@@ -82,6 +82,14 @@ const mapDef: PartialMapDef = {
                         pos: v2.create(0.5, 0.5),
                         rad: 100,
                     },
+                    {
+                        rad: 100,
+                        genOnShore: true,
+                    },
+                    {
+                        rad: 100,
+                        genOnShore: true,
+                    },
                 ],
             },
         },
@@ -161,7 +169,11 @@ const mapDef: PartialMapDef = {
                 stone_03: "stone_03cb",
             },
         ],
-        importantSpawns: ["bunker_structure_09"],
+        importantSpawns: [
+            "club_complex_01",
+            "warehouse_complex_01",
+            "bunker_structure_09",
+        ],
     },
     /* STRIP_FROM_PROD_CLIENT:END */
     gameMode: {
