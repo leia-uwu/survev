@@ -363,6 +363,29 @@ ModerationRouter.post(
     },
 );
 
+ModerationRouter.post(
+    "/delete_game",
+    validateParams(
+        z.object({
+            gameId: z.string(),
+        }),
+    ),
+    async (c) => {
+        try {
+            const { gameId } = c.req.valid("json");
+
+            const res = await db
+                .delete(matchDataTable)
+                .where(eq(matchDataTable.gameId, gameId));
+
+            return c.json({ message: `Deleted ${res.rowCount} rows` }, 200);
+        } catch (err) {
+            server.logger.warn("/private/moderation/set_match_data_name:", err);
+            return c.json({ error: "An unexpected error occurred." }, 500);
+        }
+    },
+);
+
 async function banAccount(userId: string, banReason: string) {
     await db
         .update(usersTable)
