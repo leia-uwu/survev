@@ -289,16 +289,17 @@ export class PlaneBarn {
             let coll = collider.transform(def.collision, airdropPos, 0, 1);
             const objs = this.game.grid.intersectCollider(coll);
 
+            // move airdrop randomly a bit if we are still colliding with something...
+            if (attemps % 100 > 75) {
+                coll = collider.transform(coll, v2.mul(v2.randomUnit(), 3), 0, 1);
+            }
+
             for (let i = 0; i < objs.length && !collided; i++) {
                 const obj = objs[i];
                 if (obj.layer !== 0) continue;
                 // height check to make it so bombs can still spawn on top of obstacles like the
                 // faction mode statues
-                if (
-                    obj.__type === ObjectType.Obstacle &&
-                    !obj.destructible &&
-                    obj.height > 1
-                ) {
+                if (obj.__type === ObjectType.Obstacle && !obj.destructible) {
                     const intersection = collider.intersect(coll, obj.collider);
                     if (intersection) {
                         coll = collider.transform(
@@ -360,11 +361,6 @@ export class PlaneBarn {
                     collided = true;
                     break;
                 }
-            }
-
-            if (attemps % 100 === 99) {
-                coll = collider.transform(coll, v2.randomUnit(), 0, 1);
-                attemps = 0;
             }
 
             let rad: number;
