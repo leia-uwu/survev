@@ -1,3 +1,4 @@
+import { Config } from "../config";
 import { logErrorToWebhook } from "./serverHelpers";
 
 export const ColorStyles = {
@@ -92,24 +93,74 @@ export function styleText(
     return `${CSI}[${styles.join(";")}m${string}${CSI}[0m`;
 }
 
+const logCfg = Config.logging;
+
 export class Logger {
     constructor(public prefix: string) {}
 
-    log(...message: any[]): void {
-        const date = new Date();
-        const dateString = `[${date.toISOString().substring(0, 10)} ${date.toLocaleTimeString()}]`;
-        console.log(
-            styleText(dateString, ColorStyles.foreground.cyan.normal),
-            styleText(this.prefix, ColorStyles.foreground.green.normal),
-            "|",
-            message.join(" "),
+    private log(logFn = console.log, ...message: any[]): void {
+        if (logCfg.logDate) {
+            const date = new Date();
+            const dateString = `[${date.toISOString().substring(0, 10)} ${date.toLocaleTimeString()}]`;
+
+            logFn(
+                styleText(dateString, ColorStyles.foreground.cyan.normal),
+                styleText(this.prefix, ColorStyles.foreground.green.normal),
+                "|",
+                message.join(" "),
+            );
+        } else {
+            logFn(
+                styleText(this.prefix, ColorStyles.foreground.green.normal),
+                "|",
+                message.join(" "),
+            );
+        }
+
+        // to print full error messages
+        for (const msg of message) {
+            if (msg instanceof Error) {
+                logFn(msg);
+            }
+        }
+    }
+
+    info(...message: any[]): void {
+        if (!logCfg.infoLogs) return;
+        this.log(
+            undefined,
+            styleText("[INFO]", ColorStyles.foreground.blue.normal),
+            ...message,
         );
     }
-    warn(...message: any[]): void {
+
+    debug(...message: any[]): void {
+        if (!logCfg.debugLogs) return;
         this.log(
-            styleText("[WARNING]", ColorStyles.foreground.yellow.normal),
-            message.join(" "),
+            undefined,
+            styleText("[DEBUG]", ColorStyles.foreground.magenta.normal),
+            ...message,
+        );
+    }
+
+    warn(...message: any[]): void {
+        if (!logCfg.warnLogs) return;
+        this.log(
+            console.warn,
+            styleText("[WARN]", ColorStyles.foreground.yellow.normal),
+            ...message,
+        );
+    }
+
+    error(...message: any[]): void {
+        if (!logCfg.errorLogs) return;
+        this.log(
+            console.error,
+            styleText("[ERROR]", ColorStyles.foreground.red.normal),
+            ...message,
         );
         logErrorToWebhook("server", ...message);
     }
 }
+
+export const defaultLogger = new Logger("Generic");

@@ -19,6 +19,7 @@ import type { ApiServer } from "./api/apiServer";
 import { validateSessionToken } from "./api/auth";
 import { isBanned } from "./api/routes/private/ModerationRouter";
 import { Config } from "./config";
+import { Logger } from "./utils/logger";
 import {
     HTTPRateLimit,
     WebSocketRateLimit,
@@ -269,7 +270,7 @@ class Room {
                     return;
                 }
             } catch (err) {
-                console.error("/team_menu: Failed verifying turnstile: ", err);
+                this.teamMenu.logger.error("Failed verifying turnstile:", err);
                 this.data.lastError = "find_game_error";
                 this.sendState();
                 return;
@@ -310,7 +311,7 @@ class Room {
             const token = tokenMap.get(player);
 
             if (!token) {
-                console.warn(`Missing token for player ${player.name}`);
+                this.teamMenu.logger.warn(`Missing token for player ${player.name}`);
                 continue;
             }
 
@@ -353,6 +354,8 @@ function randomString(len: number) {
 
 export class TeamMenu {
     rooms = new Map<string, Room>();
+
+    logger = new Logger("TeamMenu");
 
     constructor(public server: ApiServer) {
         setInterval(() => {
@@ -417,7 +420,7 @@ export class TeamMenu {
                         closeReason = "banned";
                     }
                 } catch (err) {
-                    console.error("/team_v2: Failed to check if IP is banned", err);
+                    this.logger.error("Failed to check if IP is banned", err);
                 }
 
                 wsRateLimit.ipConnected(ip!);
@@ -434,7 +437,7 @@ export class TeamMenu {
                             userId = null;
                         }
                     } catch (err) {
-                        console.error(`TeamMenu: Failed to validate session:`, err);
+                        this.logger.error(`Failed to validate session:`, err);
                         userId = null;
                     }
                 }
@@ -476,7 +479,7 @@ export class TeamMenu {
                                 event.data as string,
                             );
                         } catch (err) {
-                            console.log(err);
+                            teamMenu.logger.error("Error processing message:", err);
                             ws.close();
                         }
                     },

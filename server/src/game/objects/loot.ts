@@ -66,6 +66,13 @@ export class LootBarn {
         pushSpeed?: number,
         dir?: Vec2,
     ) {
+        const def = GameObjectDefs[type];
+
+        if (!def || !("lootImg" in def)) {
+            this.game.logger.warn("Invalid loot type:", type);
+            return;
+        }
+
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
     }
@@ -80,6 +87,13 @@ export class LootBarn {
         dir?: Vec2,
         preloadGun?: boolean,
     ) {
+        const def = GameObjectDefs[type];
+
+        if (!def || !("lootImg" in def)) {
+            this.game.logger.warn("Invalid loot type:", type);
+            return;
+        }
+
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
 
@@ -87,7 +101,6 @@ export class LootBarn {
             loot.isPreloadedGun = true;
         }
 
-        const def = GameObjectDefs[type];
         if (def.type === "gun" && GameObjectDefs[def.ammo] && !preloadGun) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             if (ammoCount <= 0) return;
@@ -202,9 +215,7 @@ export class Loot extends BaseGameObject {
         super(game, pos);
 
         const def = GameObjectDefs[type] as LootDef;
-        def === undefined
-            ? console.log(`Invalid loot type ${type}`)
-            : assert("lootImg" in def, `Invalid loot type ${type}`);
+        assert("lootImg" in def, `Invalid loot type ${type}`);
 
         this.layer = layer;
         this.type = type;

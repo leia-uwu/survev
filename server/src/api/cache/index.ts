@@ -1,5 +1,6 @@
 import { createClient } from "redis";
 import { Config } from "../../config";
+import { server } from "../apiServer";
 
 export const CACHE_TTL = 3 * 24 * 60 * 60;
 
@@ -13,7 +14,7 @@ export async function getRedisClient() {
     }
     const cacheInstance = createClient();
 
-    cacheInstance.on("connect", () => console.log("Connected to redis"));
+    cacheInstance.on("connect", () => server.logger.info("Connected to redis"));
     process.on("exit", () => cleanupRedis);
 
     await cacheInstance.connect();
@@ -26,7 +27,7 @@ export async function cleanupRedis() {
         await redisClient
             .disconnect()
             .catch((err) =>
-                console.log(
+                server.logger.info(
                     `CacheStore - Error while disconnecting from redis: ${
                         err instanceof Error ? err.message : "Unknown error"
                     }`,

@@ -163,6 +163,43 @@ export interface ConfigType {
     };
 
     /**
+     * Server logger configuration
+     */
+    logging: {
+        /**
+         * If the logger class should include the date.
+         * Useful to disable it when using logging tools that add a date by default (like journalctl)
+         */
+        logDate: boolean;
+
+        // logging categories enabled
+
+        /**
+         * Information logs
+         */
+        infoLogs: boolean;
+
+        /**
+         * Debug logs, disabled by default on production
+         */
+        debugLogs: boolean;
+
+        /**
+         * Warning logs
+         */
+        warnLogs: boolean;
+
+        /**
+         * Error logs, will also log to a webhook if `errorLoggingWebhook` is set.
+         */
+        errorLogs: boolean;
+    };
+    /**
+     * Webhook URL to log errors.
+     */
+    errorLoggingWebhook?: string;
+
+    /**
      * PostgreSQL Database configuration, this will enable features like accounts, IP bans, leaderboards etc.
      */
     database: {
@@ -295,11 +332,6 @@ export interface ConfigType {
      * Useful for banning players.
      */
     randomizeDefaultPlayerName: boolean;
-
-    /**
-     * Webhook URL to log errors.
-     */
-    errorLoggingWebhook?: string;
 
     /**
      * Debugging config for development :)

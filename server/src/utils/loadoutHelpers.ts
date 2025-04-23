@@ -6,6 +6,7 @@ import type { JoinMsg } from "../../../shared/net/joinMsg";
 import type { Loadout } from "../../../shared/utils/loadout";
 import { Config } from "../config";
 import type { Player } from "../game/objects/player";
+import { defaultLogger } from "./logger";
 
 const loadoutSecret = Config.secrets.SURVEV_LOADOUT_SECRET;
 
@@ -32,7 +33,7 @@ function decryptLoadout(encodedLoadout: string): Loadout | undefined {
         const [ivString, encryptedString] = encodedLoadout.split(":");
 
         if (!ivString || !encryptedString) {
-            console.warn("Invalid or corrupted cipher format");
+            defaultLogger.warn("Invalid or corrupted cipher format");
             return;
         }
 
@@ -50,7 +51,7 @@ function decryptLoadout(encodedLoadout: string): Loadout | undefined {
 
         return JSON.parse(decrypted.toString());
     } catch (err) {
-        console.log(err);
+        defaultLogger.error("Failed to decrypt loadout:", err);
     }
 }
 

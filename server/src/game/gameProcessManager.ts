@@ -183,7 +183,7 @@ export class GameProcessManager implements GameManager {
                 });
 
                 if (Date.now() - gameProc.lastMsgTime > 10000) {
-                    this.logger.log(
+                    this.logger.warn(
                         `Game ${gameProc.id} did not send a message in more 10 seconds, killing`,
                     );
                     // sigquit can dump a core of the process
@@ -193,7 +193,7 @@ export class GameProcessManager implements GameManager {
                     gameProc.stopped &&
                     Date.now() - gameProc.stoppedTime > 60000
                 ) {
-                    this.logger.log(
+                    this.logger.warn(
                         `Game ${gameProc.id} stopped more than a minute ago, killing`,
                     );
                     this.killProcess(gameProc);

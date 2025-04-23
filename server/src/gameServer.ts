@@ -297,7 +297,9 @@ setInterval(() => {
 }, 20 * 1000);
 
 app.listen(Config.gameServer.host, Config.gameServer.port, () => {
-    server.logger.log(`Survev Game Server v${version} - GIT ${GIT_VERSION}`);
-    server.logger.log(`Listening on ${Config.gameServer.host}:${Config.gameServer.port}`);
-    server.logger.log("Press Ctrl+C to exit.");
+    server.logger.info(`Survev Game Server v${version} - GIT ${GIT_VERSION}`);
+    server.logger.info(
+        `Listening on ${Config.gameServer.host}:${Config.gameServer.port}`,
+    );
+    server.logger.info("Press Ctrl+C to exit.");
 });

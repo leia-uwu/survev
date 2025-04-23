@@ -41,6 +41,13 @@ export function getConfig(isProduction: boolean, dir: string) {
             enabled: isDev,
             time: 10,
         },
+        logging: {
+            logDate: true,
+            infoLogs: true,
+            debugLogs: isDev,
+            warnLogs: true,
+            errorLogs: true,
+        },
         database: {
             enabled: true,
             host: "127.0.0.1",

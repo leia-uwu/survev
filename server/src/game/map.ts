@@ -918,7 +918,7 @@ export class GameMap {
         const def = MapObjectDefs[type];
 
         if (!def) {
-            this.game.logger.warn("Type does not exist!", type);
+            this.game.logger.warn("Invalid map object:", type);
             return;
         }
 

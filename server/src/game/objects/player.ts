@@ -219,7 +219,7 @@ export class PlayerBarn {
             group.spawnLeader = player;
         }
 
-        this.game.logger.log(`Player ${player.name} joined`);
+        this.game.logger.info(`Player ${player.name} joined`);
 
         this.newPlayers.push(player);
         this.game.objectRegister.register(player);
@@ -810,7 +810,7 @@ export class Player extends BaseGameObject {
     promoteToRole(role: string) {
         const roleDef = GameObjectDefs[role] as RoleDef;
         if (!roleDef || roleDef.type !== "role") {
-            console.warn(`Invalid role type: ${role}`);
+            this.game.logger.warn(`Invalid role type: ${role}`);
             return;
         }
 

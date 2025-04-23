@@ -110,7 +110,7 @@ export class Game {
     ) {
         this.id = id;
         this.logger = new Logger(`Game #${this.id.substring(0, 4)}`);
-        this.logger.log("Creating");
+        this.logger.info("Creating");
 
         this.config = config;
 
@@ -153,7 +153,7 @@ export class Game {
         this.pluginManager.emit("gameCreated", this);
 
         this.allowJoin = true;
-        this.logger.log(`Created in ${Date.now() - this.start} ms`);
+        this.logger.info(`Created in ${Date.now() - this.start} ms`);
 
         this.updateData();
     }
@@ -212,7 +212,7 @@ export class Game {
                 const mspt =
                     this.tickTimes.reduce((a, b) => a + b) / this.tickTimes.length;
 
-                this.logger.log(
+                this.logger.debug(
                     `Avg ms/tick: ${mspt.toFixed(2)} | Load: ${((mspt / (1000 / Config.gameTps)) * 100).toFixed(1)}%`,
                 );
                 this.tickTimes = [];
@@ -322,8 +322,7 @@ export class Game {
             msg = deserialized.msg;
             type = deserialized.type;
         } catch (err) {
-            this.logger.warn("Failed to deserialize msg: ");
-            console.error(err);
+            this.logger.error("Failed to deserialize msg: ", err);
             return;
         }
 
@@ -370,7 +369,7 @@ export class Game {
     handleSocketClose(socketId: string): void {
         const player = this.playerBarn.socketIdToPlayer.get(socketId);
         if (!player) return;
-        this.logger.log(`"${player.name}" left`);
+        this.logger.info(`"${player.name}" left`);
         player.disconnected = true;
         player.group?.checkPlayers();
         player.spectating = undefined;
@@ -440,7 +439,7 @@ export class Game {
                 this.closeSocket(player.socketId);
             }
         }
-        this.logger.log("Game Ended");
+        this.logger.info("Game Ended");
         this.updateData();
         this._saveGameToDatabase();
     }

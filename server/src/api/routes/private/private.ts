@@ -39,7 +39,7 @@ PrivateRouter.post("/update_region", validateParams(zUpdateRegionBody), (c) => {
         server.updateRegion(regionId, data);
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/private/update_region: Error processing request", err);
+        server.logger.error("/private/update_region: Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
     }
 });
@@ -78,7 +78,7 @@ PrivateRouter.post(
 
             return c.json({}, 200);
         } catch (err) {
-            server.logger.warn("set_game_mode Error processing request", err);
+            server.logger.error("set_game_mode Error processing request", err);
             return c.json({ error: "Error processing request" }, 500);
         }
     },
@@ -103,7 +103,7 @@ PrivateRouter.post(
 
             return c.json({ state: enabled }, 200);
         } catch (err) {
-            server.logger.warn("toggle_captcha Error processing request", err);
+            server.logger.error("toggle_captcha Error processing request", err);
             return c.json({ error: "Error processing request" }, 500);
         }
     },
@@ -123,10 +123,10 @@ PrivateRouter.post("/save_game", databaseEnabledMiddleware, async (c) => {
 
         await db.insert(matchDataTable).values(matchData);
         await logPlayerIPs(matchData);
-        server.logger.log(`Saved game data for ${matchData[0].gameId}`);
+        server.logger.info(`Saved game data for ${matchData[0].gameId}`);
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("save_game Error processing request", err);
+        server.logger.error("save_game Error processing request", err);
         return c.json({ error: "Error processing request" }, 500);
     }
 });
@@ -182,7 +182,7 @@ PrivateRouter.post(
 
             return c.json({ success: true }, 200);
         } catch (err) {
-            server.logger.warn("/private/give_item: Error unlocking item", err);
+            server.logger.error("/private/give_item: Error unlocking item", err);
             return c.json({}, 500);
         }
     },
@@ -218,7 +218,7 @@ PrivateRouter.post(
 
             return c.json({ success: true }, 200);
         } catch (err) {
-            server.logger.warn("/private/remove_item: Error removing item", err);
+            server.logger.error("/private/remove_item: Error removing item", err);
             return c.json({}, 500);
         }
     },
@@ -230,7 +230,7 @@ PrivateRouter.post("/clear_cache", async (c) => {
         await client.flushAll();
         return c.json({ success: true }, 200);
     } catch (err) {
-        server.logger.warn("/private/clear_cache: Error clearing cache", err);
+        server.logger.error("/private/clear_cache: Error clearing cache", err);
         return c.json({}, 500);
     }
 });
@@ -275,7 +275,7 @@ PrivateRouter.post(
             await db.insert(matchDataTable).values(matchData);
             return c.json({ success: true }, 200);
         } catch (err) {
-            server.logger.warn("/private/test/insert_game: Error inserting game", err);
+            server.logger.error("/private/test/insert_game: Error inserting game", err);
             return c.json({}, 500);
         }
     },

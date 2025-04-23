@@ -4,6 +4,7 @@ import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
+import { defaultLogger } from "./logger";
 
 /**
  * Apply CORS headers to a response.
@@ -331,16 +332,16 @@ export async function isBehindProxy(ip: string): Promise<boolean> {
                 case "warning":
                     info = proxyRes[ip];
                     if (proxyRes.status === "warning") {
-                        console.warn(`ProxyCheck warning, res:`, proxyRes);
+                        defaultLogger.warn(`ProxyCheck warning, res:`, proxyRes);
                     }
                     break;
                 case "denied":
                 case "error":
-                    console.error(`Failed to check for ip ${ip}:`, proxyRes);
+                    defaultLogger.error(`Failed to check for ip ${ip}:`, proxyRes);
                     break;
             }
         } catch (error) {
-            console.error(`Proxycheck error:`, error);
+            defaultLogger.error(`Proxycheck error:`, error);
             return true;
         }
     }
@@ -398,9 +399,13 @@ export async function fetchApiServer<
             return res as Res;
         }
 
-        console.warn(`Error fetching API server ${route}`, res.status, res.statusText);
+        defaultLogger.warn(
+            `Error fetching API server ${route}`,
+            res.status,
+            res.statusText,
+        );
     } catch (err) {
-        console.warn(`Error fetching API server ${route}`, err);
+        defaultLogger.error(`Error fetching API server ${route}`, err);
     }
 
     return undefined;
@@ -427,6 +432,7 @@ export function logErrorToWebhook(from: "server" | "client", ...messages: any[])
             body: JSON.stringify(payload),
         });
     } catch (err) {
-        console.warn("Failed to log error to webhook", err);
+        // dont use defaultLogger.error here to not log it recursively :)
+        console.error("Failed to log error to webhook", err);
     }
 }

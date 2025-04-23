@@ -73,7 +73,7 @@ matchHistoryRouter.post(
 
             return c.json<MatchHistoryResponse>(data);
         } catch (err) {
-            server.logger.warn("/api/match_history: Error getting match history", err);
+            server.logger.error("/api/match_history: Error getting match history", err);
             return c.json({}, 500);
         }
     },

@@ -44,7 +44,7 @@ matchDataRouter.post(
 
             return c.json<MatchDataResponse>(result);
         } catch (err) {
-            server.logger.warn("/api/match_data: Error getting match data", err);
+            server.logger.error("/api/match_data: Error getting match data", err);
             return c.json({}, 500);
         }
     },

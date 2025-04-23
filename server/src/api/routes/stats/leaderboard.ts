@@ -31,7 +31,7 @@ leaderboardRouter.post(
             const cachedResult = await leaderboardCache.get(params);
 
             if (cachedResult) {
-                console.log(
+                server.logger.info(
                     `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
                 );
                 return c.json(cachedResult, 200);
@@ -51,7 +51,7 @@ leaderboardRouter.post(
 
             return c.json<LeaderboardResponse[]>(data, 200);
         } catch (err) {
-            server.logger.warn("/api/leaderboard: Error getting leaderboard data", err);
+            server.logger.error("/api/leaderboard: Error getting leaderboard data", err);
             return c.json({ error: "" }, 500);
         }
     },

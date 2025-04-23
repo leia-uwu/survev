@@ -94,7 +94,7 @@ UserRouter.post("/profile", async (c) => {
             200,
         );
     } catch (err) {
-        server.logger.warn("/api/profile: Error fetching user profile", err);
+        server.logger.error("/api/profile: Error fetching user profile", err);
         return c.json({}, 500);
     }
 });
@@ -148,7 +148,7 @@ UserRouter.post(
 
             return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
-            server.logger.warn("/api/username: Error updating username", err);
+            server.logger.error("/api/username: Error updating username", err);
             return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
     },
@@ -184,7 +184,7 @@ UserRouter.post("/loadout", validateParams(zLoadoutRequest), async (c) => {
             200,
         );
     } catch (err) {
-        server.logger.warn("/api/username: Error updating loadout", err);
+        server.logger.error("/api/username: Error updating loadout", err);
         return c.json({}, 500);
     }
 });
@@ -197,7 +197,7 @@ UserRouter.post("/logout", async (c) => {
 
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/api/logout: Error logging out", err);
+        server.logger.error("/api/logout: Error logging out", err);
         return c.json({}, 500);
     }
 });
@@ -221,7 +221,7 @@ UserRouter.post("/delete", async (c) => {
 
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/api/delete: Error deleting account", err);
+        server.logger.error("/api/delete: Error deleting account", err);
         return c.json({}, 500);
     }
 });
@@ -242,7 +242,7 @@ UserRouter.post("/set_item_status", validateParams(zSetItemStatusRequest), async
 
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/api/set_item_status: Error setting item status", err);
+        server.logger.error("/api/set_item_status: Error setting item status", err);
         return c.json({}, 500);
     }
 });
@@ -258,7 +258,7 @@ UserRouter.post("/reset_stats", async (c) => {
 
         return c.json({}, 200);
     } catch (err) {
-        server.logger.warn("/api/reset_stats: Error reseting stats", err);
+        server.logger.error("/api/reset_stats: Error reseting stats", err);
         return c.json({}, 500);
     }
 });

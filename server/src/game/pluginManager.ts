@@ -87,7 +87,7 @@ export class PluginManager {
 
     async loadPlugins() {
         for (const path of pluginPaths) {
-            this.game.logger.log("Loading plugin", path);
+            this.game.logger.info("Loading plugin", path);
             const plugin = ((await import(path)) as { default: new () => GamePlugin })
                 .default;
 

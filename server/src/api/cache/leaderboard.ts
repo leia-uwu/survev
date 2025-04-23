@@ -4,6 +4,7 @@ import type {
     LeaderboardResponse,
 } from "../../../../shared/types/stats";
 import { Config } from "../../config";
+import { server } from "../apiServer";
 import type { MatchDataTable } from "../db/schema";
 
 const SIX_MINUTES_CACHE_TTL = 360;
@@ -82,7 +83,7 @@ class LeaderBoardCache {
                     "leaderboard",
                     gameData,
                 );
-                console.log(`[INVALIDATING CACHE] -> ${leaderboardCacheKey}`);
+                server.logger.info(`[INVALIDATING CACHE] -> ${leaderboardCacheKey}`);
 
                 await client.set(lowestScoreCacheKey, maxGameValue);
                 await client.del(leaderboardCacheKey);
