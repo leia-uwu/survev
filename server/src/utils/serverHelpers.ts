@@ -411,7 +411,6 @@ export async function fetchApiServer<
     return undefined;
 }
 
-// @TODO: format the errors sent better
 export async function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
     if (!Config.errorLoggingWebhook) return;
 

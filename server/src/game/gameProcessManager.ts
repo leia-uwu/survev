@@ -99,7 +99,7 @@ class GameProcess implements GameData {
                             disconnectMsg.reason = msg.reason;
                             const stream = new net.MsgStream(new ArrayBuffer(128));
                             stream.serializeMsg(net.MsgType.Disconnect, disconnectMsg);
-                            socket.send(stream.getBuffer());
+                            socket.send(stream.getBuffer(), true, false);
                         }
 
                         socket.close();
