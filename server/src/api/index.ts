@@ -178,10 +178,15 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
 app.post(
     "/api/report_error",
     rateLimitMiddleware(5, 60 * 1000),
-    validateParams(z.object({ loc: z.string(), data: z.any() })),
+    validateParams(z.object({ loc: z.string(), error: z.any(), data: z.any() })),
     async (c) => {
         try {
             const content = await c.req.json();
+            if ("error" in content) {
+                try {
+                    content.error = JSON.parse(content.error);
+                } catch {}
+            }
 
             logErrorToWebhook("client", content);
 
