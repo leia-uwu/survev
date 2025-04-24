@@ -1,6 +1,7 @@
 import { platform } from "os";
 import NanoTimer from "nanotimer";
 import { Config } from "../config";
+import { logErrorToWebhook } from "../utils/serverHelpers";
 import { type ProcessMsg, ProcessMsgType } from "../utils/types";
 import { Game } from "./game";
 
@@ -127,3 +128,12 @@ if (platform() === "win32") {
         socketMsgs.length = 0;
     }, 1000 / Config.netSyncTps);
 }
+
+process.on("uncaughtException", async (err) => {
+    console.error(err);
+    game = undefined;
+
+    await logErrorToWebhook("server", "Game process error", err);
+
+    process.exit(1);
+});

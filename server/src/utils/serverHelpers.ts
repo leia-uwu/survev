@@ -412,7 +412,7 @@ export async function fetchApiServer<
 }
 
 // @TODO: format the errors sent better
-export function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
+export async function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
     if (!Config.errorLoggingWebhook) return;
 
     try {
@@ -434,7 +434,7 @@ Timestamp: \`${new Date().toISOString()}\`
 `;
         content += msg;
 
-        fetch(Config.errorLoggingWebhook, {
+        await fetch(Config.errorLoggingWebhook, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
