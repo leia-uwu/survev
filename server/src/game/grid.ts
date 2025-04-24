@@ -2,6 +2,7 @@ import type { AABB, Collider } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
+import type { Loot } from "./objects/loot";
 
 interface GameObject {
     __gridCells: Vec2[];
@@ -230,5 +231,125 @@ export class Grid<T extends GameObject = GameObject> {
             x: math.clamp(Math.floor(vector.x / this.cellSize), 0, this.width),
             y: math.clamp(Math.floor(vector.y / this.cellSize), 0, this.height),
         };
+    }
+}
+
+/**
+ * Hash grid optimized for loot to loot collision.
+ * @link https://github.com/reu/broadphase.js/blob/master/src/hash-grid.js
+ *
+ * Implements the space partitioning algorithim for better performance.
+ * @see http://en.wikipedia.org/wiki/Space_partitioning
+ */
+export class HashGrid<T extends Loot = Loot> {
+    width: number;
+    height: number;
+
+    cellSize: number;
+
+    rows: number;
+    cols: number;
+    grid: Array<Array<Array<T>>>;
+
+    constructor(width: number, height: number, cellSize: number) {
+        this.width = width;
+        this.height = height;
+
+        this.cellSize = cellSize;
+
+        this.rows = Math.ceil(this.height / this.cellSize);
+        this.cols = Math.ceil(this.width / this.cellSize);
+
+        this.grid = [];
+    }
+
+    /**
+     * Cleans the partitioning grid.
+     */
+    private _resetGrid() {
+        for (let y = 0; y < this.rows; y++) {
+            if (!this.grid[y]) continue;
+            this.grid[y].length = 0;
+        }
+    }
+
+    /**
+     * Checks for collision using spatial grid hashing.
+     *
+     * @param loots thie list of particles to check collisions.
+     * @param comparator the function that, given two objects, return if they are colliding or not.
+     * @param resolver the collision resolver which will receive each collision pair occurrence.
+     */
+    check(
+        loots: T[],
+        comparator: (a: T, b: T) => boolean,
+        resolver: (a: T, b: T) => void,
+    ) {
+        const length = loots.length;
+
+        this._resetGrid();
+
+        for (let i = 0; i < length; i++) {
+            const loot = loots[i];
+            if (loot.destroyed) continue;
+
+            const xMin = ((loot.pos.x - loot.lootRad) / this.cellSize) << 0;
+            const xMax = ((loot.pos.x + loot.lootRad) / this.cellSize) << 0;
+            const yMin = ((loot.pos.y - loot.lootRad) / this.cellSize) << 0;
+            const yMax = ((loot.pos.y + loot.lootRad) / this.cellSize) << 0;
+
+            for (let y = yMin; y <= yMax; y++) {
+                let row = this.grid[y];
+                if (!row) row = this.grid[y] = [];
+
+                for (let x = xMin; x <= xMax; x++) {
+                    let col = row[x];
+                    if (!col) col = this.grid[y][x] = [];
+                    col.push(loot);
+                }
+            }
+        }
+
+        for (let y = 0; y < this.rows; y++) {
+            let row = this.grid[y];
+            if (!row) continue;
+
+            for (let x = 0; x < this.cols; x++) {
+                let col = row[x];
+                if (!col) continue;
+
+                this.bruteForceCheck(col, comparator, resolver);
+            }
+        }
+    }
+
+    /**
+     * The most basic implementation of collision detection, although it is suitable for lots of cases,
+     * specially if your system has few particles (< 100).
+     *
+     * @param loots thie list of particles to check collisions.
+     * @param comparator the function that, given two objects, return if they are colliding or not.
+     * @param resolver the collision resolver which will receive each collision pair occurrence.
+     */
+    bruteForceCheck(
+        loots: T[],
+        comparator: (a: T, b: T) => boolean,
+        resolver: (a: T, b: T) => void,
+    ) {
+        const length = loots.length;
+
+        if (length < 2) return;
+
+        for (let i = 0; i < length; i++) {
+            const p1 = loots[i];
+
+            for (let j = i + 1; j < length; j++) {
+                const p2 = loots[j];
+
+                if (comparator(p1, p2)) {
+                    resolver(p1, p2);
+                }
+            }
+        }
     }
 }

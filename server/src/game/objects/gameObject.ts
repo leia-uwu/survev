@@ -222,55 +222,63 @@ export abstract class BaseGameObject {
     }
 
     checkStairs(objs: GameObject[], rad: number): Structure["stairs"][0] | undefined {
-        let finalStair: Structure["stairs"][0] | undefined;
-        let onStair = false;
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type !== ObjectType.Structure) continue;
-            for (let j = 0; j < obj.stairs.length; j++) {
-                const stair = obj.stairs[j];
-                if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
+            const stair = this.checkStructureStairs(obj, rad);
+            if (stair) return stair;
+        }
+        return undefined;
+    }
 
-                const collides = coldet.testCircleAabb(
+    checkStructureStairs(obj: Structure, rad: number) {
+        let onStair = false;
+        let finalStair: Structure["stairs"][0] | undefined;
+
+        for (let j = 0; j < obj.stairs.length; j++) {
+            const stair = obj.stairs[j];
+            if (stair.lootOnly && this.__type !== ObjectType.Loot) continue;
+
+            const collides = coldet.testCircleAabb(
+                this.pos,
+                rad,
+                stair.collision.min,
+                stair.collision.max,
+            );
+
+            if (collides) {
+                const downCollision = coldet.intersectAabbCircle(
+                    stair.downAabb.min,
+                    stair.downAabb.max,
                     this.pos,
                     rad,
-                    stair.collision.min,
-                    stair.collision.max,
                 );
 
-                if (collides) {
-                    const downCollision = coldet.intersectAabbCircle(
-                        stair.downAabb.min,
-                        stair.downAabb.max,
-                        this.pos,
-                        rad,
-                    );
+                const upCollision = coldet.intersectAabbCircle(
+                    stair.upAabb.min,
+                    stair.upAabb.max,
+                    this.pos,
+                    rad,
+                );
 
-                    const upCollision = coldet.intersectAabbCircle(
-                        stair.upAabb.min,
-                        stair.upAabb.max,
-                        this.pos,
-                        rad,
-                    );
-
-                    if (upCollision && downCollision) {
-                        this.layer = upCollision.pen > downCollision.pen ? 2 : 3;
-                    } else if (downCollision) {
-                        this.layer = 3;
-                    } else if (upCollision) {
-                        this.layer = 2;
-                    }
-
-                    onStair = true;
-                    finalStair = stair;
-                    break;
+                if (upCollision && downCollision) {
+                    this.layer = upCollision.pen > downCollision.pen ? 2 : 3;
+                } else if (downCollision) {
+                    this.layer = 3;
+                } else if (upCollision) {
+                    this.layer = 2;
                 }
-            }
-            if (!onStair) {
-                if (this.layer === 2) this.layer = 0;
-                if (this.layer === 3) this.layer = 1;
+
+                onStair = true;
+                finalStair = stair;
+                break;
             }
         }
+        if (!onStair) {
+            if (this.layer === 2) this.layer = 0;
+            if (this.layer === 3) this.layer = 1;
+        }
+
         return finalStair;
     }
 

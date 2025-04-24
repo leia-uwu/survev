@@ -98,12 +98,6 @@ export class Airdrop extends BaseGameObject {
                             break;
                         }
                     }
-                } else if (
-                    obj.__type === ObjectType.Loot &&
-                    coldet.test(obj.collider, this.crateCollision)
-                ) {
-                    // just push randomly to wake up the loot
-                    obj.push(v2.randomUnit(), 1);
                 }
             }
 
