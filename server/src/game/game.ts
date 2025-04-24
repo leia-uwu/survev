@@ -29,6 +29,7 @@ import { PlayerBarn } from "./objects/player";
 import { ProjectileBarn } from "./objects/projectile";
 import { SmokeBarn } from "./objects/smoke";
 import { PluginManager } from "./pluginManager";
+import { Profiler } from "./profiler";
 
 export interface JoinTokenData {
     expiresAt: number;
@@ -107,6 +108,8 @@ export class Game {
 
     start = Date.now();
 
+    profiler = new Profiler();
+
     constructor(
         id: string,
         config: ServerGameConfig,
@@ -166,6 +169,8 @@ export class Game {
 
     update(): void {
         if (!this.allowJoin) return;
+        this.profiler.flush();
+
         const now = performance.now();
         if (!this.now) this.now = now;
         const dt = math.clamp((now - this.now) / 1000, 0.001, 1 / 8);
@@ -192,23 +197,61 @@ export class Game {
         //
         // Update modules
         //
+        this.profiler.addSample("gas");
         this.gas.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("players");
         this.playerBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("map");
         this.map.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("loot");
         this.lootBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("bullets");
         this.bulletBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("projectiles");
         this.projectileBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("explosions");
         this.explosionBarn.update();
+        this.profiler.endSample();
+
+        this.profiler.addSample("smoke");
         this.smokeBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("airdrops");
         this.airdropBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("deadBodies");
         this.deadBodyBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("decals");
         this.decalBarn.update(dt);
+        this.profiler.endSample();
+
+        this.profiler.addSample("planes");
         this.planeBarn.update(dt);
+        this.profiler.endSample();
 
         const tickTime = performance.now() - this.now;
 
         if (tickTime > 1000) {
-            this.logger.error(`Tick took over 1 second! ${tickTime.toFixed(2)}ms`);
+            let errString = `Tick took over 1 second! ${tickTime.toFixed(2)}ms\n`;
+            errString += "Profiler stats:\n";
+            errString += this.profiler.getStats();
+            this.logger.error(errString);
         } else if (tickTime > this.tickTimeWarnThreshold) {
             this.logger.warn(
                 `Tick took over ${this.tickTimeWarnThreshold}ms! ${tickTime.toFixed(2)}ms`,
@@ -216,9 +259,10 @@ export class Game {
             this.gameTickWarnings++;
 
             if (this.gameTickWarnings > 20) {
-                this.logger.warn(
-                    `Server is overloaded! Increasing tickTimeWarnThreshold.`,
-                );
+                let errString = `Server is overloaded! Increasing tickTimeWarnThreshold.\n`;
+                errString += "Profiler stats:\n";
+                errString += this.profiler.getStats();
+                this.logger.warn(errString);
 
                 this.gameTickWarnings = 0;
                 this.tickTimeWarnThreshold *= 2;
