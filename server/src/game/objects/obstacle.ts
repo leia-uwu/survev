@@ -496,7 +496,7 @@ export class Obstacle extends BaseGameObject {
         this.parentBuilding?.obstacleDestroyed(this);
 
         if (this.isWall) {
-            const objs = this.game.grid.intersectCollider(this.collider);
+            const objs = this.game.grid.intersectGameObject(this);
 
             for (let i = 0; i < objs.length; i++) {
                 const obj = objs[i];

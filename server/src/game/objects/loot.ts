@@ -280,7 +280,7 @@ export class Loot extends BaseGameObject {
             this.vel = v2.mul(thisDir, 100);
         }
 
-        let objs = this.game.grid.intersectCollider(this.collider);
+        let objs = this.game.grid.intersectGameObject(this);
 
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];

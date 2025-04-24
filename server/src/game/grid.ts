@@ -107,6 +107,30 @@ export class Grid<T extends GameObject = GameObject> {
     }
 
     /**
+     * Get all objects near this game object
+     * @param obj The game object. NOTE: it must already be inside the grid
+     * @return An array with the objects near this collider
+     */
+    intersectGameObject(obj: GameObject): T[] {
+        const objects: T[] = [];
+
+        const queryId = this.nextQueryId++;
+
+        for (let i = 0; i < obj.__gridCells.length; i++) {
+            const pos = obj.__gridCells[i];
+            const cell = this._grid[pos.x][pos.y];
+            for (const object of cell) {
+                if (object.__gridQueryId === queryId) continue;
+                if (object === obj) continue;
+                object.__gridQueryId = queryId;
+                objects.push(object);
+            }
+        }
+
+        return objects;
+    }
+
+    /**
      * Get all objects near this collider
      * This transforms the collider into a rectangle
      * and gets all objects intersecting it after rounding it to grid cells

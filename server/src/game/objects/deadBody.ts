@@ -60,9 +60,7 @@ export class DeadBody extends BaseGameObject {
         this.game.map.clampToMapBounds(this.pos);
 
         const originalLayer = this.layer;
-        const objs = this.game.grid.intersectCollider(
-            collider.createCircle(this.pos, 0.1),
-        );
+        const objs = this.game.grid.intersectGameObject(this);
         this.checkStairs(objs, 2);
 
         this.game.map.clampToMapBounds(this.pos);

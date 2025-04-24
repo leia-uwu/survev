@@ -196,8 +196,7 @@ export class Projectile extends BaseGameObject {
         //
         // Collision and changing layers on stair
         //
-        const coll = collider.createCircle(this.pos, this.rad, this.posZ);
-        const objs = this.game.grid.intersectCollider(coll);
+        const objs = this.game.grid.intersectGameObject(this);
 
         for (const obj of objs) {
             if (
@@ -310,8 +309,7 @@ export class Projectile extends BaseGameObject {
      * only used for bomb_iron projectiles, they CANNOT explode inside indestructable buildings
      */
     canBombIronExplode(): boolean {
-        const coll = collider.createCircle(this.pos, this.rad);
-        const objs = this.game.grid.intersectCollider(coll);
+        const objs = this.game.grid.intersectGameObject(this);
 
         for (const obj of objs) {
             if (obj.__type != ObjectType.Building) continue;
