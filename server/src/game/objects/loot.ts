@@ -44,7 +44,10 @@ export class LootBarn {
         this.grid.check(
             this.loots,
             (a, b) => {
-                return coldet.testCircleCircle(a.pos, a.lootRad, b.pos, b.lootRad);
+                return (
+                    (util.sameLayer(a.layer, b.layer) as boolean) &&
+                    coldet.testCircleCircle(a.pos, a.lootRad, b.pos, b.lootRad)
+                );
             },
             (a, b) => {
                 const res = coldet.intersectCircleCircle(
