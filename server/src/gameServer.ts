@@ -89,6 +89,10 @@ class GameServer {
 
 const server = new GameServer();
 
+if (process.env.NODE_ENV !== "production") {
+    server.manager.newGame(Config.modes[0]);
+}
+
 const app = Config.gameServer.ssl
     ? SSLApp({
           key_file_name: Config.gameServer.ssl.keyFile,
