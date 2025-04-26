@@ -23,7 +23,7 @@ export class Grid<T extends GameObject = GameObject> {
     //                      __^__ __^__   __^__
     private readonly _grid: Array<Array<Set<T>>>;
 
-    private nextQueryId = 0;
+    private nextQueryId = 1;
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
