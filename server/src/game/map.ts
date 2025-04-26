@@ -97,6 +97,7 @@ function getBuildingBounds(type: string, layer = 0, pos: Vec2, rot: number) {
 }
 
 interface GridCollider {
+    __gridQueryId?: number;
     collision: Collider;
     layer: number;
     // Obstacle colliders are used for areas obstacles and buildings cant spawn
@@ -119,6 +120,7 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     //                        X     Y     Object
     //                      __^__ __^__   __^__
     private readonly _grid: Array<Array<Array<T>>>;
+    private nextQueryId = 1;
 
     constructor(width: number, height: number) {
         this.width = Math.floor(width / this.cellSize);
@@ -130,6 +132,7 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     }
 
     addCollider(coll: T): void {
+        coll.__gridQueryId = 0;
         const aabb = collider.toAabb(coll.collision);
         // Get the bounds of the hitbox
         // Round it to the grid cells
@@ -146,28 +149,28 @@ export class MapGrid<T extends GridCollider = GridCollider> {
     }
 
     intersectCollider(coll: Collider): T[] {
-        return [...this.intersectColliderSet(coll)];
-    }
-
-    intersectColliderSet(coll: Collider): Set<T> {
         const aabb = collider.toAabb(coll);
 
         const min = this._roundToCells(aabb.min);
         const max = this._roundToCells(aabb.max);
 
-        const objects = new Set<T>();
+        const colliders: T[] = [];
+        const queryId = this.nextQueryId++;
 
         for (let x = min.x; x <= max.x; x++) {
             const xRow = this._grid[x];
             for (let y = min.y; y <= max.y; y++) {
                 const cell = xRow[y];
-                for (const object of cell) {
-                    objects.add(object);
+                for (let i = 0; i < cell.length; i++) {
+                    const coll = cell[i];
+                    if (coll.__gridQueryId === queryId) continue;
+                    coll.__gridQueryId = queryId;
+                    colliders.push(coll);
                 }
             }
         }
 
-        return objects;
+        return colliders;
     }
 
     private _roundToCells(vector: Vec2): Vec2 {
