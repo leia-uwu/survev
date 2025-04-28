@@ -1,4 +1,4 @@
-import { and, eq, gte, inArray, sql } from "drizzle-orm";
+import { type SQL, and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
 import { MinGames } from "../../../../../shared/constants";
@@ -15,7 +15,6 @@ import { validateParams } from "../../auth/middleware";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
-import { filterByInterval, filterByMapId } from "./user_stats";
 
 export const leaderboardRouter = new Hono<Context>();
 
@@ -63,48 +62,52 @@ const typeToQuery: Record<LeaderboardRequest["type"], string> = {
     wins: "COUNT(CASE WHEN match_data.rank = 1 THEN 1 END)",
 };
 
+const intervalFilter = {
+    daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
+    weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
+};
+
 async function soloLeaderboardQuery(params: LeaderboardRequest) {
     const { interval, mapId, teamMode, type } = params;
-    const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapId as unknown as string);
-    const userNotBannedQuery = `AND users.banned = false`;
-    const loggedPlayersFilterQuery = `AND match_data.user_id IS NOT NULL`;
     const minGames = type === "kpg" ? MinGames[type][interval] : 1;
 
     const usernameQuery =
-        type === "most_kills" ? "match_data.username" : "users.username";
+        type === "most_kills" ? matchDataTable.username : usersTable.username;
 
-    // SQL 🤮, migrate to drizzle once stable
-    const query = sql.raw(`
-    SELECT
-        ${usernameQuery} AS username,
-        match_data.map_id AS map_id,
-        match_data.region,
-        COUNT(DISTINCT(match_data.game_id)) as games,
-        match_data.team_mode as team_mode,
-        users.slug,
-        ${typeToQuery[type]} as val
-    FROM match_data
-    LEFT JOIN users ON match_data.user_id = users.id
-    WHERE team_mode = ${teamMode}
-        ${userNotBannedQuery}
-        ${loggedPlayersFilterQuery}
-        ${intervalFilterQuery}
-        ${mapIdFilterQuery}
-    GROUP BY
-        map_id,
-        users.slug,
-        match_data.region,
-        match_data.team_mode,
-        ${type === "most_kills" ? "match_data.kills," : ""}
-        ${usernameQuery}
-    HAVING COUNT(DISTINCT(match_data.game_id)) >= ${minGames}
-    ORDER BY val DESC
-    LIMIT ${MAX_RESULT_COUNT};
-  `);
+    const result = await db
+        .select({
+            username: usernameQuery,
+            mapId: matchDataTable.mapId,
+            region: matchDataTable.region,
+            teamMode: matchDataTable.teamMode,
+            games: count(sql`DISTINCT(match_data.game_id)`),
+            slug: usersTable.slug,
+            val: sql.raw(`${typeToQuery[type]} as val`) as SQL<number>,
+        })
+        .from(matchDataTable)
+        .leftJoin(usersTable, eq(usersTable.id, matchDataTable.userId))
+        .where(
+            and(
+                eq(matchDataTable.teamMode, teamMode),
+                eq(usersTable.banned, false),
+                interval === "alltime" ? undefined : intervalFilter[interval],
+                ne(matchDataTable.userId, ""),
+                eq(matchDataTable.mapId, mapId),
+            ),
+        )
+        .groupBy(
+            matchDataTable.mapId,
+            usersTable.slug,
+            matchDataTable.region,
+            matchDataTable.teamMode,
+            usernameQuery,
+            sql`${type === "most_kills" ? matchDataTable.kills : ""}`,
+        )
+        .having(gte(count(sql`DISTINCT(match_data.game_id)`), minGames))
+        .orderBy(sql`val DESC`)
+        .limit(MAX_RESULT_COUNT);
 
-    const result = await db.execute<LeaderboardResponse>(query);
-    return result.rows;
+    return result as LeaderboardResponse[];
 }
 
 async function multiplePlayersQuery({
@@ -112,11 +115,6 @@ async function multiplePlayersQuery({
     mapId,
     teamMode,
 }: LeaderboardRequest): Promise<LeaderboardResponse[]> {
-    const intervalFilter = {
-        daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
-        weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
-    };
-
     const data = await db
         .select({
             matchedUsers: sql<
