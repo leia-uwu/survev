@@ -8,7 +8,6 @@ import {
     type LeaderboardResponse,
     zLeaderboardsRequest,
 } from "../../../../../shared/types/stats";
-import { Config } from "../../../config";
 import { server } from "../../apiServer";
 import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
@@ -189,18 +188,14 @@ async function multiplePlayersQuery({
 }
 
 function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
-    if (!Config.errorLoggingWebhook) return;
-    if (Math.random() > 0.2) return;
-
     const endTime = performance.now();
     const executionTime = endTime - startTime;
-    const message = `**${params.type} leaderboard** | Execution time: ${executionTime > 1000 ? `${(executionTime / 1000).toFixed(2)}s` : `${executionTime.toFixed(2)}ms`} | Params: ${JSON.stringify(params)}`;
+    const timeString =
+        executionTime > 1000
+            ? `${(executionTime / 1000).toFixed(2)}s`
+            : `${executionTime.toFixed(2)}ms`;
 
-    fetch(Config.errorLoggingWebhook, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-    });
+    server.logger[executionTime > 1000 ? "warn" : "debug"](
+        `leaderboard | Execution time: ${timeString} | Params: ${JSON.stringify(params)}`,
+    );
 }
