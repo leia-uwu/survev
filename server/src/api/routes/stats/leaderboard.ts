@@ -25,35 +25,30 @@ leaderboardRouter.post(
     rateLimitMiddleware(40, 60 * 1000),
     validateParams(zLeaderboardsRequest),
     async (c) => {
-        try {
-            const params = c.req.valid("json");
-            const { type, teamMode } = params;
-            const cachedResult = await leaderboardCache.get(params);
+        const params = c.req.valid("json");
+        const { type, teamMode } = params;
+        const cachedResult = await leaderboardCache.get(params);
 
-            if (cachedResult) {
-                server.logger.info(
-                    `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
-                );
-                return c.json(cachedResult, 200);
-            }
-
-            const startTime = performance.now();
-            const data =
-                type === "most_kills" && teamMode != TeamMode.Solo
-                    ? await multiplePlayersQuery(params)
-                    : await soloLeaderboardQuery(params);
-            logQueryPerformance(startTime, params);
-
-            // TODO: decide if we should cache empty results;
-            if (data.length != 0) {
-                await leaderboardCache.set(params, data);
-            }
-
-            return c.json<LeaderboardResponse[]>(data, 200);
-        } catch (err) {
-            server.logger.error("/api/leaderboard: Error getting leaderboard data", err);
-            return c.json({ error: "" }, 500);
+        if (cachedResult) {
+            server.logger.info(
+                `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
+            );
+            return c.json(cachedResult, 200);
         }
+
+        const startTime = performance.now();
+        const data =
+            type === "most_kills" && teamMode != TeamMode.Solo
+                ? await multiplePlayersQuery(params)
+                : await soloLeaderboardQuery(params);
+        logQueryPerformance(startTime, params);
+
+        // TODO: decide if we should cache empty results;
+        if (data.length != 0) {
+            await leaderboardCache.set(params, data);
+        }
+
+        return c.json<LeaderboardResponse[]>(data, 200);
     },
 );
 

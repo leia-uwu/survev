@@ -16,6 +16,7 @@ import {
     forbidden,
     getIp,
     isBehindProxy,
+    logErrorToWebhook,
     readPostedJSON,
     returnJson,
 } from "./utils/serverHelpers";
@@ -25,6 +26,14 @@ import {
     type GameSocketData,
     zFindGamePrivateBody,
 } from "./utils/types";
+
+process.on("uncaughtException", async (err) => {
+    console.error(err);
+
+    await logErrorToWebhook("server", "Game server error:", err);
+
+    process.exit(1);
+});
 
 class GameServer {
     readonly logger = new Logger("GameServer");

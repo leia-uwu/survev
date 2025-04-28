@@ -85,7 +85,7 @@ export function rateLimitMiddleware(limit: number, interval: number) {
         const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
         if (!ip) {
-            return c.json({}, 500);
+            return c.json({ error: "invalid_ip" }, 500);
         }
 
         if (rateLimit.isRateLimited(ip)) {

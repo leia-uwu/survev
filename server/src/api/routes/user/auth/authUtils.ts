@@ -120,7 +120,6 @@ export async function handleAuthUser(c: Context, provider: Provider, authId: str
     });
 
     await setSessionTokenCookie(userId, c);
-    return;
 }
 
 export async function createNewUser(payload: UsersTableInsert) {

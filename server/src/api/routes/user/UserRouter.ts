@@ -40,102 +40,93 @@ UserRouter.use(rateLimitMiddleware(40, 60 * 1000));
 UserRouter.use(authMiddleware);
 
 UserRouter.post("/profile", async (c) => {
-    try {
-        const user = c.get("user")!;
+    const user = c.get("user")!;
 
-        const {
-            loadout,
-            slug,
-            linked,
-            username,
-            usernameSet,
-            lastUsernameChangeTime,
-            banned,
-            banReason,
-        } = user;
+    const {
+        loadout,
+        slug,
+        linked,
+        username,
+        usernameSet,
+        lastUsernameChangeTime,
+        banned,
+        banReason,
+    } = user;
 
-        if (banned) {
-            const session = c.get("session")!;
-            await logoutUser(c, session.id);
+    if (banned) {
+        const session = c.get("session")!;
+        await logoutUser(c, session.id);
 
-            return c.json<ProfileResponse>({
-                banned: true,
-                reason: banReason,
-            });
-        }
-
-        const timeUntilNextChange =
-            getTimeUntilNextUsernameChange(lastUsernameChangeTime);
-
-        const items = await db
-            .select({
-                type: itemsTable.type,
-                timeAcquired: itemsTable.timeAcquired,
-                source: itemsTable.source,
-                status: itemsTable.status,
-            })
-            .from(itemsTable)
-            .where(eq(itemsTable.userId, user.id));
-
-        return c.json<ProfileResponse>(
-            {
-                success: true,
-                profile: {
-                    slug,
-                    linked,
-                    username,
-                    usernameSet,
-                    usernameChangeTime: timeUntilNextChange,
-                },
-                loadout,
-                loadoutPriv: encryptLoadout(loadout),
-                items: items,
-            },
-            200,
-        );
-    } catch (err) {
-        server.logger.error("/api/profile: Error fetching user profile", err);
-        return c.json({}, 500);
+        return c.json<ProfileResponse>({
+            banned: true,
+            reason: banReason,
+        });
     }
+
+    const timeUntilNextChange = getTimeUntilNextUsernameChange(lastUsernameChangeTime);
+
+    const items = await db
+        .select({
+            type: itemsTable.type,
+            timeAcquired: itemsTable.timeAcquired,
+            source: itemsTable.source,
+            status: itemsTable.status,
+        })
+        .from(itemsTable)
+        .where(eq(itemsTable.userId, user.id));
+
+    return c.json<ProfileResponse>(
+        {
+            success: true,
+            profile: {
+                slug,
+                linked,
+                username,
+                usernameSet,
+                usernameChangeTime: timeUntilNextChange,
+            },
+            loadout,
+            loadoutPriv: encryptLoadout(loadout),
+            items: items,
+        },
+        200,
+    );
 });
 
 UserRouter.post(
     "/username",
     validateParams(zUsernameRequest, { result: "invalid" } satisfies UsernameResponse),
     async (c) => {
+        const user = c.get("user")!;
+        const { username } = c.req.valid("json");
+        const timeUntilNextChange = getTimeUntilNextUsernameChange(
+            user.lastUsernameChangeTime,
+        );
+
+        if (timeUntilNextChange > 0) {
+            return c.json<UsernameResponse>({ result: "change_time_not_expired" }, 200);
+        }
+
+        const { validName, originalWasInvalid } = validateUserName(username);
+
+        if (originalWasInvalid) {
+            return c.json<UsernameResponse>({ result: "invalid" }, 200);
+        }
+
+        const slug = sanitizeSlug(validName);
+
+        const slugTaken = await db.query.usersTable.findFirst({
+            where: and(eq(usersTable.slug, slug), ne(usersTable.id, user.id)),
+            columns: {
+                id: true,
+            },
+        });
+
+        if (slugTaken) {
+            return c.json<UsernameResponse>({ result: "taken" }, 200);
+        }
+
         try {
-            const user = c.get("user")!;
-            const { username } = c.req.valid("json");
-            const timeUntilNextChange = getTimeUntilNextUsernameChange(
-                user.lastUsernameChangeTime,
-            );
-
-            if (timeUntilNextChange > 0) {
-                return c.json<UsernameResponse>(
-                    { result: "change_time_not_expired" },
-                    200,
-                );
-            }
-
-            const { validName, originalWasInvalid } = validateUserName(username);
-
-            if (originalWasInvalid) {
-                return c.json<UsernameResponse>({ result: "invalid" }, 200);
-            }
-
-            const slug = sanitizeSlug(validName);
-
-            const slugTaken = await db.query.usersTable.findFirst({
-                where: and(eq(usersTable.slug, slug), ne(usersTable.id, user.id)),
-                columns: {
-                    id: true,
-                },
-            });
-
-            if (slugTaken) {
-                return c.json<UsernameResponse>({ result: "taken" }, 200);
-            }
-
             await db
                 .update(usersTable)
                 .set({
@@ -145,122 +136,95 @@ UserRouter.post(
                     lastUsernameChangeTime: new Date(),
                 })
                 .where(eq(usersTable.id, user.id));
-
-            return c.json<UsernameResponse>({ result: "success" }, 200);
         } catch (err) {
             server.logger.error("/api/username: Error updating username", err);
             return c.json<UsernameResponse>({ result: "failed" }, 500);
         }
+
+        return c.json<UsernameResponse>({ result: "success" }, 200);
     },
 );
 
 UserRouter.post("/loadout", validateParams(zLoadoutRequest), async (c) => {
-    try {
-        const user = c.get("user")!;
-        const { loadout: userLoadout } = c.req.valid("json");
+    const user = c.get("user")!;
+    const { loadout: userLoadout } = c.req.valid("json");
 
-        const items = await db
-            .select({
-                type: itemsTable.type,
-                timeAcquired: itemsTable.timeAcquired,
-                source: itemsTable.source,
-                status: itemsTable.status,
-            })
-            .from(itemsTable)
-            .where(eq(itemsTable.userId, user.id));
+    const items = await db
+        .select({
+            type: itemsTable.type,
+            timeAcquired: itemsTable.timeAcquired,
+            source: itemsTable.source,
+            status: itemsTable.status,
+        })
+        .from(itemsTable)
+        .where(eq(itemsTable.userId, user.id));
 
-        const validatedLoadout = loadout.validateWithAvailableItems(userLoadout, items);
+    const validatedLoadout = loadout.validateWithAvailableItems(userLoadout, items);
 
-        await db
-            .update(usersTable)
-            .set({ loadout: validatedLoadout })
-            .where(eq(usersTable.id, user.id));
+    await db
+        .update(usersTable)
+        .set({ loadout: validatedLoadout })
+        .where(eq(usersTable.id, user.id));
 
-        return c.json<LoadoutResponse>(
-            {
-                loadout: validatedLoadout,
-                loadoutPriv: encryptLoadout(validatedLoadout),
-            },
-            200,
-        );
-    } catch (err) {
-        server.logger.error("/api/username: Error updating loadout", err);
-        return c.json({}, 500);
-    }
+    return c.json<LoadoutResponse>(
+        {
+            loadout: validatedLoadout,
+            loadoutPriv: encryptLoadout(validatedLoadout),
+        },
+        200,
+    );
 });
 
 UserRouter.post("/logout", async (c) => {
-    try {
-        const session = c.get("session")!;
+    const session = c.get("session")!;
 
-        await logoutUser(c, session.id);
+    await logoutUser(c, session.id);
 
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.error("/api/logout: Error logging out", err);
-        return c.json({}, 500);
-    }
+    return c.json({}, 200);
 });
 
 UserRouter.post("/delete", async (c) => {
-    try {
-        const user = c.get("user")!;
-        const session = c.get("session")!;
+    const user = c.get("user")!;
+    const session = c.get("session")!;
 
-        // logout out the user
-        await logoutUser(c, session.id);
+    // logout out the user
+    await logoutUser(c, session.id);
 
-        // delete the account
-        await db.delete(usersTable).where(eq(usersTable.id, user.id));
+    // delete the account
+    await db.delete(usersTable).where(eq(usersTable.id, user.id));
 
-        // remove reference to the user from match data
-        await db
-            .update(matchDataTable)
-            .set({ userId: null })
-            .where(eq(matchDataTable.userId, user.id));
+    // remove reference to the user from match data
+    await db
+        .update(matchDataTable)
+        .set({ userId: null })
+        .where(eq(matchDataTable.userId, user.id));
 
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.error("/api/delete: Error deleting account", err);
-        return c.json({}, 500);
-    }
+    return c.json({}, 200);
 });
 
 UserRouter.post("/set_item_status", validateParams(zSetItemStatusRequest), async (c) => {
-    try {
-        const user = c.get("user")!;
-        const { itemTypes, status } = c.req.valid("json");
+    const user = c.get("user")!;
+    const { itemTypes, status } = c.req.valid("json");
 
-        await db
-            .update(itemsTable)
-            .set({
-                status: status,
-            })
-            .where(
-                and(eq(itemsTable.userId, user.id), inArray(itemsTable.type, itemTypes)),
-            );
+    await db
+        .update(itemsTable)
+        .set({
+            status: status,
+        })
+        .where(and(eq(itemsTable.userId, user.id), inArray(itemsTable.type, itemTypes)));
 
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.error("/api/set_item_status: Error setting item status", err);
-        return c.json({}, 500);
-    }
+    return c.json({}, 200);
 });
 
 UserRouter.post("/reset_stats", async (c) => {
-    try {
-        const user = c.get("user")!;
+    const user = c.get("user")!;
 
-        await db
-            .update(matchDataTable)
-            .set({ userId: null })
-            .where(eq(matchDataTable.userId, user.id));
+    await db
+        .update(matchDataTable)
+        .set({ userId: null })
+        .where(eq(matchDataTable.userId, user.id));
 
-        return c.json({}, 200);
-    } catch (err) {
-        server.logger.error("/api/reset_stats: Error reseting stats", err);
-        return c.json({}, 500);
-    }
+    return c.json({}, 200);
 });
 
 //

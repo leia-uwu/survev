@@ -5,7 +5,6 @@ import {
     type UserStatsResponse,
     zUserStatsRequest,
 } from "../../../../../shared/types/stats";
-import { server } from "../../apiServer";
 import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
@@ -28,30 +27,25 @@ UserStatsRouter.post(
     rateLimitMiddleware(40, 60 * 1000),
     validateParams(zUserStatsRequest),
     async (c) => {
-        try {
-            const { interval, mapIdFilter, slug } = c.req.valid("json");
+        const { interval, mapIdFilter, slug } = c.req.valid("json");
 
-            const result = await db.query.usersTable.findFirst({
-                where: eq(usersTable.slug, slug),
-                columns: {
-                    id: true,
-                    banned: true,
-                },
-            });
+        const result = await db.query.usersTable.findFirst({
+            where: eq(usersTable.slug, slug),
+            columns: {
+                id: true,
+                banned: true,
+            },
+        });
 
-            if (!result) {
-                return c.json(emptyState, 200);
-            }
-
-            const { id: userId } = result;
-
-            const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
-
-            return c.json<UserStatsResponse>(data, 200);
-        } catch (err) {
-            server.logger.error("/api/user_stats: Error getting user stats", err);
-            return c.json({ error: "" }, 500);
+        if (!result) {
+            return c.json(emptyState, 200);
         }
+
+        const { id: userId } = result;
+
+        const data = await userStatsSqlQuery(userId, mapIdFilter, interval);
+
+        return c.json<UserStatsResponse>(data, 200);
     },
 );
 

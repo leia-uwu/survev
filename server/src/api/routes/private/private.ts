@@ -30,15 +30,10 @@ export const PrivateRouter = new Hono<Context>()
     .use(privateMiddleware)
     .route("/moderation", ModerationRouter)
     .post("/update_region", validateParams(zUpdateRegionBody), (c) => {
-        try {
-            const { regionId, data } = c.req.valid("json");
+        const { regionId, data } = c.req.valid("json");
 
-            server.updateRegion(regionId, data);
-            return c.json({}, 200);
-        } catch (err) {
-            server.logger.error("/private/update_region: Error processing request", err);
-            return c.json({ error: "Error processing request" }, 500);
-        }
+        server.updateRegion(regionId, data);
+        return c.json({}, 200);
     })
     .post(
         "/set_game_mode",
@@ -51,33 +46,27 @@ export const PrivateRouter = new Hono<Context>()
             }),
         ),
         (c) => {
-            try {
-                const { index, mapName, teamMode, enabled } = c.req.valid("json");
+            const { index, mapName, teamMode, enabled } = c.req.valid("json");
 
-                if (!MapDefs[mapName as keyof typeof MapDefs]) {
-                    return c.json({ error: "Invalid map name" }, 400);
-                }
-
-                if (!server.modes[index]) {
-                    return c.json({ error: "Invalid mode index" }, 400);
-                }
-
-                server.modes[index] = {
-                    mapName: (mapName ??
-                        server.modes[index].mapName) as keyof typeof MapDefs,
-                    teamMode: teamMode ?? server.modes[index].teamMode,
-                    enabled: enabled ?? server.modes[index].enabled,
-                };
-
-                saveConfig(serverConfigPath, {
-                    modes: server.modes,
-                });
-
-                return c.json({}, 200);
-            } catch (err) {
-                server.logger.error("set_game_mode Error processing request", err);
-                return c.json({ error: "Error processing request" }, 500);
+            if (!MapDefs[mapName as keyof typeof MapDefs]) {
+                return c.json({ error: "Invalid map name" }, 400);
             }
+
+            if (!server.modes[index]) {
+                return c.json({ error: "Invalid mode index" }, 400);
+            }
+
+            server.modes[index] = {
+                mapName: (mapName ?? server.modes[index].mapName) as keyof typeof MapDefs,
+                teamMode: teamMode ?? server.modes[index].teamMode,
+                enabled: enabled ?? server.modes[index].enabled,
+            };
+
+            saveConfig(serverConfigPath, {
+                modes: server.modes,
+            });
+
+            return c.json({}, 200);
         },
     )
     .post(
@@ -88,42 +77,32 @@ export const PrivateRouter = new Hono<Context>()
             }),
         ),
         (c) => {
-            try {
-                const { enabled } = c.req.valid("json");
+            const { enabled } = c.req.valid("json");
 
-                server.captchaEnabled = enabled;
+            server.captchaEnabled = enabled;
 
-                saveConfig(serverConfigPath, {
-                    captchaEnabled: enabled,
-                });
+            saveConfig(serverConfigPath, {
+                captchaEnabled: enabled,
+            });
 
-                return c.json({ state: enabled }, 200);
-            } catch (err) {
-                server.logger.error("toggle_captcha Error processing request", err);
-                return c.json({ error: "Error processing request" }, 500);
-            }
+            return c.json({ state: enabled }, 200);
         },
     )
     .post("/save_game", databaseEnabledMiddleware, async (c) => {
-        try {
-            const data = (await c.req.json()) as SaveGameBody;
+        const data = (await c.req.json()) as SaveGameBody;
 
-            const matchData = data.matchData;
+        const matchData = data.matchData;
 
-            if (!matchData.length) {
-                return c.json({ error: "Empty match data" }, 500);
-            }
-
-            await leaderboardCache.invalidateCache(matchData);
-
-            await db.insert(matchDataTable).values(matchData);
-            await logPlayerIPs(matchData);
-            server.logger.info(`Saved game data for ${matchData[0].gameId}`);
-            return c.json({}, 200);
-        } catch (err) {
-            server.logger.error("save_game Error processing request", err);
-            return c.json({ error: "Error processing request" }, 500);
+        if (!matchData.length) {
+            return c.json({ error: "Empty match data" }, 400);
         }
+
+        await leaderboardCache.invalidateCache(matchData);
+
+        await db.insert(matchDataTable).values(matchData);
+        await logPlayerIPs(matchData);
+        server.logger.info(`Saved game data for ${matchData[0].gameId}`);
+        return c.json({}, 200);
     })
     .post(
         "/give_item",
@@ -136,52 +115,44 @@ export const PrivateRouter = new Hono<Context>()
             }),
         ),
         async (c) => {
-            try {
-                const { item, slug, source } = c.req.valid("json");
+            const { item, slug, source } = c.req.valid("json");
 
-                const def = GameObjectDefs[item];
+            const def = GameObjectDefs[item];
 
-                if (!def) {
-                    return c.json({ error: "Invalid item type" }, 400);
-                }
-
-                const userId = await db.query.usersTable.findFirst({
-                    where: eq(usersTable.slug, slug),
-                    columns: {
-                        id: true,
-                    },
-                });
-
-                if (!userId) {
-                    return c.json({ error: "User not found" }, 404);
-                }
-
-                const existing = await db.query.itemsTable.findFirst({
-                    where: and(
-                        eq(itemsTable.userId, userId.id),
-                        eq(itemsTable.type, item),
-                    ),
-                    columns: {
-                        type: true,
-                    },
-                });
-
-                if (existing) {
-                    return c.json({ error: "User already has item" }, 400);
-                }
-
-                await db.insert(itemsTable).values({
-                    userId: userId.id,
-                    type: item,
-                    source,
-                    timeAcquired: Date.now(),
-                });
-
-                return c.json({ success: true }, 200);
-            } catch (err) {
-                server.logger.error("/private/give_item: Error unlocking item", err);
-                return c.json({}, 500);
+            if (!def) {
+                return c.json({ error: "Invalid item type" }, 400);
             }
+
+            const userId = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    id: true,
+                },
+            });
+
+            if (!userId) {
+                return c.json({ error: "User not found" }, 404);
+            }
+
+            const existing = await db.query.itemsTable.findFirst({
+                where: and(eq(itemsTable.userId, userId.id), eq(itemsTable.type, item)),
+                columns: {
+                    type: true,
+                },
+            });
+
+            if (existing) {
+                return c.json({ error: "User already has item" }, 400);
+            }
+
+            await db.insert(itemsTable).values({
+                userId: userId.id,
+                type: item,
+                source,
+                timeAcquired: Date.now(),
+            });
+
+            return c.json({ success: true }, 200);
         },
     )
     .post(
@@ -194,42 +165,30 @@ export const PrivateRouter = new Hono<Context>()
             }),
         ),
         async (c) => {
-            try {
-                const { item, slug } = c.req.valid("json");
+            const { item, slug } = c.req.valid("json");
 
-                const user = await db.query.usersTable.findFirst({
-                    where: eq(usersTable.slug, slug),
-                    columns: {
-                        id: true,
-                    },
-                });
+            const user = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, slug),
+                columns: {
+                    id: true,
+                },
+            });
 
-                if (!user) {
-                    return c.json({ error: "User not found" }, 404);
-                }
-
-                await db
-                    .delete(itemsTable)
-                    .where(
-                        and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)),
-                    );
-
-                return c.json({ success: true }, 200);
-            } catch (err) {
-                server.logger.error("/private/remove_item: Error removing item", err);
-                return c.json({}, 500);
+            if (!user) {
+                return c.json({ error: "User not found" }, 404);
             }
+
+            await db
+                .delete(itemsTable)
+                .where(and(eq(itemsTable.userId, user.id), eq(itemsTable.type, item)));
+
+            return c.json({ success: true }, 200);
         },
     )
     .post("/clear_cache", async (c) => {
-        try {
-            const client = await getRedisClient();
-            await client.flushAll();
-            return c.json({ success: true }, 200);
-        } catch (err) {
-            server.logger.error("/private/clear_cache: Error clearing cache", err);
-            return c.json({}, 500);
-        }
+        const client = await getRedisClient();
+        await client.flushAll();
+        return c.json({ success: true }, 200);
     })
     .post(
         "/test/insert_game",
@@ -240,43 +199,35 @@ export const PrivateRouter = new Hono<Context>()
             }),
         ),
         async (c) => {
-            try {
-                const data = c.req.valid("json");
-                const matchData: MatchDataTable = {
-                    ...{
-                        gameId: crypto.randomUUID(),
-                        userId: MOCK_USER_ID,
-                        createdAt: new Date(),
-                        region: "na",
-                        mapId: 0,
-                        mapSeed: 9834567801234,
-                        username: MOCK_USER_ID,
-                        playerId: 9834,
-                        teamMode: TeamMode.Solo,
-                        teamCount: 4,
-                        teamTotal: 25,
-                        teamId: 7,
-                        timeAlive: 842,
-                        rank: 3,
-                        died: true,
-                        kills: 5,
-                        damageDealt: 1247,
-                        damageTaken: 862,
-                        killerId: 18765,
-                        killedIds: [12543, 13587, 14298, 15321, 16754],
-                    },
-                    ...data,
-                };
-                await leaderboardCache.invalidateCache([matchData]);
-                await db.insert(matchDataTable).values(matchData);
-                return c.json({ success: true }, 200);
-            } catch (err) {
-                server.logger.error(
-                    "/private/test/insert_game: Error inserting game",
-                    err,
-                );
-                return c.json({}, 500);
-            }
+            const data = c.req.valid("json");
+            const matchData: MatchDataTable = {
+                ...{
+                    gameId: crypto.randomUUID(),
+                    userId: MOCK_USER_ID,
+                    createdAt: new Date(),
+                    region: "na",
+                    mapId: 0,
+                    mapSeed: 9834567801234,
+                    username: MOCK_USER_ID,
+                    playerId: 9834,
+                    teamMode: TeamMode.Solo,
+                    teamCount: 4,
+                    teamTotal: 25,
+                    teamId: 7,
+                    timeAlive: 842,
+                    rank: 3,
+                    died: true,
+                    kills: 5,
+                    damageDealt: 1247,
+                    damageTaken: 862,
+                    killerId: 18765,
+                    killedIds: [12543, 13587, 14298, 15321, 16754],
+                },
+                ...data,
+            };
+            await leaderboardCache.invalidateCache([matchData]);
+            await db.insert(matchDataTable).values(matchData);
+            return c.json({ success: true }, 200);
         },
     );
 

@@ -1,8 +1,7 @@
-import { Google, OAuth2RequestError, generateCodeVerifier, generateState } from "arctic";
+import { Google, generateCodeVerifier, generateState } from "arctic";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { server } from "../../../apiServer";
 import { getRedirectUri, handleAuthUser } from "./authUtils";
 
 const google = new Google(
@@ -16,10 +15,14 @@ const codeVerifierCookieName = "google_code_verifier";
 
 export const GoogleRouter = new Hono();
 
-GoogleRouter.get("/", async (c) => {
-    if (!Config.secrets.GOOGLE_CLIENT_ID || !Config.secrets.GOOGLE_SECRET_ID) {
-        return c.json({ error: "Missing Google credentials" }, 500);
+GoogleRouter.use(async (c, next) => {
+    if (!(Config.secrets.GOOGLE_CLIENT_ID && Config.secrets.GOOGLE_SECRET_ID)) {
+        return c.text("Google login is not supported", 500);
     }
+    await next();
+});
+
+GoogleRouter.get("/", async (c) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
@@ -57,34 +60,23 @@ GoogleRouter.get("/callback", async (c) => {
         return c.json({}, 400);
     }
 
-    try {
-        const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
-        const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-            headers: {
-                Authorization: `Bearer ${tokens.accessToken}`,
-            },
-        });
+    const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
+    const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
+        headers: {
+            Authorization: `Bearer ${tokens.accessToken}`,
+        },
+    });
 
-        const resData = (await response.json()) as {
-            sub: string;
-            email_verified: boolean;
-        };
+    const resData = (await response.json()) as {
+        sub: string;
+        email_verified: boolean;
+    };
 
-        if (!resData.email_verified) {
-            return c.json({ error: "verified_email_required" }, 400);
-        }
-
-        await handleAuthUser(c, "google", resData.sub);
-
-        return c.redirect("/");
-    } catch (err) {
-        server.logger.error(`/api/auth/google/callback: Failed to create user`, err);
-        if (
-            err instanceof OAuth2RequestError &&
-            err.message === "bad_verification_code"
-        ) {
-            return c.json({ error: "bad_verification_code" }, 400);
-        }
-        return c.json({}, 500);
+    if (!resData.email_verified) {
+        return c.json({ error: "verified_email_required" }, 400);
     }
+
+    await handleAuthUser(c, "google", resData.sub);
+
+    return c.redirect("/");
 });
