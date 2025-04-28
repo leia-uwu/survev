@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { desc, eq, lt } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -178,7 +179,7 @@ export const ModerationRouter = new Hono()
                 const expiresIn = new Date(
                     Date.now() + durationInDays * 24 * 60 * 60 * 1000,
                 );
-                const encodedIp = isEncoded ? ip : encodeIP(ip);
+                const encodedIp = isEncoded ? ip : hashIp(ip);
 
                 await db
                     .insert(bannedIpsTable)
@@ -237,7 +238,7 @@ export const ModerationRouter = new Hono()
         async (c) => {
             try {
                 const { ip, isEncoded } = c.req.valid("json");
-                const encodedIp = isEncoded ? ip : encodeIP(ip);
+                const encodedIp = isEncoded ? ip : hashIp(ip);
                 await db
                     .delete(bannedIpsTable)
                     .where(eq(bannedIpsTable.encodedIp, encodedIp))
@@ -288,8 +289,8 @@ export const ModerationRouter = new Hono()
                 const result = await db
                     .select({
                         ip: ipLogsTable.encodedIp,
-                        findGameIp: ipLogsTable.findGameIp,
-                        name: ipLogsTable.username,
+                        findGameIp: ipLogsTable.findGameEncodedIp,
+                        username: ipLogsTable.username,
                         region: ipLogsTable.region,
                     })
                     .from(ipLogsTable)
@@ -312,12 +313,14 @@ export const ModerationRouter = new Hono()
 
                 return c.json(
                     {
-                        message: result.map(({ ip, findGameIp, name, region }) => {
-                            if (ip === findGameIp) {
-                                return `[${region}] ${name}'s IP is ${ip}`;
-                            }
-
-                            return `[${region}] ${name}'s IP is ${findGameIp} - in game: ${ip}`;
+                        ips: result.map((r) => {
+                            return {
+                                ip: r.ip,
+                                region: r.region,
+                                username: r.username,
+                                findGameIp:
+                                    r.findGameIp !== r.ip ? r.findGameIp : undefined,
+                            };
                         }),
                     },
                     200,
@@ -461,7 +464,7 @@ export async function cleanupOldLogs() {
 export async function isBanned(ip: string, isEncoded = false) {
     if (!Config.database.enabled) return undefined;
 
-    const encodedIp = isEncoded ? ip : encodeIP(ip);
+    const encodedIp = isEncoded ? ip : hashIp(ip);
     const banned = await db.query.bannedIpsTable.findFirst({
         where: eq(bannedIpsTable.encodedIp, encodedIp),
         columns: {
@@ -494,8 +497,8 @@ export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
     try {
         const logsData = data.map((matchData) => ({
             ...matchData,
-            encodedIp: encodeIP(matchData.ip),
-            findGameEncodedIp: encodeIP(matchData.findGameIp),
+            encodedIp: hashIp(matchData.ip),
+            findGameEncodedIp: hashIp(matchData.findGameIp),
         }));
         await db.insert(ipLogsTable).values(logsData);
     } catch (err) {
@@ -503,29 +506,9 @@ export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
     }
 }
 
-/**
- * DONT ASK ME ABOUT THIS CODE.
- */
-export function encodeIP(ip: string, secret: string = Config.secrets.SURVEV_IP_SECRET) {
-    let encoded = "";
-    for (let i = 0; i < ip.length; i++) {
-        encoded += String.fromCharCode(
-            ip.charCodeAt(i) ^ secret.charCodeAt(i % secret.length),
-        );
-    }
-    return Buffer.from(encoded).toString("base64");
-}
-
-export function decodeIP(
-    encoded: string,
-    secret: string = Config.secrets.SURVEV_IP_SECRET,
-) {
-    const decoded = Buffer.from(encoded, "base64").toString();
-    let ip = "";
-    for (let i = 0; i < decoded.length; i++) {
-        ip += String.fromCharCode(
-            decoded.charCodeAt(i) ^ secret.charCodeAt(i % secret.length),
-        );
-    }
-    return ip;
+const salt = Config.secrets.SURVEV_IP_SECRET;
+export function hashIp(ip: string) {
+    return createHash("sha256")
+        .update(salt + ip)
+        .digest("hex");
 }
