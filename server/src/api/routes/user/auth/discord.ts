@@ -1,4 +1,4 @@
-import { Discord, generateState } from "arctic";
+import { Discord, generateCodeVerifier, generateState } from "arctic";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
@@ -11,6 +11,7 @@ export const discord = new Discord(
 );
 
 const stateCookieName = "discord_oauth_state";
+const codeVerifierCookieName = "discord_code_verifier";
 
 export const DiscordRouter = new Hono();
 
@@ -23,15 +24,25 @@ DiscordRouter.use(async (c, next) => {
 
 DiscordRouter.get("/", async (c) => {
     const state = generateState();
+    const codeVerifier = generateCodeVerifier();
 
-    const url = await discord.createAuthorizationURL(state, {
-        scopes: ["identify", "email"],
-    });
+    const url = discord.createAuthorizationURL(state, codeVerifier, [
+        "identify",
+        "email",
+    ]);
 
     setCookie(c, stateCookieName, state, {
         path: "/",
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
+        maxAge: 60 * 10,
+        sameSite: "Lax",
+    });
+
+    setCookie(c, codeVerifierCookieName, codeVerifier, {
+        secure: process.env.NODE_ENV === "production",
+        path: "/",
+        httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
     });
@@ -44,11 +55,13 @@ DiscordRouter.get("/callback", async (c) => {
     const code = c.req.query("code")?.toString() ?? null;
     const state = c.req.query("state")?.toString() ?? null;
     const storedState = getCookie(c)[stateCookieName] ?? null;
-    if (!code || !state || !storedState || state !== storedState) {
+    const storedCodeVerifier = getCookie(c)[codeVerifierCookieName] ?? null;
+
+    if (!code || !state || !storedCodeVerifier || !storedState || state !== storedState) {
         return c.json({}, 400);
     }
 
-    const tokens = await discord.validateAuthorizationCode(code);
+    const tokens = await discord.validateAuthorizationCode(code, storedCodeVerifier);
 
     const discordUserResponse = await fetch("https://discord.com/api/users/@me", {
         headers: {

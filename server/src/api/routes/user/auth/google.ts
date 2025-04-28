@@ -26,9 +26,7 @@ GoogleRouter.get("/", async (c) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
-    const url = await google.createAuthorizationURL(state, codeVerifier, {
-        scopes: ["openid", "email"],
-    });
+    const url = google.createAuthorizationURL(state, codeVerifier, ["openid", "email"]);
 
     setCookie(c, stateCookieName, state, {
         secure: process.env.NODE_ENV === "production",
