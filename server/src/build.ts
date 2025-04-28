@@ -14,7 +14,7 @@ const esbuildConfig: BuildOptions = {
     packages: "external",
     entryNames: "[name]",
     sourcemap: "linked",
-    logLevel: "debug",
+    logLevel: "info",
     format: "esm",
     define: {
         "process.env.NODE_ENV": "'production'",
