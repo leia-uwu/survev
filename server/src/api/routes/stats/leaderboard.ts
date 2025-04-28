@@ -143,6 +143,8 @@ async function multiplePlayersQuery({
             ),
         )
         .groupBy(matchDataTable.gameId, matchDataTable.teamId, matchDataTable.region)
+        // make sure at least one member of the duo / squad is logged in
+        .having(sql`count(case when user_id!='' then 1 end) >= 1`)
         .orderBy(sql`val DESC`)
         .limit(MAX_RESULT_COUNT);
 
