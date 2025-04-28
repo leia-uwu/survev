@@ -22,7 +22,7 @@ DiscordRouter.use(async (c, next) => {
     await next();
 });
 
-DiscordRouter.get("/", async (c) => {
+DiscordRouter.get("/", (c) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
@@ -65,7 +65,7 @@ DiscordRouter.get("/callback", async (c) => {
 
     const discordUserResponse = await fetch("https://discord.com/api/users/@me", {
         headers: {
-            Authorization: `Bearer ${tokens.accessToken}`,
+            Authorization: `Bearer ${tokens.accessToken()}`,
         },
     });
 
