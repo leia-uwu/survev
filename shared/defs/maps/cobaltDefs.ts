@@ -65,6 +65,8 @@ const mapDef: PartialMapDef = {
         tier_islander_outfit: [{ name: "tier_outfits", count: 1, weight: 1 }],
         tier_imperial_outfit: [{ name: "tier_outfits", count: 1, weight: 1 }],
 
+        tier_club_melee: [{ name: "tier_outfits", count: 1, weight: 1 }],
+
         tier_airdrop_outfits: [{ name: "outfitGhillie", count: 1, weight: 1 }],
     },
     /* STRIP_FROM_PROD_CLIENT:START */
