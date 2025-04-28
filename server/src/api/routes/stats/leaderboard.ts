@@ -29,7 +29,7 @@ leaderboardRouter.post(
         const cachedResult = await leaderboardCache.get(params);
 
         if (cachedResult) {
-            server.logger.info(
+            server.logger.debug(
                 `[CACHE HIT] -> ${leaderboardCache.getCacheKey("leaderboard", params)}`,
             );
             return c.json(cachedResult, 200);
