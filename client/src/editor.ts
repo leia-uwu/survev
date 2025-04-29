@@ -6,6 +6,7 @@ import { EditMsg } from "../../shared/net/editMsg";
 import { math } from "../../shared/utils/math";
 import { util } from "../../shared/utils/util";
 import type { ConfigKey, ConfigManager } from "./config";
+import { helpers } from "./helpers";
 import { type InputHandler, Key } from "./input";
 import type { Map } from "./map";
 import type { Player } from "./objects/player";
@@ -136,12 +137,15 @@ export class Editor {
 
             let name = type;
             if ("name" in def && def.name !== name) {
-                name = `${def.name} (${type})`;
+                name = `<img src="${helpers.getSvgFromGameType(type)}"></img>${def.name} (${type})`;
             }
 
             const opt = $<HTMLOptionElement>("<option/>", {
                 value: type,
                 html: name,
+                css: {
+                    "background-image": `url(${helpers.getSvgFromGameType(type)})`,
+                },
             });
 
             let optGroup = lootOptGroups[def.type];

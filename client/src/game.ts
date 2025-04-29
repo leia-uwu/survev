@@ -36,6 +36,7 @@ import { ShotBarn } from "./objects/shot";
 import { SmokeBarn } from "./objects/smoke";
 import { Renderer } from "./renderer";
 import type { ResourceManager } from "./resources";
+import { SDK } from "./sdk";
 import type { Localization } from "./ui/localization";
 import { Touch } from "./ui/touch";
 import { UiManager } from "./ui/ui";
@@ -1268,6 +1269,7 @@ export class Game {
                     });
                 }
 
+                SDK.gamePlayStart();
                 break;
             }
             case net.MsgType.Map: {

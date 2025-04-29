@@ -294,6 +294,7 @@ export interface ConfigType {
          * NOTE: This is only used by the client so must be present at the build time!
          */
         AIP_PLACEMENT_ID?: string;
+        GAMEMONETIZE_ID?: string;
     };
 
     /**

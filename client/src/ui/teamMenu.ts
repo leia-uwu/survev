@@ -15,6 +15,7 @@ import type { ConfigManager } from "../config";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import type { PingTest } from "../pingTest";
+import { SDK } from "../sdk";
 import type { SiteInfo } from "../siteInfo";
 import type { Localization } from "./localization";
 
@@ -104,7 +105,9 @@ export class TeamMenu {
             this.setRoomProperty("autoFill", false);
         });
         this.playBtn.on("click", () => {
-            this.tryStartGame();
+            SDK.requestMidGameAd(() => {
+                this.tryStartGame();
+            });
         });
         $("#team-copy-url, #team-desc-text").click((e) => {
             const t = $("<div/>", {
@@ -276,6 +279,8 @@ export class TeamMenu {
                 errTxt = errorTypeToString(errType, this.localization);
             }
             this.leaveCb(errTxt);
+
+            SDK.hideInviteButton();
         }
     }
 
@@ -312,6 +317,8 @@ export class TeamMenu {
                     this.roomData.autoFill = ourRoomData.autoFill;
                 }
                 this.refreshUi();
+                // Since the only way to get the roomID (ig?) is from state, each time receiving state, we can show the invite button
+                SDK.showInviteButton(stateData.room.roomUrl.replace("#", ""));
                 break;
             }
             case "joinGame":
@@ -467,17 +474,27 @@ export class TeamMenu {
 
             // Invite link
             if (this.roomData.roomUrl) {
-                const roomUrl = new URL(window.location.href);
-                roomUrl.search = ""; // removes ?t=423904234 that is set when the client receives an invalid protocol error
-                roomUrl.hash = this.roomData.roomUrl;
-
                 const roomCode = this.roomData.roomUrl.substring(1);
-
-                $("#team-url").text(roomUrl.toString());
                 $("#team-code").text(roomCode);
 
-                if (window.history) {
-                    window.history.replaceState("", "", this.roomData.roomUrl);
+                if (SDK.supportsInviteLink()) {
+                    SDK.getInviteLink(roomCode).then((sdkUrl) => {
+                        $("#team-url").text(sdkUrl!);
+                    });
+                } else {
+                    const roomUrl = new URL(window.location.href);
+                    roomUrl.search = ""; // removes ?t=<timestamp> that is set when the client receives an invalid protocol error
+                    roomUrl.hash = this.roomData.roomUrl;
+
+                    const url = new URL(window.location.href);
+                    url.search = "";
+                    url.hash = this.roomData.roomUrl;
+
+                    $("#team-url").text(url.toString());
+
+                    if (window.history) {
+                        window.history.replaceState("", "", this.roomData.roomUrl);
+                    }
                 }
             }
 

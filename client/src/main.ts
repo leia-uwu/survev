@@ -22,6 +22,7 @@ import { InputHandler } from "./input";
 import { InputBindUi, InputBinds } from "./inputBinds";
 import { PingTest } from "./pingTest";
 import { ResourceManager } from "./resources";
+import { SDK } from "./sdk";
 import { SiteInfo } from "./siteInfo";
 import { LoadoutMenu } from "./ui/loadoutMenu";
 import { Localization } from "./ui/localization";
@@ -125,7 +126,8 @@ class Application {
         this.loadBrowserDeps(onLoadComplete);
     }
 
-    loadBrowserDeps(onLoadCompleteCb: () => void) {
+    async loadBrowserDeps(onLoadCompleteCb: () => void) {
+        await SDK.init();
         onLoadCompleteCb();
     }
 
@@ -148,15 +150,23 @@ class Application {
 
             (this.nameInput as unknown as HTMLInputElement).maxLength =
                 net.Constants.PlayerNameMaxLen;
+
             this.playMode0Btn.on("click", () => {
-                this.tryQuickStartGame(0);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(0);
+                });
             });
             this.playMode1Btn.on("click", () => {
-                this.tryQuickStartGame(1);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(1);
+                });
             });
             this.playMode2Btn.on("click", () => {
-                this.tryQuickStartGame(2);
+                SDK.requestMidGameAd(() => {
+                    this.tryQuickStartGame(2);
+                });
             });
+
             this.serverSelect.change(() => {
                 const t = this.serverSelect.find(":selected").val();
                 this.config.set("region", t as string);
@@ -322,6 +332,8 @@ class Application {
                 if (errMsg) {
                     this.showErrorModal(errMsg);
                 }
+
+                SDK.gamePlayStop();
             };
             this.game = new Game(
                 this.pixi,
@@ -350,6 +362,8 @@ class Application {
             this.onConfigModified();
             this.config.addModifiedListener(this.onConfigModified.bind(this));
             loadStaticDomImages();
+
+            SDK.gameLoadComplete();
         }
     }
 
@@ -447,6 +461,14 @@ class Application {
     }
 
     setDOMFromConfig() {
+        if (SDK.isAnySDK && !this.config.get("playerName")) {
+            SDK.getPlayerName().then((username) => {
+                if (!username) return;
+                this.config.set("playerName", username);
+                this.nameInput.val(username);
+            });
+        }
+
         this.nameInput.val(this.config.get("playerName")!);
         this.serverSelect.find("option").each((_i, ele) => {
             ele.selected = ele.value == this.config.get("region");
@@ -552,7 +574,14 @@ class Application {
     tryJoinTeam(create: boolean, url?: string) {
         if (this.active && this.quickPlayPendingModeIdx === -1) {
             // Join team if the url contains a team address
-            const roomUrl = url || window.location.hash.slice(1);
+            let roomUrl = url || window.location.hash.slice(1);
+
+            const sdkRoom = SDK.getRoomInviteParam();
+            if (sdkRoom) {
+                roomUrl = sdkRoom;
+                create = false;
+            }
+
             if (create || roomUrl != "") {
                 // The main menu and squad menus have separate
                 // DOM elements for input, such as player name and
