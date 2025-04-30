@@ -189,10 +189,9 @@ export class App {
             });
             const el = e.target;
             const code = $(el).attr("value") as AcceptedLocales;
-            const _language = $(el).html();
             if (code) {
                 // Set the config language
-                $("#selected-language").html(code.toUpperCase());
+                $("#selected-language").text(code.toUpperCase());
                 this.localization.setLocale(code);
                 this.localization.localizeIndex();
                 this.config.set("language", code);

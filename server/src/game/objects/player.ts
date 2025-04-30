@@ -183,7 +183,7 @@ export class PlayerBarn {
             let count = 0;
 
             while (this.game.playerBarn.players.find((p) => p.name === finalName)) {
-                const postFix = `${++count}`;
+                const postFix = `-${++count}`;
                 const trimmed = originalName.substring(
                     0,
                     net.Constants.PlayerNameMaxLen - postFix.length,
