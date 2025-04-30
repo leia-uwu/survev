@@ -114,7 +114,7 @@ function createWoodBarrel<T extends ObstacleDef>(params: Partial<T>): T {
         explodeParticle: "barrelPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 11235106, scale: 1 },
+        map: { display: true, color: 0xab6f22, scale: 1 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-barrel-02.img",
@@ -147,7 +147,7 @@ function createBed<T extends ObstacleDef>(params: Partial<T>): T {
         explodeParticle: ["woodPlank", "clothBreak"],
         reflectBullets: false,
         loot: [],
-        map: { display: true, color: 6697728, scale: 0.875 },
+        map: { display: true, color: 0x663300, scale: 0.875 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-bed-02.img",
@@ -180,7 +180,7 @@ function createBookShelf<T extends ObstacleDef>(params: Partial<T>): T {
         explodeParticle: ["woodPlank", "book"],
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-bookshelf-01.img",
@@ -210,7 +210,7 @@ function createBunkerStairs<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(0, 1),
                         v2.create(2, 3.25),
                     ),
-                    color: 3815994,
+                    color: 0x3a3a3a,
                 },
             ],
         },
@@ -340,7 +340,7 @@ function createStatue<T extends BuildingDef>(e: Partial<T>): T {
 function createStatueUnderground<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -432,7 +432,7 @@ function createBush<T extends ObstacleDef>(e: Partial<T>): T {
         reflectBullets: false,
         isBush: true,
         loot: [],
-        map: { display: true, color: 24320, scale: 1.5 },
+        map: { display: true, color: 0x5f00, scale: 1.5 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-bush-01.img",
@@ -501,7 +501,7 @@ function createCase<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-case-deagle-01.img",
@@ -534,7 +534,7 @@ function createChest<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_chest", 3, 4)],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-chest-01.img",
@@ -636,7 +636,7 @@ function createContainer(props: {
         type: "building",
         map: {
             display: true,
-            color: props.mapTint || 2703694,
+            color: props.mapTint || 0x29414e,
             scale: 1,
             displayType: props.mapDisplayType,
         },
@@ -716,7 +716,7 @@ function createCouch<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: ["woodPlank", "clothBreak"],
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-couch-01.img",
@@ -749,7 +749,7 @@ function createCrate<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 6697728, scale: 0.875 },
+        map: { display: true, color: 0x663300, scale: 0.875 },
         terrain: { grass: true, beach: true, riverShore: true },
         img: {
             sprite: "map-crate-01.img",
@@ -849,7 +849,7 @@ function createDepositBox<T extends ObstacleDef>(e: Partial<T>): T {
         reflectBullets: true,
         loot: [tierLoot("tier_world", 1, 1)],
         lootSpawn: { offset: v2.create(0, -1), speedMult: 0 },
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-deposit-box-01.img",
@@ -908,7 +908,7 @@ function createDoor<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "none",
             scale: 0.5,
             alpha: 1,
-            tint: 14671839,
+            tint: 0xdfdfdf,
             zIdx: 15,
         },
         sound: {
@@ -969,7 +969,7 @@ function createDrawer<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_container", 1, 1)],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-drawers-01.img",
@@ -1003,7 +1003,7 @@ function createGunMount<T extends ObstacleDef>(e: Partial<T>): T {
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
         lootSpawn: { offset: v2.create(0, -1), speedMult: 0 },
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-gun-mount-01.img",
@@ -1037,7 +1037,7 @@ function createLocker<T extends ObstacleDef>(e: Partial<T>): T {
         reflectBullets: true,
         loot: [tierLoot("tier_world", 1, 1)],
         lootSpawn: { offset: v2.create(0, -1), speedMult: 0 },
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-locker-01.img",
@@ -1104,7 +1104,7 @@ function createOven<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "barrelBreak",
         reflectBullets: true,
         loot: [],
-        map: { display: false, color: 14935011, scale: 0.875 },
+        map: { display: false, color: 0xe3e3e3, scale: 0.875 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-oven-01.img",
@@ -1136,7 +1136,7 @@ function createPlanter<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 6697728, scale: 0.875 },
+        map: { display: true, color: 0x663300, scale: 0.875 },
         terrain: { grass: true, beach: true, riverShore: true },
         img: {
             sprite: "map-planter-01.img",
@@ -1169,7 +1169,7 @@ function createBottle<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "potBreak",
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 6697728, scale: 1 },
+        map: { display: true, color: 0x663300, scale: 1 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-pot-01.img",
@@ -1201,7 +1201,7 @@ function createBottle2<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "bottleBlueBreak",
         reflectBullets: false,
         loot: [],
-        map: { display: true, color: 6697728, scale: 1 },
+        map: { display: true, color: 0x663300, scale: 1 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-bottle-02.img",
@@ -1249,7 +1249,7 @@ function createPotato<T extends ObstacleDef>(e: Partial<T>): T {
         regrow: true,
         regrowTimer: 60,
         loot: [tierLoot("tier_potato_perks", 1, 1)],
-        map: { display: false, color: 9466197, scale: 1 },
+        map: { display: false, color: 0x907155, scale: 1 },
         terrain: { grass: true, beach: true, riverShore: true },
         img: {
             sprite: "map-potato-01.img",
@@ -1288,7 +1288,7 @@ function createEgg<T extends ObstacleDef>(e: Partial<T>): T {
         loot: [tierLoot("tier_egg_outfits", 1, 1)],
         map: {
             display: false,
-            color: 6697728,
+            color: 0x663300,
             scale: 0.875,
         },
         terrain: {
@@ -1300,7 +1300,7 @@ function createEgg<T extends ObstacleDef>(e: Partial<T>): T {
             residue: "map-egg-res-01.img",
             scale: 0.35,
             alpha: 1,
-            tint: 16777215,
+            tint: 0xffffff,
             zIdx: 10,
         },
         sound: {
@@ -1327,7 +1327,7 @@ function createPumpkin<T extends ObstacleDef>(e: Partial<T>): T {
         hitParticle: "pumpkinChip",
         explodeParticle: "pumpkinBreak",
         loot: [tierLoot("tier_outfits", 1, 1)],
-        map: { display: true, color: 15889667, scale: 1 },
+        map: { display: true, color: 0xf27503, scale: 1 },
         terrain: { grass: true, beach: false, riverShore: true },
         img: {
             sprite: "map-pumpkin-01.img",
@@ -1402,7 +1402,7 @@ function createRefrigerator<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: true,
         loot: [],
-        map: { display: false, color: 7733259, scale: 0.875 },
+        map: { display: false, color: 0x76000b, scale: 0.875 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-refrigerator-01.img",
@@ -1424,7 +1424,7 @@ function createRefrigerator<T extends ObstacleDef>(e: Partial<T>): T {
 function createSandBags<T extends ObstacleDef>(e: Partial<T>): T {
     const t = {
         type: "obstacle",
-        map: { display: true, color: 13278307, scale: 1 },
+        map: { display: true, color: 0xca9c63, scale: 1 },
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(3.1, 1.4)),
         height: 0.5,
@@ -1464,7 +1464,7 @@ function createSilo<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "barrelBreak",
         reflectBullets: true,
         loot: [],
-        map: { display: true, color: 4079166, scale: 1 },
+        map: { display: true, color: 0x3e3e3e, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-silo-01.img",
@@ -1495,7 +1495,7 @@ function createStone<T extends ObstacleDef>(e: Partial<T>): T {
         hitParticle: "rockChip",
         explodeParticle: "rockBreak",
         loot: [],
-        map: { display: true, color: 11776947, scale: 1 },
+        map: { display: true, color: 0xb3b3b3, scale: 1 },
         terrain: { grass: true, beach: false, riverShore: true },
         img: {
             sprite: "map-stone-01.img",
@@ -1527,7 +1527,7 @@ function createRiverStone<T extends ObstacleDef>(e: Partial<T>): T {
         hitParticle: "rockChip",
         explodeParticle: "rockBreak",
         loot: [],
-        map: { display: true, color: 5197647, scale: 1 },
+        map: { display: true, color: 0x4f4f4f, scale: 1 },
         terrain: {
             grass: false,
             beach: false,
@@ -1565,7 +1565,7 @@ function createTable<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: true, beach: true },
         img: {
             sprite: "map-table-01.img",
@@ -1598,7 +1598,7 @@ function createToilet<T extends ObstacleDef>(e: Partial<T>): T {
         hitParticle: "whiteChip",
         explodeParticle: "toiletBreak",
         loot: [tierLoot("tier_toilet", 2, 3)],
-        map: { display: false, color: 11776947, scale: 1 },
+        map: { display: false, color: 0xb3b3b3, scale: 1 },
         img: {
             sprite: "map-toilet-01.img",
             residue: "map-toilet-res-01.img",
@@ -1632,7 +1632,7 @@ function createTree<T extends ObstacleDef>(e: Partial<T>): T {
         reflectBullets: false,
         isTree: true,
         loot: [],
-        map: { display: true, color: 4083758, scale: 2.5 },
+        map: { display: true, color: 0x3e502e, scale: 2.5 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-tree-03.img",
@@ -1678,7 +1678,7 @@ function createTreeSwitch<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodLog",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 8602624, scale: 1 },
+        map: { display: false, color: 0x834400, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-tree-switch-01.img",
@@ -1739,7 +1739,7 @@ function createWheel<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "barrelBreak",
         reflectBullets: true,
         loot: [],
-        map: { display: false, color: 6310464, scale: 1 },
+        map: { display: false, color: 0x604a40, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-wheel-01.img",
@@ -1770,7 +1770,7 @@ function createWoodPile<T extends ObstacleDef>(e: Partial<T>): T {
         explodeParticle: "woodLog",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 9455616, scale: 0.875 },
+        map: { display: false, color: 0x904800, scale: 0.875 },
         terrain: {},
         img: {
             sprite: "map-woodpile-01.img",
@@ -1805,21 +1805,21 @@ function createBank<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(-16, 7),
                         v2.create(10.75, 11),
                     ),
-                    color: 7820585,
+                    color: 0x775529,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(6, 0),
                         v2.create(11.5, 18.25),
                     ),
-                    color: 9989427,
+                    color: 0x986d33,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(22, 4),
                         v2.create(4.5, 7.5),
                     ),
-                    color: 7820585,
+                    color: 0x775529,
                 },
             ],
         },
@@ -2230,7 +2230,7 @@ function createBank<T extends BuildingDef>(e: Partial<T>): T {
 function createBankVault<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -2278,7 +2278,7 @@ function createBankVault<T extends BuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-vault-ceiling.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -2406,14 +2406,14 @@ function createBarn<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(0, 12),
                         v2.create(5, 2),
                     ),
-                    color: 12300935,
+                    color: 0xbbb287,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, -2),
                         v2.create(24.5, 12.8),
                     ),
-                    color: 3816739,
+                    color: 0x3a3d23,
                 },
             ],
         },
@@ -2878,7 +2878,7 @@ function createBarn<T extends BuildingDef>(e: Partial<T>): T {
 function createBarnBasement<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -3017,35 +3017,35 @@ function createBridgeLarge<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(0, 0),
                         v2.create(31.5, 8),
                     ),
-                    color: 5197647,
+                    color: 0x4f4f4f,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-14, -9.5),
                         v2.create(2.5, 1.5),
                     ),
-                    color: 3618615,
+                    color: 0x373737,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(14, -9.5),
                         v2.create(2.5, 1.5),
                     ),
-                    color: 3618615,
+                    color: 0x373737,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-14, 9.5),
                         v2.create(2.5, 1.5),
                     ),
-                    color: 3618615,
+                    color: 0x373737,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(14, 9.5),
                         v2.create(2.5, 1.5),
                     ),
-                    color: 3618615,
+                    color: 0x373737,
                 },
             ],
         },
@@ -3275,14 +3275,14 @@ function createCabin<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                         v2.create(0, 0.5),
                         v2.create(18, 12),
                     ),
-                    color: 3823128,
+                    color: 0x3a5618,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, -13),
                         v2.create(17, 2),
                     ),
-                    color: 6368528,
+                    color: 0x612d10,
                 },
             ],
         },
@@ -3618,14 +3618,14 @@ function createHut<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(0, 0),
                         v2.create(7, 7),
                     ),
-                    color: 15181895,
+                    color: 0xe7a847,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, -18.9),
                         v2.create(2, 12),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
             ],
         },
@@ -3773,28 +3773,28 @@ function createShack3<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(-7.75, 3),
                         v2.create(1, 2),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(5, -4.75),
                         v2.create(2, 1),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(1, 1.5),
                         v2.create(8, 5.5),
                     ),
-                    color: 3754050,
+                    color: 0x394842,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-10.65, 7),
                         v2.create(2, 12),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
             ],
         },
@@ -3847,7 +3847,7 @@ function createShack3<T extends BuildingDef>(e: Partial<T>): T {
                     pos: v2.create(0.5, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 10461087,
+                    tint: 0x9f9f9f,
                 },
             ],
             destroy: {
@@ -3943,7 +3943,7 @@ function createShack3<T extends BuildingDef>(e: Partial<T>): T {
 function createGreenhouse<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 1995644, scale: 1 },
+        map: { display: true, color: 0x1e737c, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
             collider.createAabbExtents(v2.create(0, 0), v2.create(15, 25)),
@@ -4293,13 +4293,13 @@ function createLoggingComplex<T extends BuildingDef>(e: Partial<T>): T {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(55, 55)),
-                color: e.groundTintLt || 5195792,
+                color: e.groundTintLt || 0x4f4810,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-28.5, 7), v2.create(7, 5)),
-                color: e.groundTintDk || 5986827,
+                color: e.groundTintDk || 0x5b5a0b,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4308,13 +4308,13 @@ function createLoggingComplex<T extends BuildingDef>(e: Partial<T>): T {
                     v2.create(-24.5, -35),
                     v2.create(5.5, 4.5),
                 ),
-                color: e.groundTintDk || 5986827,
+                color: e.groundTintDk || 0x5b5a0b,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
             {
                 bound: collider.createAabbExtents(v2.create(20, 10), v2.create(20, 30)),
-                color: e.groundTintDk || 5986827,
+                color: e.groundTintDk || 0x5b5a0b,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4667,7 +4667,7 @@ function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(5, 21.5), v2.create(5.5, 6)),
-                color: e.groundTintDk || 7563810,
+                color: e.groundTintDk || 0x736a22,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4676,7 +4676,7 @@ function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
                     v2.create(-17.75, -14),
                     v2.create(6, 4.5),
                 ),
-                color: e.groundTintDk || 7563810,
+                color: e.groundTintDk || 0x736a22,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4685,7 +4685,7 @@ function createLoggingComplex2<T extends BuildingDef>(e: Partial<T>): T {
                     v2.create(21.5, -10),
                     v2.create(4.75, 3.5),
                 ),
-                color: e.groundTintDk || 7563810,
+                color: e.groundTintDk || 0x736a22,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4765,7 +4765,7 @@ function createLoggingComplex3<T extends BuildingDef>(e: Partial<T>): T {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(6.5, 5.5)),
-                color: e.groundTintDk || 7563810,
+                color: e.groundTintDk || 0x736a22,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -4818,35 +4818,35 @@ function createMansion<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                         v2.create(-1.5, 20.5),
                         v2.create(12.5, 4.5),
                     ),
-                    color: 8671554,
+                    color: 0x845142,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-2, -23),
                         v2.create(3, 2.5),
                     ),
-                    color: 8671554,
+                    color: 0x845142,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-20.5, -22.5),
                         v2.create(10, 2),
                     ),
-                    color: 7750457,
+                    color: 0x764339,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(28, 1.5),
                         v2.create(3.75, 3),
                     ),
-                    color: 7237230,
+                    color: 0x6e6e6e,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-3.5, -2),
                         v2.create(28, 18.5),
                     ),
-                    color: 6175023,
+                    color: 0x5e392f,
                 },
             ],
         },
@@ -5849,7 +5849,7 @@ function createMansionCellar<T extends BuildingDef>(
 function createOutHouse<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 8145976, scale: 1 },
+        map: { display: true, color: 0x7c4c38, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
             collider.createAabbExtents(v2.create(0, 1.4), v2.create(5.5, 6.5)),
@@ -5956,21 +5956,21 @@ function createTeaPavilion<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(0, 0),
                         v2.create(9, 9),
                     ),
-                    color: 10555920,
+                    color: 0xa11210,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, 0),
                         v2.create(3.5, 3.5),
                     ),
-                    color: 16727611,
+                    color: 0xff3e3b,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, -10.15),
                         v2.create(2, 1.5),
                     ),
-                    color: 7354635,
+                    color: 0x70390b,
                 },
             ],
         },
@@ -6103,7 +6103,7 @@ function createTeaHouseComplex<T extends BuildingDef>(e: Partial<T>): T {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(21, 15)),
-                color: e.grass_color || 6066442,
+                color: e.grass_color || 0x5c910a,
                 roughness: 0.05,
                 offsetDist: 0.25,
             },
@@ -6195,7 +6195,7 @@ function createGrassyCover<T extends BuildingDef>(e: Partial<T>): T {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(8, 8)),
-                color: 7696926,
+                color: 0x75721e,
                 roughness: 0.1,
                 offsetDist: 0.2,
             },
@@ -6217,64 +6217,64 @@ function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(-21, -8),
                         v2.create(21.25, 14),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-24.5, 8.5),
                         v2.create(17.75, 9.75),
                     ),
-                    color: 3355970,
+                    color: 0x333542,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-3.5, 12),
                         v2.create(3.5, 6.25),
                     ),
-                    color: 4278620,
+                    color: 0x41495c,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(10.35, 0),
                         v2.create(10.5, 22),
                     ),
-                    color: 3355970,
+                    color: 0x333542,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(31.25, 12.5),
                         v2.create(10.75, 9.5),
                     ),
-                    color: 3355970,
+                    color: 0x333542,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-3.5, 2.5),
                         v2.create(2.25, 2.25),
                     ),
-                    color: 6310464,
+                    color: 0x604a40,
                 },
                 {
                     collider: collider.createCircle(v2.create(-30.5, -18), 1.5),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createCircle(v2.create(-20.5, -10.5), 1.5),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-38.5, -7),
                         v2.create(1.4, 3.1),
                     ),
-                    color: 13278307,
+                    color: 0xca9c63,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-7.5, -19.5),
                         v2.create(3.1, 1.4),
                     ),
-                    color: 13278307,
+                    color: 0xca9c63,
                 },
             ],
         },
@@ -6916,7 +6916,7 @@ function createPoliceStation<T extends BuildingDef>(e: Partial<T>): T {
 function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 6429724, scale: 1 },
+        map: { display: true, color: 0x621c1c, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
             collider.createAabbExtents(v2.create(0, 0), v2.create(19, 17.5)),
@@ -7258,7 +7258,7 @@ function createHouseRed<T extends ExtendedBuildingDef>(e: Partial<T>): T {
 function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 4656911, scale: 1 },
+        map: { display: true, color: 0x470f0f, scale: 1 },
         terrain: { grass: true, beach: false },
         mapObstacleBounds: [
             collider.createAabbExtents(v2.create(0, -1), v2.create(19, 18.5)),
@@ -7379,7 +7379,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
                     sprite: "map-building-house-ceiling.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 13619151,
+                    tint: 0xcfcfcf,
                     rot: 2,
                 },
             ],
@@ -7651,7 +7651,7 @@ function createHouseRed2<T extends ExtendedBuildingDef>(e: Partial<T>): T {
 function createShack2<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 6707790, scale: 1 },
+        map: { display: true, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         floor: {
             surfaces: [
@@ -7769,7 +7769,7 @@ function createShack2<T extends BuildingDef>(e: Partial<T>): T {
 function createShack<T extends BuildingDef>(e: Partial<T>): T {
     const t = {
         type: "building",
-        map: { display: true, color: 4014894, scale: 1 },
+        map: { display: true, color: 0x3d432e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -7879,21 +7879,21 @@ function createWarehouse<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(27, 0),
                         v2.create(3, 12.25),
                     ),
-                    color: 10066329,
+                    color: 0x999999,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-27, 0),
                         v2.create(3, 12.25),
                     ),
-                    color: 10066329,
+                    color: 0x999999,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, 0),
                         v2.create(24.5, 12.25),
                     ),
-                    color: 5915450,
+                    color: 0x5a433a,
                 },
             ],
         },
@@ -8108,14 +8108,14 @@ function createWarehouse2<T extends BuildingDef>(e: Partial<T>): T {
                         v2.create(25, 0),
                         v2.create(3, 12.25),
                     ),
-                    color: 10066329,
+                    color: 0x999999,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-25, 0),
                         v2.create(3, 12.25),
                     ),
-                    color: 10066329,
+                    color: 0x999999,
                 },
                 {
                     collider: collider.createAabbExtents(
@@ -8374,7 +8374,7 @@ function createLowWall<T extends ObstacleDef>(e: Partial<T>): T {
             sprite: "map-building-house-window-res-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
         sound: {
@@ -8484,7 +8484,7 @@ const MaterialDefs = {
 export const MapObjectDefs: Record<string, MapObjectDef> = {
     barrel_01: createBarrel({}),
     barrel_01b: createBarrel({
-        img: { tint: 13224393 },
+        img: { tint: 0xc9c9c9 },
         loot: [
             tierLoot("tier_surviv", 2, 3),
             autoLoot("mirv", 1),
@@ -8515,7 +8515,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     propane_01: createBarrel({
         collision: collider.createCircle(v2.create(0, 0), 1.25),
         health: 50,
-        map: { display: true, color: 24516, scale: 1 },
+        map: { display: true, color: 0x5fc4, scale: 1 },
         img: { sprite: "map-propane-01.img", scale: 0.4 },
     }),
     bed_sm_01: createBed({
@@ -8537,7 +8537,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "barrelBreak",
         reflectBullets: true,
         loot: [],
-        map: { display: true, color: 6310464, scale: 1 },
+        map: { display: true, color: 0x604a40, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-bollard-01.img",
@@ -8565,11 +8565,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     bush_01b: createBush({ img: { alpha: 1 } }),
     bush_01cb: createBush({
         img: { sprite: "map-bush-01cb.img" },
-        map: { color: 2518873 },
+        map: { color: 0x266f59 },
     } as unknown as Partial<ObstacleDef>),
     bush_01f: createBush({
         img: { sprite: "map-bush-01f.img" },
-        map: { color: 1793032 },
+        map: { color: 0x1b5c08 },
     } as unknown as Partial<ObstacleDef>),
     bush_01sv: createBush({
         hitParticle: "leafPrickly",
@@ -8578,7 +8578,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bush-01sv.img",
             residue: "map-bush-res-01sv.img",
         },
-        map: { color: 7569455 },
+        map: { color: 0x73802f },
     } as unknown as Partial<ObstacleDef>),
     brush_01sv: createBush({
         scale: {
@@ -8594,7 +8594,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-brush-01sv.img",
             residue: "map-brush-res-02sv.img",
         },
-        map: { color: 5207588 },
+        map: { color: 0x4f7624 },
     } as unknown as Partial<ObstacleDef>),
     brush_02sv: createBush({
         scale: {
@@ -8610,10 +8610,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-brush-02sv.img",
             residue: "map-brush-res-02sv.img",
         },
-        map: { color: 5207588 },
+        map: { color: 0x4f7624 },
     } as unknown as Partial<ObstacleDef>),
     bush_01x: createBush({
-        map: { color: 4545840 },
+        map: { color: 0x455d30 },
         img: { sprite: "map-bush-01x.img" },
     } as unknown as Partial<ObstacleDef>),
     bush_02: createBush({ img: { residue: "map-bush-res-02.img" } }),
@@ -8651,14 +8651,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             riverShore: true,
         },
         sound: { enter: "bush_enter_02" },
-        map: { color: 2784099 },
+        map: { color: 0x2a7b63 },
     } as unknown as Partial<ObstacleDef>),
     bush_05: createBush({
         img: {
             sprite: "map-bush-05.img",
             residue: "map-bush-res-05.img",
         },
-        map: { color: 6971965 },
+        map: { color: 0x6a623d },
     } as unknown as Partial<ObstacleDef>),
     bush_06: createBush({
         collision: collider.createCircle(v2.create(0, 0), 1.75),
@@ -8666,7 +8666,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-bush-06.img",
             residue: "map-bush-res-06.img",
         },
-        map: { display: true, color: 6971965, scale: 1.5 },
+        map: { display: true, color: 0x6a623d, scale: 1.5 },
     }),
     bush_06b: createBush({
         scale: { createMin: 1, createMax: 1 },
@@ -8676,7 +8676,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             residue: "map-bush-res-06.img",
             alpha: 1,
         },
-        map: { display: true, color: 14041344, scale: 1.5 },
+        map: { display: true, color: 0xd64100, scale: 1.5 },
     } as unknown as Partial<ObstacleDef>),
     bush_07: createBush({
         hitParticle: "leafRiver",
@@ -8691,7 +8691,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     bush_07sp: createBush({
         hitParticle: "leafRiver",
         explodeParticle: "leafRiver",
-        map: { display: true, color: 671242, scale: 1.5 },
+        map: { display: true, color: 0xa3e0a, scale: 1.5 },
         img: {
             sprite: "map-bush-07sp.img",
             alpha: 1,
@@ -8722,7 +8722,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         loot: [autoLoot("flare_gun", 1)],
         hitParticle: "blackChip",
-        map: { display: true, color: 7025920, scale: 0.85 },
+        map: { display: true, color: 0x6b3500, scale: 0.85 },
     }),
     case_05: createCase({
         health: 140,
@@ -8738,21 +8738,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("strobe", 1),
         ],
         hitParticle: "blackChip",
-        map: { display: false, color: 7025920, scale: 0.85 },
+        map: { display: false, color: 0x6b3500, scale: 0.85 },
     }),
     case_06: createCase({
         health: 140,
         img: { sprite: "map-case-chrys-01.img" },
         loot: [tierLoot("tier_chest", 2, 3), tierLoot("tier_chrys_case", 1, 1)],
         hitParticle: "blackChip",
-        map: { display: false, color: 7025920, scale: 0.85 },
+        map: { display: false, color: 0x6b3500, scale: 0.85 },
     }),
     case_07: createCase({
         health: 200,
         img: { sprite: "map-case-ring-01.img" },
         loot: [tierLoot("tier_ring_case", 1, 1)],
         hitParticle: "blackChip",
-        map: { display: false, color: 7025920, scale: 0.85 },
+        map: { display: false, color: 0x6b3500, scale: 0.85 },
     }),
     chest_01: createChest({
         loot: [
@@ -8798,7 +8798,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("glock_dual", 1),
             autoLoot("smoke", 4),
         ],
-        map: { display: false, color: 7025920, scale: 0.85 },
+        map: { display: false, color: 0x6b3500, scale: 0.85 },
     }),
     chest_04d: createChest({
         health: 200,
@@ -8810,7 +8810,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("smoke", 4),
             autoLoot("backpack02", 1),
         ],
-        map: { display: false, color: 7025920, scale: 0.85 },
+        map: { display: false, color: 0x6b3500, scale: 0.85 },
     }),
     control_panel_01: createControlPanel({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.25, 1.7)),
@@ -8939,7 +8939,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_02sv: createCrate({
         health: 140,
         loot: [tierLoot("tier_soviet", 4, 5), tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 16760832 },
+        map: { display: true, color: 0xffc000 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02sv.img" },
         sound: { explode: "crate_break_01" },
@@ -8947,7 +8947,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_02sv_lake: createCrate({
         health: 140,
         loot: [tierLoot("tier_soviet", 5, 6)],
-        map: { display: true, color: 16760832 },
+        map: { display: true, color: 0xffc000 },
         terrain: { lakeCenter: true },
         img: { sprite: "map-crate-02sv.img" },
         sound: { explode: "crate_break_01" },
@@ -8967,7 +8967,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_armor", 2, 2),
             tierLoot("tier_packs", 1, 1),
         ],
-        map: { display: true, color: 13369344 },
+        map: { display: true, color: 0xcc0000 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" },
@@ -8981,7 +8981,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("outfitRedLeaderAged", 1, 1),
             autoLoot("machete_taiga", 1, 1),
         ],
-        map: { display: true, color: 13369344 },
+        map: { display: true, color: 0xcc0000 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-02f.img" },
         sound: { explode: "crate_break_01" },
@@ -8990,7 +8990,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         health: 100,
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.575, 1.575)),
         loot: [tierLoot("tier_throwables", 2, 4)],
-        map: { color: 5066014, scale: 0.875 },
+        map: { color: 0x4d4d1e, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-03.img", scale: 0.35 },
         sound: { explode: "crate_break_01" },
@@ -9005,7 +9005,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("snowball", 4, 4),
             autoLoot("snowball", 4, 4),
         ],
-        map: { color: 31863, scale: 0.875 },
+        map: { color: 0x7c77, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-03x.img", scale: 0.35 },
         sound: { explode: "crate_break_02" },
@@ -9016,7 +9016,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         armorPlated: true,
         hitParticle: "greenChip",
         loot: [tierLoot("tier_ammo_crate", 1, 1)],
-        map: { display: true, color: 5468244, scale: 0.875 },
+        map: { display: true, color: 0x537054, scale: 0.875 },
         img: { sprite: "map-crate-04.img" },
         sound: {
             bullet: "ammo_crate_bullet",
@@ -9352,7 +9352,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_18: createCrate({
         health: 140,
         loot: [tierLoot("tier_cattle_crate", 2, 3), tierLoot("tier_soviet", 1, 2)],
-        map: { display: true, color: 12867840, scale: 0.875 },
+        map: { display: true, color: 0xc45900, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-18.img" },
         sound: { explode: "crate_break_01" },
@@ -9360,7 +9360,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_19: createCrate({
         health: 140,
         loot: [tierLoot("tier_guns", 1, 3), tierLoot("tier_surviv", 2, 3)],
-        map: { display: true, color: 4500224, scale: 0.875 },
+        map: { display: true, color: 0x44ab00, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-19.img" },
         sound: { explode: "crate_break_01" },
@@ -9371,7 +9371,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         hitParticle: "greenChip",
         explodeParticle: "greenPlank",
         loot: [tierLoot("tier_armor", 1, 1), tierLoot("tier_world", 1, 1)],
-        map: { display: true, color: 3884335, scale: 1 },
+        map: { display: true, color: 0x3b452f, scale: 1 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-20.img" },
         sound: { explode: "crate_break_01" },
@@ -9384,7 +9384,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_cloud_02", 1, 1),
             tierLoot("tier_perks", 1, 1),
         ],
-        map: { display: true, color: 18799, scale: 0.875 },
+        map: { display: true, color: 0x496f, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-21.img" },
         sound: { explode: "crate_break_01" },
@@ -9397,7 +9397,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_cloud_02", 1, 1),
             tierLoot("tier_perks", 1, 1),
         ],
-        map: { display: false, color: 18799, scale: 0.875 },
+        map: { display: false, color: 0x496f, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-21.img" },
         sound: { explode: "crate_break_01" },
@@ -9423,7 +9423,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoLoot("outfitBlueLeaderAged", 1, 1),
             autoLoot("kukri_trad", 1, 1),
         ],
-        map: { display: true, color: 32511 },
+        map: { display: true, color: 0x7eff },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-22.img" },
         sound: { explode: "crate_break_01" },
@@ -9808,7 +9808,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(2.7, 1.25)),
         health: 100,
         loot: [tierLoot("tier_guns", 1, 2), tierLoot("tier_snipers", 1, 2)],
-        map: { display: true, color: 3622438 },
+        map: { display: true, color: 0x374626 },
         terrain: { grass: true, beach: true },
         img: { sprite: "map-crate-mil-05.img" },
         sound: { explode: "crate_break_01" },
@@ -9847,22 +9847,22 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             enter: "none",
         },
     }),
-    bottle_02r: createBottle2({ img: { tint: 13172736 } }),
+    bottle_02r: createBottle2({ img: { tint: 0xc90000 } }),
     bottle_02o: createBottle2({
         collidable: false,
-        img: { tint: 16734720 },
+        img: { tint: 0xff5a00 },
     }),
     bottle_02y: createBottle2({
         collidable: false,
-        img: { tint: 16776960 },
+        img: { tint: 0xffff00 },
     }),
-    bottle_02g: createBottle2({ collidable: false, img: { tint: 32768 } }),
-    bottle_02b: createBottle2({ img: { tint: 27903 } }),
+    bottle_02g: createBottle2({ collidable: false, img: { tint: 0x8000 } }),
+    bottle_02b: createBottle2({ img: { tint: 0x6cff } }),
     bottle_02i: createBottle2({
         collidable: false,
-        img: { tint: 4915330 },
+        img: { tint: 0x4b0082 },
     }),
-    bottle_02v: createBottle2({ img: { tint: 15631086 } }),
+    bottle_02v: createBottle2({ img: { tint: 0xee82ee } }),
     bottle_04: createBottle({
         collision: collider.createCircle(v2.create(0, 0), 0.5),
         health: 20,
@@ -9954,7 +9954,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "redBreak",
         reflectBullets: true,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-fire-ext-01.img",
@@ -10024,7 +10024,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: ["woodPlank", "book"],
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-piano-01.img",
@@ -10235,7 +10235,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "barrelBreak",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-screen-01.img",
@@ -10265,7 +10265,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         loot: [autoLoot("potato_smg", 1, 1)],
         img: {
             residue: "map-smoke-res.img",
-            tint: 16749645,
+            tint: 0xff944d,
         },
     }),
     stairs_01: {
@@ -10280,7 +10280,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-stairs-broken-01.img",
@@ -10314,7 +10314,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "woodPlank",
         reflectBullets: false,
         loot: [tierLoot("tier_world", 1, 1)],
-        map: { display: false, color: 6697728, scale: 0.875 },
+        map: { display: false, color: 0x663300, scale: 0.875 },
         terrain: { grass: false, beach: true },
         img: {
             sprite: "map-stand-01.img",
@@ -10336,14 +10336,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         img: { residue: "map-stone-res-01b.img" },
     }),
     stone_01cb: createStone({
-        map: { display: true, color: 10265256, scale: 1 },
+        map: { display: true, color: 0x9ca2a8, scale: 1 },
         img: {
             sprite: "map-stone-01cb.img",
             residue: "map-stone-res-01cb.img",
         },
     }),
     stone_01f: createStone({
-        map: { display: true, color: 8224125, scale: 1 },
+        map: { display: true, color: 0x7d7d7d, scale: 1 },
     }),
     stone_01sv: createStone({
         scale: {
@@ -10353,7 +10353,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
     }),
     stone_01x: createStone({
-        map: { display: true, color: 6052956, scale: 1 },
+        map: { display: true, color: 0x5c5c5c, scale: 1 },
         img: {
             sprite: "map-stone-01x.img",
             residue: "map-stone-res-01x.img",
@@ -10361,12 +10361,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     stone_02: createStone({
         map: { display: false },
-        img: { tint: 15066597 },
+        img: { tint: 0xe5e5e5 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("ak47", 1)],
     }),
     stone_02sv: createStone({
         map: { display: false },
-        img: { tint: 15066597 },
+        img: { tint: 0xe5e5e5 },
         loot: [
             tierLoot("tier_surviv", 2, 3),
             autoLoot("m39", 1),
@@ -10374,11 +10374,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         ],
     }),
     stone_02cb: createStone({
-        map: { display: false, color: 10265256, scale: 1 },
+        map: { display: false, color: 0x9ca2a8, scale: 1 },
         img: {
             sprite: "map-stone-01cb.img",
             residue: "map-stone-res-01cb.img",
-            tint: 15066597,
+            tint: 0xe5e5e5,
         },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("ak47", 1)],
     }),
@@ -10418,7 +10418,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "rockEyeBreak",
         loot: [tierLoot("tier_eye_block", 1, 1)],
         terrain: { grass: true, beach: true, riverShore: true },
-        map: { display: true, color: 1512466, scale: 1 },
+        map: { display: true, color: 0x171412, scale: 1 },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.8, 1.8)),
         img: {
             sprite: "map-stone-04.img",
@@ -10431,7 +10431,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         explodeParticle: "rockEyeBreak",
         loot: [tierLoot("tier_eye_stone", 1, 1)],
         terrain: { grass: true, beach: true, riverShore: true },
-        map: { display: true, color: 1512466, scale: 1 },
+        map: { display: true, color: 0x171412, scale: 1 },
         collision: collider.createCircle(v2.create(0, 0), 1.7),
         img: {
             sprite: "map-stone-05.img",
@@ -10443,7 +10443,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
         height: 10,
         terrain: { grass: true, beach: true, riverShore: true },
-        map: { display: true, color: 3618615, scale: 1 },
+        map: { display: true, color: 0x373737, scale: 1 },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.5, 2)),
         img: {
             sprite: "map-stone-06.img",
@@ -10455,7 +10455,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
         collision: collider.createCircle(v2.create(0, 0), 7.75),
         health: 500,
-        map: { display: true, color: 9931908, scale: 1 },
+        map: { display: true, color: 0x978c84, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-stone-07.img",
@@ -10570,7 +10570,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             explodeParticle: "barrelBreak",
             reflectBullets: false,
             loot: [],
-            map: { display: true, color: 6708838, scale: 1 },
+            map: { display: true, color: 0x665e66, scale: 1 },
             terrain: { grass: true, beach: true },
             img: {
                 sprite: "map-tire-01.img",
@@ -10599,7 +10599,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     toilet_02b: createToilet({
         img: {
             sprite: "map-toilet-02.img",
-            tint: 11842740,
+            tint: 0xb4b4b4,
         },
         loot: [autoLoot("fireaxe", 1, 1)],
     }),
@@ -10647,11 +10647,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         collision: collider.createCircle(v2.create(0, 0), 1.2),
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(7.75, 7.75)),
-        map: { color: 2900834 },
+        map: { color: 0x2c4362 },
         img: { sprite: "map-tree-03cb.img" },
     } as unknown as Partial<ObstacleDef>),
     tree_01sv: createTree({
-        map: { color: 4411673 },
+        map: { color: 0x435119 },
         img: { sprite: "map-tree-03sv.img" },
     } as unknown as Partial<ObstacleDef>),
     tree_interior_01: createTree({ img: { zIdx: 200 } }),
@@ -10688,29 +10688,29 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     tree_03: createTree({
         map: { display: false },
-        img: { tint: 11645361 },
+        img: { tint: 0xb1b1b1 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     }),
     tree_03sv: createTree({
-        map: { display: false, color: 4411673 },
+        map: { display: false, color: 0x435119 },
         img: {
             sprite: "map-tree-03sv.img",
-            tint: 11645361,
+            tint: 0xb1b1b1,
         },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     // woods cache
     tree_03w: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { display: false, color: 5199637, scale: 2.5 },
-        img: { sprite: "map-tree-07.img", tint: 11645361 },
+        map: { display: false, color: 0x4f5715, scale: 2.5 },
+        img: { sprite: "map-tree-07.img", tint: 0xb1b1b1 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     // spring cache
     tree_03sp: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { display: false, color: 16697057, scale: 2.5 },
-        img: { sprite: "map-tree-07sp.img", tint: 11645361 },
+        map: { display: false, color: 0xfec6e1, scale: 2.5 },
+        img: { sprite: "map-tree-07sp.img", tint: 0xb1b1b1 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     // cobalt cache
@@ -10722,8 +10722,8 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         collision: collider.createCircle(v2.create(0, 0), 1.2),
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(7.75, 7.75)),
-        map: { display: false, color: 2900834 },
-        img: { sprite: "map-tree-03cb.img", tint: 11645361 },
+        map: { display: false, color: 0x2c4362 },
+        img: { sprite: "map-tree-03cb.img", tint: 0xb1b1b1 },
         loot: [tierLoot("tier_surviv", 2, 3), autoLoot("mosin", 1)],
     } as unknown as Partial<ObstacleDef>),
     tree_05: createTree({
@@ -10731,7 +10731,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(12, 12)),
         scale: { createMin: 1.2, createMax: 1.3 },
         health: 400,
-        map: { color: 5911831, scale: 3 },
+        map: { color: 0x5a3517, scale: 3 },
         img: {
             sprite: "map-tree-05.img",
             residue: "map-tree-res-02.img",
@@ -10750,7 +10750,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_lmgs", 1, 1),
             autoLoot("outfitTreeSpooky", 1),
         ],
-        map: { color: 5911831, scale: 3 },
+        map: { color: 0x5a3517, scale: 3 },
         img: {
             sprite: "map-tree-05.img",
             residue: "map-tree-res-02.img",
@@ -10764,7 +10764,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 4)),
         scale: { createMin: 1.6, createMax: 1.6 },
         health: 200,
-        map: { color: 9064739, scale: 3 },
+        map: { color: 0x8a5123, scale: 3 },
         img: {
             sprite: "map-tree-05c.img",
             residue: "map-tree-res-02.img",
@@ -10775,34 +10775,34 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     tree_06: createTree({
         img: { sprite: "map-tree-06.img" },
-        map: { color: 7700520 },
+        map: { color: 0x758028 },
     } as unknown as Partial<ObstacleDef>),
     tree_07: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 5199637, scale: 2.5 },
+        map: { color: 0x4f5715, scale: 2.5 },
         img: { sprite: "map-tree-07.img" },
     } as unknown as Partial<ObstacleDef>),
     tree_07sp: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 16697057, scale: 2.5 },
+        map: { color: 0xfec6e1, scale: 2.5 },
         img: { sprite: "map-tree-07sp.img" },
         terrain: { grass: true, beach: false, riverShore: true },
     } as unknown as Partial<ObstacleDef>),
     tree_07spr: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 16697057, scale: 2.5 },
+        map: { color: 0xfec6e1, scale: 2.5 },
         img: { sprite: "map-tree-07sp.img" },
         terrain: { grass: false, beach: false, riverShore: true },
     } as unknown as Partial<ObstacleDef>),
     tree_07su: createTree({
         scale: { createMin: 1, createMax: 1.2 },
-        map: { color: 2185478, scale: 2.5 },
+        map: { color: 0x215906, scale: 2.5 },
         img: { sprite: "map-tree-07su.img" },
     } as unknown as Partial<ObstacleDef>),
     tree_08: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
-        map: { color: 11033868, scale: 2.5 },
+        map: { color: 0xa85d0c, scale: 2.5 },
         img: {
             sprite: "map-tree-08.img",
             residue: "map-tree-res-02.img",
@@ -10812,11 +10812,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08b: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
-        map: { color: 9647632, scale: 3 },
+        map: { color: 0x933610, scale: 3 },
         img: {
             sprite: "map-tree-08.img",
             residue: "map-tree-res-02.img",
-            tint: 14383224,
+            tint: 0xdb7878,
             scale: 0.35,
             zIdx: 801,
         },
@@ -10829,11 +10829,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_lmgs", 2, 3),
             autoLoot("outfitWoodland", 1),
         ],
-        map: { color: 7817749, scale: 3 },
+        map: { color: 0x774a15, scale: 3 },
         img: {
             sprite: "map-tree-08.img",
             residue: "map-tree-res-02.img",
-            tint: 11645361,
+            tint: 0xb1b1b1,
             scale: 0.35,
             zIdx: 801,
         },
@@ -10841,7 +10841,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08f: createTree({
         scale: { createMin: 1.2, createMax: 1.6 },
         health: 200,
-        map: { color: 995844, scale: 3 },
+        map: { color: 0xf3204, scale: 3 },
         img: {
             sprite: "map-tree-08f.img",
             residue: "map-tree-res-01.img",
@@ -10852,7 +10852,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08sp: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
-        map: { color: 16746936, scale: 2.5 },
+        map: { color: 0xff89b8, scale: 2.5 },
         img: {
             sprite: "map-tree-08sp.img",
             residue: "map-tree-res-02.img",
@@ -10863,11 +10863,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08spb: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
-        map: { color: 16734619, scale: 3 },
+        map: { color: 0xff599b, scale: 3 },
         img: {
             sprite: "map-tree-08sp.img",
             residue: "map-tree-res-02.img",
-            tint: 14383224,
+            tint: 0xdb7878,
             scale: 0.35,
             zIdx: 801,
         },
@@ -10881,11 +10881,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tierLoot("tier_lmgs", 2, 3),
             autoLoot("outfitWoodland", 1),
         ],
-        map: { color: 8268107, scale: 3 },
+        map: { color: 0x7e294b, scale: 3 },
         img: {
             sprite: "map-tree-08sp.img",
             residue: "map-tree-res-02.img",
-            tint: 11645361,
+            tint: 0xb1b1b1,
             scale: 0.35,
             zIdx: 801,
         },
@@ -10893,7 +10893,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08spr: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
-        map: { color: 16746936, scale: 2.5 },
+        map: { color: 0xff89b8, scale: 2.5 },
         img: {
             sprite: "map-tree-08sp.img",
             residue: "map-tree-res-02.img",
@@ -10904,7 +10904,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08su: createTree({
         scale: { createMin: 1.2, createMax: 1.4 },
         health: 225,
-        map: { color: 2183181, scale: 2.5 },
+        map: { color: 0x21500d, scale: 2.5 },
         img: {
             sprite: "map-tree-08su.img",
             residue: "map-tree-res-01.img",
@@ -10915,11 +10915,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_08sub: createTree({
         scale: { createMin: 1.75, createMax: 2 },
         health: 300,
-        map: { color: 1785864, scale: 3 },
+        map: { color: 0x1b4008, scale: 3 },
         img: {
             sprite: "map-tree-08su.img",
             residue: "map-tree-res-02.img",
-            tint: 9211210,
+            tint: 0x8c8d4a,
             scale: 0.35,
             zIdx: 801,
         },
@@ -10930,7 +10930,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         collision: collider.createCircle(v2.create(0, 0), 1.6),
         aabb: collider.createAabbExtents(v2.create(0, 0), v2.create(5.75, 5.75)),
         height: 0.5,
-        map: { display: true, color: 8602624, scale: 1 },
+        map: { display: true, color: 0x834400, scale: 1 },
         scale: {
             createMin: 1,
             createMax: 1,
@@ -10946,7 +10946,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     tree_10: createTree({
         collision: collider.createCircle(v2.create(0, 0), 1.25),
         scale: { createMin: 0.9, createMax: 1.1 },
-        map: { color: 7571807, scale: 2.5 },
+        map: { color: 0x73895f, scale: 2.5 },
         img: { sprite: "map-tree-10.img" },
     } as unknown as Partial<ObstacleDef>),
     tree_11: createTree({
@@ -10960,7 +10960,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
     } as unknown as Partial<ObstacleDef>),
     tree_12: createTree({
-        map: { color: 8032292, scale: 7 },
+        map: { color: 0x7a9024, scale: 7 },
         img: {
             sprite: "map-tree-12.img",
             residue: "map-tree-res-12.img",
@@ -10996,7 +10996,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         hitParticle: "glassChip",
         explodeParticle: "windowBreak",
         loot: [],
-        map: { display: true, color: 11776947, scale: 1 },
+        map: { display: true, color: 0xb3b3b3, scale: 1 },
         terrain: { grass: false, beach: false },
         img: {
             sprite: "map-vat-01.img",
@@ -11029,7 +11029,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         hitParticle: "glassChip",
         explodeParticle: "windowBreak",
         loot: [],
-        map: { display: true, color: 11776947, scale: 1 },
+        map: { display: true, color: 0xb3b3b3, scale: 1 },
         terrain: { grass: true, beach: false },
         img: {
             sprite: "map-vat-02.img",
@@ -11069,7 +11069,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             loot: [tierLoot("tier_vending_soda", 1, 3), autoLoot("soda", 1)],
             map: {
                 display: false,
-                color: 10925,
+                color: 0x2aad,
                 scale: 0.875,
             },
             terrain: { grass: true, beach: true },
@@ -11189,7 +11189,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 close: "door_close_02",
             },
         },
-        img: { tint: 3159362 },
+        img: { tint: 0x303542 },
     } as unknown as Partial<ObstacleDef>),
     cell_door_01: createDoor({
         material: "metal",
@@ -11203,7 +11203,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 close: "door_close_02",
             },
         },
-        img: { tint: 1776411 },
+        img: { tint: 0x1b1b1b },
     } as unknown as Partial<ObstacleDef>),
     eye_door_01: createDoor({
         material: "metal",
@@ -11218,20 +11218,20 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 close: "door_close_02",
             },
         },
-        img: { tint: 921102 },
+        img: { tint: 0xe0e0e },
     } as unknown as Partial<ObstacleDef>),
-    lab_door_01: createLabDoor({ img: { tint: 5373952 } }),
+    lab_door_01: createLabDoor({ img: { tint: 0x520000 } }),
     lab_door_02: createLabDoor({
         door: {
             openOneWay: 1,
             slideOffset: -3.75,
             casingImg: { pos: v2.create(6, 0) },
         },
-        img: { tint: 5373952 },
+        img: { tint: 0x520000 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_03: createLabDoor({
         door: { openOneWay: 1 },
-        img: { tint: 5373952 },
+        img: { tint: 0x520000 },
     } as unknown as Partial<ObstacleDef>),
     lab_door_locked_01: createLabDoor({
         door: {
@@ -11240,14 +11240,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             autoClose: false,
             sound: { error: "" },
         },
-        img: { tint: 5373952 },
+        img: { tint: 0x520000 },
     } as unknown as Partial<ObstacleDef>),
     house_window_01: createWindow({}),
     house_window_broken_01: createLowWall({}),
     lab_window_01: createWindow({
         destroyType: "lab_window_broken_01",
     }),
-    lab_window_broken_01: createLowWall({ img: { tint: 1316379 } }),
+    lab_window_broken_01: createLowWall({ img: { tint: 0x14161b } }),
     container_05_collider: createWall({
         material: "metal",
         extents: v2.create(2.75, 6),
@@ -11256,7 +11256,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         type: "building",
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
         zIdx: 1,
-        map: { display: true, color: 11485762, scale: 1 },
+        map: { display: true, color: 0xaf4242, scale: 1 },
         terrain: { grass: false, beach: false },
         floor: {
             surfaces: [
@@ -11290,7 +11290,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-container-ceiling-05.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 11485762,
+                    tint: 0xaf4242,
                 },
             ],
         },
@@ -11521,7 +11521,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 10),
                         v2.create(3.6, 5.8),
                     ),
-                    color: 6707790,
+                    color: 0x665a4e,
                 },
             ],
         },
@@ -11611,14 +11611,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(-2, 0),
                 scale: 0.5,
                 alpha: 1,
-                tint: 1316379,
+                tint: 0x14161b,
             },
         },
-        img: { tint: 5373952 },
+        img: { tint: 0x520000 },
     } as unknown as Partial<ObstacleDef>),
     bunker_chrys_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -11665,7 +11665,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(11.5, -11),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -11822,7 +11822,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_sublevel_01b: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -11869,7 +11869,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(11.5, -11),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -12029,7 +12029,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     } as unknown as Partial<ObstacleDef>),
     bunker_chrys_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12073,14 +12073,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-10.5, -2.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-ceiling-01b.img",
                     pos: v2.create(4, 3),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -12179,7 +12179,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_compartment_01b: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12223,14 +12223,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-10.5, -2.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-ceiling-01b.img",
                     pos: v2.create(4, 3),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -12371,7 +12371,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_compartment_02: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12415,14 +12415,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 8.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-ceiling-02b.img",
                     pos: v2.create(0, -2.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -12485,7 +12485,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_compartment_02b: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12529,14 +12529,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 8.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
                 {
                     sprite: "map-bunker-chrys-compartment-ceiling-02b.img",
                     pos: v2.create(0, -2.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -12605,7 +12605,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_compartment_03: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12650,7 +12650,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -9.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                     rot: 0,
                 },
                 {
@@ -12658,7 +12658,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 3),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                     rot: 0,
                 },
             ],
@@ -12752,7 +12752,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_chrys_compartment_03b: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -12797,7 +12797,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -9.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                     rot: 0,
                 },
                 {
@@ -12805,7 +12805,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 3),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                     rot: 0,
                 },
             ],
@@ -12907,11 +12907,11 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "metal",
         extents: v2.create(3, 0.5),
         height: 0.5,
-        map: { display: true, color: 5854285, scale: 1 },
+        map: { display: true, color: 0x59544d, scale: 1 },
     }),
     hedgehog_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: false, beach: true },
         floor: {
             surfaces: [],
@@ -13246,33 +13246,33 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 2),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-04.img", 4608e3),
+        img: wallImg("map-wall-04.img", 0x465000),
     }),
     hut_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-05.img", 4608e3),
+        img: wallImg("map-wall-05.img", 0x465000),
     }),
     hut_wall_int_6: createWall({
         material: "wood",
         extents: v2.create(0.5, 3),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-06.img", 4608e3),
+        img: wallImg("map-wall-06.img", 0x465000),
     }),
     hut_wall_int_12: createWall({
         material: "wood",
         extents: v2.create(0.5, 6),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-12.img", 4608e3),
+        img: wallImg("map-wall-12.img", 0x465000),
     }),
     hut_wall_int_14: createWall({
         material: "wood",
         extents: v2.create(0.5, 7),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-14.img", 4608e3),
+        img: wallImg("map-wall-14.img", 0x465000),
     }),
-    hut_window_open_01: createLowWall({ img: { tint: 7681026 } }),
+    hut_window_open_01: createLowWall({ img: { tint: 0x753402 } }),
     hut_01: createHut({}),
     hut_01x: createHut({
         ceiling: {
@@ -13346,14 +13346,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 0),
                         v2.create(7, 7),
                     ),
-                    color: 7771201,
+                    color: 0x769441,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(0, -18.9),
                         v2.create(2, 12),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
             ],
         },
@@ -13482,113 +13482,113 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(26, 70.5),
                         v2.create(47, 7.5),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(15.5, 52.5),
                         v2.create(57.5, 10.5),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(33, 11),
                         v2.create(75, 31),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(5, -30),
                         v2.create(47, 10),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-39.75, 11.25),
                         v2.create(2, 51),
                     ),
-                    color: 16109568,
+                    color: 0xf5d000,
                 },
                 {
                     collider: collider.createCircle(v2.create(-39, 55), 1.25),
-                    color: 6310464,
+                    color: 0x604a40,
                 },
                 {
                     collider: collider.createCircle(v2.create(-39, 20.5), 1.25),
-                    color: 6310464,
+                    color: 0x604a40,
                 },
                 {
                     collider: collider.createCircle(v2.create(-39, 2), 1.25),
-                    color: 6310464,
+                    color: 0x604a40,
                 },
                 {
                     collider: collider.createCircle(v2.create(-39, -31.5), 1.25),
-                    color: 6310464,
+                    color: 0x604a40,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-28, -30),
                         v2.create(2, 2),
                     ),
-                    color: 6697728,
+                    color: 0x663300,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-23, -33),
                         v2.create(2, 2),
                     ),
-                    color: 6697728,
+                    color: 0x663300,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(7, 70),
                         v2.create(2, 2),
                     ),
-                    color: 6697728,
+                    color: 0x663300,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(12, 72),
                         v2.create(2, 2),
                     ),
-                    color: 6697728,
+                    color: 0x663300,
                 },
                 {
                     collider: collider.createCircle(v2.create(-26.5, 54.75), 1.75),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createCircle(v2.create(-23.5, 57), 1.75),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createCircle(v2.create(84, -15.5), 1.75),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createCircle(v2.create(40, -35), 1.5),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createCircle(v2.create(65, 61), 1.5),
-                    color: 8026746,
+                    color: 0x7a7a7a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(44.5, -25),
                         v2.create(1.4, 3.1),
                     ),
-                    color: 13278307,
+                    color: 0xca9c63,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(58, 47.5),
                         v2.create(1.4, 3.1),
                     ),
-                    color: 13278307,
+                    color: 0xca9c63,
                 },
             ],
         },
@@ -13608,7 +13608,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(26, 60), v2.create(47, 18)),
-                color: 9340275,
+                color: 0x8e8573,
                 order: 1,
             },
             {
@@ -13616,17 +13616,17 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(5, 11.5),
                     v2.create(47, 51.5),
                 ),
-                color: 9340275,
+                color: 0x8e8573,
                 order: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(80, 11), v2.create(28, 31)),
-                color: 9340275,
+                color: 0x8e8573,
                 order: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(26, 58), v2.create(46, 19)),
-                color: 5855577,
+                color: 0x595959,
                 order: 1,
             },
             {
@@ -13634,12 +13634,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(5, 11.5),
                     v2.create(46, 50.5),
                 ),
-                color: 5855577,
+                color: 0x595959,
                 order: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(78, 11), v2.create(29, 30)),
-                color: 5855577,
+                color: 0x595959,
                 order: 1,
             },
             {
@@ -13647,7 +13647,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-37.5, 38),
                     v2.create(4.5, 10),
                 ),
-                color: 9340275,
+                color: 0x8e8573,
                 order: 1,
             },
             {
@@ -13655,7 +13655,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-37.5, -15),
                     v2.create(4.5, 10),
                 ),
-                color: 9340275,
+                color: 0x8e8573,
                 order: 1,
             },
             {
@@ -13663,7 +13663,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-37.5, 38),
                     v2.create(3.5, 9),
                 ),
-                color: 5855577,
+                color: 0x595959,
                 order: 1,
             },
             {
@@ -13671,7 +13671,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-37.5, -15),
                     v2.create(3.5, 9),
                 ),
-                color: 5855577,
+                color: 0x595959,
                 order: 1,
             },
         ],
@@ -14191,21 +14191,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     logging_complex_01: createLoggingComplex({}),
     logging_complex_01sp: createLoggingComplex({
-        groundTintLt: 3361294,
-        groundTintDk: 2437648,
+        groundTintLt: 0x334a0e,
+        groundTintDk: 0x253210,
     }),
     logging_complex_01su: createLoggingComplex({
-        groundTintLt: 7843122,
-        groundTintDk: 5143827,
+        groundTintLt: 0x77ad32,
+        groundTintDk: 0x4e7d13,
     }),
     logging_complex_02: createLoggingComplex2({}),
     logging_complex_02sp: createLoggingComplex2({
-        groundTintDk: 2437648,
+        groundTintDk: 0x253210,
         tree_08c: "tree_08spc",
     }),
-    logging_complex_02su: createLoggingComplex2({ groundTintDk: 5143827 }),
+    logging_complex_02su: createLoggingComplex2({ groundTintDk: 0x4e7d13 }),
     logging_complex_03: createLoggingComplex3({}),
-    logging_complex_03sp: createLoggingComplex3({ groundTintDk: 2437648 }),
+    logging_complex_03sp: createLoggingComplex3({ groundTintDk: 0x253210 }),
     junkyard_01: {
         type: "building",
         map: { display: true, shapes: [] },
@@ -14215,35 +14215,35 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(-8.5, 24), v2.create(13, 9)),
-                color: 1184769,
+                color: 0x121401,
             },
             {
                 bound: collider.createAabbExtents(
                     v2.create(26.75, 8.5),
                     v2.create(8, 5.5),
                 ),
-                color: 1184769,
+                color: 0x121401,
             },
             {
                 bound: collider.createAabbExtents(
                     v2.create(23.75, -15.5),
                     v2.create(7, 5.5),
                 ),
-                color: 1184769,
+                color: 0x121401,
             },
             {
                 bound: collider.createAabbExtents(
                     v2.create(-23.5, -3),
                     v2.create(4.75, 3.5),
                 ),
-                color: 1184769,
+                color: 0x121401,
             },
             {
                 bound: collider.createAabbExtents(
                     v2.create(-3.5, -19.5),
                     v2.create(4, 6.5),
                 ),
-                color: 1184769,
+                color: 0x121401,
             },
         ],
         floor: {
@@ -14531,13 +14531,13 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     archway_column_1: createWall({
         material: "wood",
         extents: v2.create(1, 1),
-        img: Object.assign(wallImg("map-column-01.img", 7290644), {
+        img: Object.assign(wallImg("map-column-01.img", 0x6f3f14), {
             residue: "map-drawers-res.img",
         }),
     }),
     archway_01: {
         type: "building",
-        map: { display: true, color: 7813914, scale: 1 },
+        map: { display: true, color: 0x773b1a, scale: 1 },
         terrain: { grass: true, beach: false },
         floor: {
             surfaces: [
@@ -14601,19 +14601,19 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(60, 95)),
-                color: 12813354,
+                color: 0xc3842a,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(10, 96)),
-                color: 9396511,
+                color: 0x8f611f,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-33, 40), v2.create(27, 5)),
-                color: 9396511,
+                color: 0x8f611f,
                 roughness: 0.1,
                 offsetDist: 1,
             },
@@ -14802,19 +14802,19 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, -3), v2.create(45, 55)),
-                color: 12813354,
+                color: 0xc3842a,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(46, 10)),
-                color: 9396511,
+                color: 0x8f611f,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 2), v2.create(5, 50.5)),
-                color: 9396511,
+                color: 0x8f611f,
                 roughness: 0.1,
                 offsetDist: 1,
             },
@@ -14929,7 +14929,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         scale: { createMin: 1, createMax: 1, destroy: 0.5 },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: false,
-        map: { display: true, color: 5723991, scale: 1 },
+        map: { display: true, color: 0x575757, scale: 1 },
         img: { sprite: "map-statue-01.img", scale: 0.5 },
     }),
     statue_03: createStone({
@@ -14943,7 +14943,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: true,
-        map: { display: true, color: 5723991, scale: 1 },
+        map: { display: true, color: 0x575757, scale: 1 },
         img: {
             sprite: "map-statue-03.img",
             scale: 0.5,
@@ -14961,7 +14961,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(4.4, 4.4)),
         destructible: true,
-        map: { display: true, color: 5723991, scale: 1 },
+        map: { display: true, color: 0x575757, scale: 1 },
         img: {
             sprite: "map-statue-04.img",
             scale: 0.5,
@@ -14974,7 +14974,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         collision: collider.createCircle(v2.create(0, 0), 2.45),
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
         destructible: true,
-        map: { display: false, color: 5723991, scale: 1 },
+        map: { display: false, color: 0x575757, scale: 1 },
         img: {
             sprite: "map-statue-top-01.img",
             residue: "",
@@ -14988,7 +14988,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         collision: collider.createCircle(v2.create(0, 0), 2.45),
         scale: { createMin: 1, createMax: 1, destroy: 0.8 },
         destructible: true,
-        map: { display: false, color: 5723991, scale: 1 },
+        map: { display: false, color: 0x575757, scale: 1 },
         img: {
             sprite: "map-statue-top-02.img",
             residue: "",
@@ -15130,28 +15130,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(70.75, 0.5),
                         v2.create(30, 54.5),
                     ),
-                    color: 3815994,
+                    color: 0x3a3a3a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(77.5, 64),
                         v2.create(23, 10),
                     ),
-                    color: 3815994,
+                    color: 0x3a3a3a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(111, -29.5),
                         v2.create(10.5, 24.5),
                     ),
-                    color: 3815994,
+                    color: 0x3a3a3a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(50, 0),
                         v2.create(4.4, 4.4),
                     ),
-                    color: 5723991,
+                    color: 0x575757,
                 },
             ],
         },
@@ -15185,19 +15185,19 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(-20, 0), v2.create(100, 6)),
-                color: 6632211,
+                color: 0x653313,
                 roughness: 0.05,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-71, 10), v2.create(2, 9)),
-                color: 6632211,
+                color: 0x653313,
                 roughness: 0,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-57, -10), v2.create(2, 9)),
-                color: 6632211,
+                color: 0x653313,
                 roughness: 0,
                 offsetDist: 1,
             },
@@ -15206,13 +15206,13 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-109, 30),
                     v2.create(6, 6.25),
                 ),
-                color: 3293977,
+                color: 0x324319,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-86, -10), v2.create(2, 9)),
-                color: 6632211,
+                color: 0x653313,
                 roughness: 0,
                 offsetDist: 1,
             },
@@ -15221,7 +15221,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(106, 19.5),
                     v2.create(7, 6.25),
                 ),
-                color: 3293977,
+                color: 0x324319,
                 roughness: 0.05,
                 offsetDist: 0.5,
             },
@@ -15479,25 +15479,25 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(-5, 0), v2.create(70, 6)),
-                color: 9585940,
+                color: 0x924514,
                 roughness: 0.05,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-71, 10), v2.create(2, 9)),
-                color: 9585940,
+                color: 0x924514,
                 roughness: 0.05,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-76, 19), v2.create(10.5, 8)),
-                color: 9585940,
+                color: 0x924514,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(-57, -10), v2.create(2, 9)),
-                color: 9585940,
+                color: 0x924514,
                 roughness: 0.05,
                 offsetDist: 1,
             },
@@ -15506,31 +15506,31 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(-63, -19),
                     v2.create(11.5, 8.5),
                 ),
-                color: 9585940,
+                color: 0x924514,
                 roughness: 0.1,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(14, 10)),
-                color: 8405016,
+                color: 0x804018,
                 roughness: 0.3,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(9, 22)),
-                color: 8405016,
+                color: 0x804018,
                 roughness: 0.3,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(4, 33)),
-                color: 8405016,
+                color: 0x804018,
                 roughness: 0.3,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(61, -3), v2.create(22, 19)),
-                color: 3815994,
+                color: 0x3a3a3a,
                 roughness: 0.15,
                 offsetDist: 1,
             },
@@ -15539,13 +15539,13 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     v2.create(45, -34),
                     v2.create(5.75, 14),
                 ),
-                color: 3815994,
+                color: 0x3a3a3a,
                 roughness: 0.15,
                 offsetDist: 1,
             },
             {
                 bound: collider.createAabbExtents(v2.create(69, -10), v2.create(4, 3.75)),
-                color: 14657367,
+                color: 0xdfa757,
                 roughness: 0.2,
                 offsetDist: 1,
             },
@@ -15772,7 +15772,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     shilo_01: (function <T extends BuildingDef>(e: Partial<T>): T {
         const t = {
             type: "building",
-            map: { display: true, color: 3240224, scale: 1 },
+            map: { display: true, color: 0x317120, scale: 1 },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
                 collider.createAabbExtents(v2.create(0, -1), v2.create(17, 15)),
@@ -15892,31 +15892,31 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 1),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-02.img", 12556639),
+        img: wallImg("map-wall-02.img", 0xbf995f),
     }),
     shack_wall_ext_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-05.img", 12556639),
+        img: wallImg("map-wall-05.img", 0xbf995f),
     }),
     shack_wall_ext_9: createWall({
         material: "wood",
         extents: v2.create(0.5, 4.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-09.img", 12556639),
+        img: wallImg("map-wall-09.img", 0xbf995f),
     }),
     shack_wall_ext_10: createWall({
         material: "wood",
         extents: v2.create(0.5, 5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-10.img", 12556639),
+        img: wallImg("map-wall-10.img", 0xbf995f),
     }),
     shack_wall_ext_14: createWall({
         material: "wood",
         extents: v2.create(0.5, 7),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-14.img", 12556639),
+        img: wallImg("map-wall-14.img", 0xbf995f),
     }),
     shack_03a: createShack3({
         terrain: {
@@ -15944,28 +15944,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-7.75, 3),
                         v2.create(1, 2),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(5, -4.75),
                         v2.create(2, 1),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(1, 1.5),
                         v2.create(8, 5.5),
                     ),
-                    color: 5730406,
+                    color: 0x577066,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-10.65, 9),
                         v2.create(2, 12),
                     ),
-                    color: 6171907,
+                    color: 0x5e2d03,
                 },
             ],
         },
@@ -16028,7 +16028,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0.5, 0.5),
                     scale: 0.667,
                     alpha: 1,
-                    tint: 10461087,
+                    tint: 0x9f9f9f,
                 },
                 {
                     sprite: "map-snow-01.img",
@@ -16108,7 +16108,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-outhouse-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 13735576,
+                    tint: 0xd19698,
                 },
             ],
             destroy: {
@@ -16123,7 +16123,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     perch_01: (function (e) {
         const t = {
             type: "building",
-            map: { display: true, color: 1915136, scale: 1 },
+            map: { display: true, color: 0x1d3900, scale: 1 },
             terrain: { grass: true, beach: false },
             mapObstacleBounds: [
                 collider.createAabbExtents(v2.create(0, 0), v2.create(7, 8)),
@@ -16814,7 +16814,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     panicroom_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -16831,7 +16831,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-panicroom-floor.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -16849,7 +16849,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-panicroom-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -16894,7 +16894,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     barn_basement_stairs_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -16937,7 +16937,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     barn_basement_floor_02: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -16974,7 +16974,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-1.4, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -16989,7 +16989,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     barn_basement_floor_02d: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -17026,7 +17026,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-1.4, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6182731,
+                    tint: 0x5e574b,
                 },
             ],
         },
@@ -17107,61 +17107,61 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 1),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-02-rounded.img", 7173701),
+        img: wallImg("map-wall-02-rounded.img", 0x6d7645),
     }),
     barn_wall_int_2_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 1.25),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-02-5-rounded.img", 7173701),
+        img: wallImg("map-wall-02-5-rounded.img", 0x6d7645),
     }),
     barn_wall_int_4: createWall({
         material: "wood",
         extents: v2.create(0.5, 2),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-04-rounded.img", 7173701),
+        img: wallImg("map-wall-04-rounded.img", 0x6d7645),
     }),
     barn_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-05-rounded.img", 7173701),
+        img: wallImg("map-wall-05-rounded.img", 0x6d7645),
     }),
     barn_wall_int_6: createWall({
         material: "wood",
         extents: v2.create(0.5, 3),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-06-rounded.img", 7173701),
+        img: wallImg("map-wall-06-rounded.img", 0x6d7645),
     }),
     barn_wall_int_7: createWall({
         material: "wood",
         extents: v2.create(0.5, 3.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-07-rounded.img", 7173701),
+        img: wallImg("map-wall-07-rounded.img", 0x6d7645),
     }),
     barn_wall_int_8: createWall({
         material: "wood",
         extents: v2.create(0.5, 4),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-08-rounded.img", 7173701),
+        img: wallImg("map-wall-08-rounded.img", 0x6d7645),
     }),
     barn_wall_int_11: createWall({
         material: "wood",
         extents: v2.create(0.5, 5.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-11-rounded.img", 7173701),
+        img: wallImg("map-wall-11-rounded.img", 0x6d7645),
     }),
     barn_wall_int_13: createWall({
         material: "wood",
         extents: v2.create(0.5, 6.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-13-rounded.img", 7173701),
+        img: wallImg("map-wall-13-rounded.img", 0x6d7645),
     }),
     barn_column_1: createWall({
         material: "concrete",
         extents: v2.create(1, 1),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-column-01.img", 2764060),
+        img: wallImg("map-column-01.img", 0x2a2d1c),
     }),
     barn_01: createBarn({ bonus_door: "house_door_02" }),
     barn_01h: createBarn({
@@ -17226,22 +17226,22 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     bank_wall_int_3: createWall({
         material: "wood",
         extents: v2.create(0.5, 1.5),
-        img: wallImg("map-wall-03-rounded.img", 7951934),
+        img: wallImg("map-wall-03-rounded.img", 0x79563e),
     }),
     bank_wall_int_4: createWall({
         material: "wood",
         extents: v2.create(0.5, 2),
-        img: wallImg("map-wall-04-rounded.img", 7951934),
+        img: wallImg("map-wall-04-rounded.img", 0x79563e),
     }),
     bank_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
-        img: wallImg("map-wall-05-rounded.img", 7951934),
+        img: wallImg("map-wall-05-rounded.img", 0x79563e),
     }),
     bank_wall_int_8: createWall({
         material: "wood",
         extents: v2.create(0.5, 4),
-        img: wallImg("map-wall-08-rounded.img", 7951934),
+        img: wallImg("map-wall-08-rounded.img", 0x79563e),
     }),
     bank_01: createBank({ teamId: 1 }),
     bank_01b: createBank({ vault: "vault_01b" }),
@@ -17331,37 +17331,37 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     police_wall_int_2: createWall({
         material: "wood",
         extents: v2.create(0.5, 1),
-        img: wallImg("map-wall-02-rounded.img", 1777447),
+        img: wallImg("map-wall-02-rounded.img", 0x1b1f27),
     }),
     police_wall_int_3: createWall({
         material: "wood",
         extents: v2.create(0.5, 1.5),
-        img: wallImg("map-wall-03-rounded.img", 1777447),
+        img: wallImg("map-wall-03-rounded.img", 0x1b1f27),
     }),
     police_wall_int_4: createWall({
         material: "wood",
         extents: v2.create(0.5, 2),
-        img: wallImg("map-wall-04-rounded.img", 1777447),
+        img: wallImg("map-wall-04-rounded.img", 0x1b1f27),
     }),
     police_wall_int_6: createWall({
         material: "wood",
         extents: v2.create(0.5, 3),
-        img: wallImg("map-wall-06-rounded.img", 1777447),
+        img: wallImg("map-wall-06-rounded.img", 0x1b1f27),
     }),
     police_wall_int_7: createWall({
         material: "wood",
         extents: v2.create(0.5, 3.5),
-        img: wallImg("map-wall-07-rounded.img", 1777447),
+        img: wallImg("map-wall-07-rounded.img", 0x1b1f27),
     }),
     police_wall_int_8: createWall({
         material: "wood",
         extents: v2.create(0.5, 4),
-        img: wallImg("map-wall-08-rounded.img", 1777447),
+        img: wallImg("map-wall-08-rounded.img", 0x1b1f27),
     }),
     police_wall_int_10: createWall({
         material: "wood",
         extents: v2.create(0.5, 5),
-        img: wallImg("map-wall-10-rounded.img", 1777447),
+        img: wallImg("map-wall-10-rounded.img", 0x1b1f27),
     }),
     police_01: createPoliceStation({ teamId: 2 }),
     police_01x: createPoliceStation({
@@ -17443,43 +17443,43 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 2),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-04-rounded.img", 10584424),
+        img: wallImg("map-wall-04-rounded.img", 0xa18168),
     }),
     house_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-05-rounded.img", 10584424),
+        img: wallImg("map-wall-05-rounded.img", 0xa18168),
     }),
     house_wall_int_8: createWall({
         material: "wood",
         extents: v2.create(0.5, 4),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-08-rounded.img", 10584424),
+        img: wallImg("map-wall-08-rounded.img", 0xa18168),
     }),
     house_wall_int_9: createWall({
         material: "wood",
         extents: v2.create(0.5, 4.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-09-rounded.img", 10584424),
+        img: wallImg("map-wall-09-rounded.img", 0xa18168),
     }),
     house_wall_int_11: createWall({
         material: "wood",
         extents: v2.create(0.5, 5.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-11-rounded.img", 10584424),
+        img: wallImg("map-wall-11-rounded.img", 0xa18168),
     }),
     house_wall_int_14: createWall({
         material: "wood",
         extents: v2.create(0.5, 7),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-14-rounded.img", 10584424),
+        img: wallImg("map-wall-14-rounded.img", 0xa18168),
     }),
     house_column_1: createWall({
         material: "concrete",
         extents: v2.create(1, 1),
         hitParticle: "tanChip",
-        img: wallImg("map-column-01.img", 5587506),
+        img: wallImg("map-column-01.img", 0x554232),
     }),
     house_red_01: createHouseRed({ stand: "stand_01" }),
     house_red_01h: createHouseRed({
@@ -17524,7 +17524,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-house-ceiling.img",
                     scale: 0.667,
                     alpha: 1,
-                    tint: 13619151,
+                    tint: 0xcfcfcf,
                     rot: 2,
                 },
                 {
@@ -17550,19 +17550,19 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-05-rounded.img", 10584424),
+        img: wallImg("map-wall-05-rounded.img", 0xa18168),
     }),
     cabin_wall_int_10: createWall({
         material: "wood",
         extents: v2.create(0.5, 5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-10-rounded.img", 10584424),
+        img: wallImg("map-wall-10-rounded.img", 0xa18168),
     }),
     cabin_wall_int_13: createWall({
         material: "wood",
         extents: v2.create(0.5, 6.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-13-rounded.img", 10584424),
+        img: wallImg("map-wall-13-rounded.img", 0xa18168),
     }),
     cabin_01: createCabin({}),
     cabin_01x: createCabin({
@@ -17631,14 +17631,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(2.5, 0),
                         v2.create(2.4, 10.25),
                     ),
-                    color: 8862486,
+                    color: 0x873b16,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-2.45, 7.75),
                         v2.create(2.6, 2.5),
                     ),
-                    color: 8862486,
+                    color: 0x873b16,
                 },
             ],
         },
@@ -17707,71 +17707,71 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 0.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-01-rounded.img", 16768917),
+        img: wallImg("map-wall-01-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-05-rounded.img", 16768917),
+        img: wallImg("map-wall-05-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_6: createWall({
         material: "wood",
         extents: v2.create(0.5, 3),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-06-rounded.img", 16768917),
+        img: wallImg("map-wall-06-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_7: createWall({
         material: "wood",
         extents: v2.create(0.5, 3.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-07-rounded.img", 16768917),
+        img: wallImg("map-wall-07-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_8: createWall({
         material: "wood",
         extents: v2.create(0.5, 4),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-08-rounded.img", 16768917),
+        img: wallImg("map-wall-08-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_9: createWall({
         material: "wood",
         extents: v2.create(0.5, 4.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-09-rounded.img", 16768917),
+        img: wallImg("map-wall-09-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_10: createWall({
         material: "wood",
         extents: v2.create(0.5, 5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-10-rounded.img", 16768917),
+        img: wallImg("map-wall-10-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_11: createWall({
         material: "wood",
         extents: v2.create(0.5, 5.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-11-rounded.img", 16768917),
+        img: wallImg("map-wall-11-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_12: createWall({
         material: "wood",
         extents: v2.create(0.5, 6),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-12-rounded.img", 16768917),
+        img: wallImg("map-wall-12-rounded.img", 0xffdf95),
     }),
     mansion_wall_int_13: createWall({
         material: "wood",
         extents: v2.create(0.5, 6.5),
         hitParticle: "ltgreenChip",
-        img: wallImg("map-wall-13-rounded.img", 16768917),
+        img: wallImg("map-wall-13-rounded.img", 0xffdf95),
     }),
     mansion_column_1: createWall({
         material: "concrete",
         extents: v2.create(1, 1),
         hitParticle: "tanChip",
-        img: wallImg("map-column-01.img", 7432016),
+        img: wallImg("map-column-01.img", 0x716750),
     }),
     saferoom_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -17788,7 +17788,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-saferoom-floor.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -17803,7 +17803,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-saferoom-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -18008,7 +18008,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "woodPerm",
         extents: v2.create(1, 1),
         hitParticle: "blackChip",
-        img: wallImg("map-column-01.img", 1710618),
+        img: wallImg("map-column-01.img", 0x1a1a1a),
     }),
     saloon_bar_small: createLowWall({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 5)),
@@ -18016,7 +18016,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -18026,7 +18026,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -18155,28 +18155,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 0),
                         v2.create(20.5, 20.5),
                     ),
-                    color: 5252110,
+                    color: 0x50240e,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-1, 1),
                         v2.create(19, 19),
                     ),
-                    color: 4337194,
+                    color: 0x422e2a,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-3, 3),
                         v2.create(17, 17),
                     ),
-                    color: 2499104,
+                    color: 0x262220,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(-23.5, 1),
                         v2.create(3, 2),
                     ),
-                    color: 3485483,
+                    color: 0x352f2b,
                 },
             ],
         },
@@ -18692,7 +18692,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     saloon_cellar_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -18726,7 +18726,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-2, 3.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 7, width: 3 },
@@ -18880,52 +18880,52 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 1.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-03.img", 5505024, 0.95),
+        img: wallImg("map-wall-03.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_4: createWall({
         material: "wood",
         extents: v2.create(0.5, 2),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-04.img", 5505024, 0.95),
+        img: wallImg("map-wall-04.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_5: createWall({
         material: "wood",
         extents: v2.create(0.5, 2.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-05.img", 5505024, 0.95),
+        img: wallImg("map-wall-05.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_7: createWall({
         material: "wood",
         extents: v2.create(0.5, 3.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-07.img", 5505024, 0.95),
+        img: wallImg("map-wall-07.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_12: createWall({
         material: "wood",
         extents: v2.create(0.5, 6),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-12.img", 5505024, 0.95),
+        img: wallImg("map-wall-12.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_13: createWall({
         material: "wood",
         extents: v2.create(0.5, 6.5),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-13.img", 5505024, 0.95),
+        img: wallImg("map-wall-13.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_14: createWall({
         material: "wood",
         extents: v2.create(0.5, 7),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-14.img", 5505024, 0.95),
+        img: wallImg("map-wall-14.img", 0x540000, 0.95),
     }),
     teahouse_wall_int_18: createWall({
         material: "wood",
         extents: v2.create(0.5, 9),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-18.img", 5505024, 0.95),
+        img: wallImg("map-wall-18.img", 0x540000, 0.95),
     }),
     teahouse_door_01: createLabDoor({
-        img: { tint: 14537141, alpha: 0.95 },
+        img: { tint: 0xddd1b5, alpha: 0.95 },
         door: {
             interactionRad: 2,
             openOneWay: 0,
@@ -18945,12 +18945,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(-2, 0),
                 scale: 0.5,
                 alpha: 1,
-                tint: 3211264,
+                tint: 0x310000,
             },
         },
     } as unknown as Partial<ObstacleDef>),
     teahouse_window_open_01: createLowWall({
-        img: { tint: 12216619 },
+        img: { tint: 0xba692b },
     }),
     teahouse_01: (function (e) {
         const t = {
@@ -18963,28 +18963,28 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                             v2.create(0, 0),
                             v2.create(14, 9),
                         ),
-                        color: 4608356,
+                        color: 0x465164,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(0, 0),
                             v2.create(7.5, 3.75),
                         ),
-                        color: 5793921,
+                        color: 0x586881,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(9, -10.15),
                             v2.create(2, 1.5),
                         ),
-                        color: 7354635,
+                        color: 0x70390b,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-9, 10.15),
                             v2.create(2, 1.5),
                         ),
-                        color: 7354635,
+                        color: 0x70390b,
                     },
                 ],
             },
@@ -19158,7 +19158,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     teahouse_complex_01s: createTeaHouseComplex({}),
     teahouse_complex_01su: createTeaHouseComplex({
-        grass_color: 6460706,
+        grass_color: 0x629522,
         tree_small: "tree_08su",
         tree_large: "tree_08su",
     }),
@@ -19173,7 +19173,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             mapGroundPatches: [
                 {
                     bound: collider.createAabbExtents(v2.create(8, 15), v2.create(5, 4)),
-                    color: 13084454,
+                    color: 0xc7a726,
                     roughness: 0.1,
                     offsetDist: 0.5,
                 },
@@ -19182,25 +19182,25 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-6, -12),
                         v2.create(7, 3),
                     ),
-                    color: 13084454,
+                    color: 0xc7a726,
                     roughness: 0.1,
                     offsetDist: 0.5,
                 },
                 {
                     bound: collider.createAabbExtents(v2.create(-18, 8), v2.create(3, 4)),
-                    color: 13084454,
+                    color: 0xc7a726,
                     roughness: 0.1,
                     offsetDist: 0.5,
                 },
                 {
                     bound: collider.createAabbExtents(v2.create(16, -8), v2.create(3, 6)),
-                    color: 13084454,
+                    color: 0xc7a726,
                     roughness: 0.1,
                     offsetDist: 0.5,
                 },
                 {
                     bound: collider.createAabbExtents(v2.create(0, 0), v2.create(16, 12)),
-                    color: e.grass_color || 16762368,
+                    color: e.grass_color || 0xffc600,
                     roughness: 0.1,
                     offsetDist: 0.5,
                 },
@@ -19257,7 +19257,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         };
         return util.mergeDeep(t, e || {});
     })({
-        grass_color: 15451700,
+        grass_color: 0xebc634,
         terrain: { grass: true, beach: false, spawnPriority: 1 },
     }),
     kopje_patch_01: (function <T extends BuildingDef>(e: Partial<T>): T {
@@ -19271,13 +19271,13 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             mapGroundPatches: [
                 {
                     bound: collider.createAabbExtents(v2.create(0, 0), v2.create(40, 30)),
-                    color: e.grass_color || 16762368,
+                    color: e.grass_color || 0xffc600,
                     roughness: 0.2,
                     offsetDist: 3,
                 },
                 {
                     bound: collider.createAabbExtents(v2.create(0, 0), v2.create(16, 12)),
-                    color: 5862162,
+                    color: 0x597312,
                     roughness: 0.2,
                     offsetDist: 1,
                 },
@@ -19444,7 +19444,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         };
         return util.mergeDeep(t, e || {});
     })({
-        grass_color: 8035865,
+        grass_color: 0x7a9e19,
         terrain: { grass: true, beach: false, spawnPriority: 2 },
     }),
     kopje_brush_01: {
@@ -19546,7 +19546,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tint: 0xffffff,
             zIdx: 10,
         },
-        map: { display: true, color: 7282176, scale: 1 },
+        map: { display: true, color: 0x6f1e00, scale: 1 },
         health: 300,
     }),
     grassy_wall_8: createWall({
@@ -19562,7 +19562,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             tint: 0xffffff,
             zIdx: 10,
         },
-        map: { display: true, color: 7282176, scale: 1 },
+        map: { display: true, color: 0x6f1e00, scale: 1 },
         health: 300,
     }),
     grassy_cover_01: createGrassyCover({
@@ -20242,7 +20242,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         mapGroundPatches: [
             {
                 bound: collider.createAabbExtents(v2.create(0, 0), v2.create(12.5, 12.5)),
-                color: 6066442,
+                color: 0x5c910a,
                 roughness: 0.1,
                 offsetDist: 0.25,
             },
@@ -20296,13 +20296,13 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         material: "wood",
         extents: v2.create(0.5, 3),
         hitParticle: "tanChip",
-        img: wallImg("map-wall-06-rounded.img", 10584424),
+        img: wallImg("map-wall-06-rounded.img", 0xa18168),
     }),
     club_wall_int_10: createWall({
         material: "wood",
         extents: v2.create(0.5, 5),
         hitParticle: "redChip",
-        img: wallImg("map-wall-10-rounded.img", 7218988),
+        img: wallImg("map-wall-10-rounded.img", 0x6e272c),
     }),
     club_bar_small: createLowWall({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.5, 4.5)),
@@ -20310,7 +20310,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -20320,7 +20320,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -20358,22 +20358,22 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(-2, 0),
                 scale: 0.5,
                 alpha: 1,
-                tint: 1316379,
+                tint: 0x14161b,
             },
         },
-        img: { tint: 5373952 },
+        img: { tint: 0x520000 },
     } as unknown as Partial<ObstacleDef>),
     bathhouse_column_1: createWall({
         material: "concrete",
         extents: v2.create(2, 2),
         hitParticle: "whiteChip",
-        img: wallImg("map-bathhouse-column-01.img", 13481337),
+        img: wallImg("map-bathhouse-column-01.img", 0xcdb579),
     }),
     bathhouse_column_2: createWall({
         material: "concrete",
         extents: v2.create(1, 1),
         hitParticle: "whiteChip",
-        img: wallImg("map-bathhouse-column-02.img", 13481337),
+        img: wallImg("map-bathhouse-column-02.img", 0xcdb579),
     }),
     bathhouse_rocks_01: createControlPanel({
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.55, 1.55)),
@@ -20404,10 +20404,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 pos: v2.create(-2, 0),
                 scale: 0.5,
                 alpha: 1,
-                tint: 1316379,
+                tint: 0x14161b,
             },
         },
-        img: { tint: 4934475 },
+        img: { tint: 0x4b4b4b },
     } as unknown as Partial<ObstacleDef>),
     club_01: (function (e) {
         const t = {
@@ -20420,63 +20420,63 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                             v2.create(-29.25, -8.5),
                             v2.create(3.25, 2.5),
                         ),
-                        color: 13022098,
+                        color: 0xc6b392,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-4, -8.5),
                             v2.create(22, 13.25),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(6, 18),
                             v2.create(12, 8.25),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(16, 16.5),
                             v2.create(2, 6.5),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(6.5, 7),
                             v2.create(2.5, 3),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(23.5, -7.5),
                             v2.create(5.75, 7),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(1.5, -24.5),
                             v2.create(8, 3.5),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-1.5, 30.75),
                             v2.create(4.5, 4.5),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-21.5, 7),
                             v2.create(2.5, 3),
                         ),
-                        color: 5900046,
+                        color: 0x5a070e,
                     },
                 ],
             },
@@ -20488,7 +20488,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-13.5, 11.5),
                         v2.create(16, 24.5),
                     ),
-                    color: 9340275,
+                    color: 0x8e8573,
                     order: 1,
                 },
                 {
@@ -20496,12 +20496,12 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-13.5, 11.5),
                         v2.create(15, 23.5),
                     ),
-                    color: 5855577,
+                    color: 0x595959,
                     order: 1,
                 },
                 {
                     bound: collider.createAabbExtents(v2.create(1.5, 7), v2.create(3, 3)),
-                    color: 5855577,
+                    color: 0x595959,
                     order: 1,
                 },
                 {
@@ -20509,7 +20509,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-12, 14.5),
                         v2.create(7.5, 0.25),
                     ),
-                    color: 14145495,
+                    color: 0xd7d7d7,
                     order: 1,
                     useAsMapShape: false,
                 },
@@ -20518,7 +20518,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-12, 21.5),
                         v2.create(7.5, 0.25),
                     ),
-                    color: 14145495,
+                    color: 0xd7d7d7,
                     order: 1,
                     useAsMapShape: false,
                 },
@@ -20527,7 +20527,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(-12, 28.5),
                         v2.create(7.5, 0.25),
                     ),
-                    color: 14145495,
+                    color: 0xd7d7d7,
                     order: 1,
                     useAsMapShape: false,
                 },
@@ -20536,7 +20536,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(15, 5),
                         v2.create(20, 30),
                     ),
-                    color: 7551e3,
+                    color: 0x733818,
                     roughness: 0.05,
                     offsetDist: 0.5,
                 },
@@ -22173,7 +22173,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         sprite: "map-building-bathhouse-sideroom-ceiling-02.img",
                         scale: 1,
                         alpha: 1,
-                        tint: 4931116,
+                        tint: 0x4b3e2c,
                     },
                 ],
             },
@@ -22305,10 +22305,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             enter: "none",
         },
     }),
-    club_window_broken_01: createLowWall({ img: { tint: 7886127 } }),
+    club_window_broken_01: createLowWall({ img: { tint: 0x78552f } }),
     club_vault: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -22325,7 +22325,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -22340,7 +22340,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-club-vault-ceiling.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -22447,7 +22447,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_egg_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -22548,7 +22548,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_egg_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -22668,7 +22668,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_egg_sublevel_02: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -22788,7 +22788,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_egg_sublevel_01sv: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -23003,14 +23003,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(20.25, 3.5),
                         v2.create(6.25, 5.5),
                     ),
-                    color: 2894892,
+                    color: 0x2c2c2c,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(32.25, 3.5),
                         v2.create(6.75, 9.25),
                     ),
-                    color: 3815994,
+                    color: 0x3a3a3a,
                 },
             ],
         },
@@ -23321,7 +23321,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hydra_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -23404,21 +23404,21 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(7, 2),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
                 {
                     sprite: "map-bunker-hydra-chamber-ceiling-02.img",
                     pos: v2.create(-13.5, -76.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
                 {
                     sprite: "map-bunker-hydra-chamber-ceiling-03.img",
                     pos: v2.create(38, -62),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 10, width: 3 },
@@ -23694,7 +23694,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hydra_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -23733,7 +23733,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 1.25),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -23836,7 +23836,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     bunker_hydra_compartment_02: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -23879,7 +23879,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 1),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -24124,7 +24124,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hydra_compartment_03: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -24161,7 +24161,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 1),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -24280,7 +24280,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 10),
                         v2.create(3.6, 5.8),
                     ),
-                    color: 6707790,
+                    color: 0x665a4e,
                 },
             ],
         },
@@ -24447,7 +24447,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_storm_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -24701,14 +24701,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(20, 3.35),
                         v2.create(5.5, 2.5),
                     ),
-                    color: 2703694,
+                    color: 0x29414e,
                 },
                 {
                     collider: collider.createAabbExtents(
                         v2.create(46.5, -32.55),
                         v2.create(5.5, 2.5),
                     ),
-                    color: 2703694,
+                    color: 0x29414e,
                 },
             ],
         },
@@ -24869,7 +24869,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_conch_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -24923,14 +24923,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-2, 3.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
                 {
                     sprite: "map-bunker-conch-chamber-ceiling-02.img",
                     pos: v2.create(26.25, -29.9),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 7, width: 3 },
@@ -25081,7 +25081,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_conch_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -25134,7 +25134,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.75, -5.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 7, width: 3 },
@@ -25428,7 +25428,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_crossing_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -25540,14 +25540,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-3.5, 24),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
                 {
                     sprite: "map-bunker-crossing-chamber-ceiling-01.img",
                     pos: v2.create(3.5, -18),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                     rot: 2,
                 },
             ],
@@ -25762,7 +25762,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_crossing_bathroom: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -25779,7 +25779,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -25797,7 +25797,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-building-crossing-bathroom-ceiling.img",
                     scale: 0.5,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -25812,7 +25812,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_crossing_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -25862,14 +25862,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-22.475, -11),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
                 {
                     sprite: "map-bunker-crossing-compartment-ceiling-01b.img",
                     pos: v2.create(3.975, 3),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 7, width: 3 },
@@ -26209,7 +26209,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 10),
                         v2.create(3.6, 5.8),
                     ),
-                    color: 6707790,
+                    color: 0x665a4e,
                 },
             ],
         },
@@ -26364,7 +26364,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hatchet_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 1,
         floor: {
@@ -26415,7 +26415,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-3, -4.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 5, width: 3 },
@@ -26528,7 +26528,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hatchet_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -26565,7 +26565,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -26689,7 +26689,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hatchet_compartment_02: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -26747,7 +26747,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(-0.5, -0.5),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -26921,7 +26921,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_hatchet_compartment_03: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -26979,7 +26979,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -27096,7 +27096,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 7.5),
                         v2.create(2, 3.25),
                     ),
-                    color: 6946816,
+                    color: 0x6a0000,
                 },
             ],
         },
@@ -27211,7 +27211,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     bunker_eye_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -27255,7 +27255,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, -12),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
             vision: { dist: 5, width: 3 },
@@ -27473,7 +27473,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_eye_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -27510,7 +27510,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -27590,7 +27590,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                         v2.create(0, 1),
                         v2.create(2, 3.25),
                     ),
-                    color: 10244368,
+                    color: 0x9c5110,
                 },
             ],
         },
@@ -27617,7 +27617,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     bunker_twins_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -27676,7 +27676,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     bunker_twins_sublevel_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 0,
         floor: {
@@ -27713,7 +27713,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     sprite: "map-bunker-twins-chamber-ceiling-01.img",
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                 },
             ],
         },
@@ -27956,7 +27956,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     },
     bunker_twins_compartment_01: {
         type: "building",
-        map: { display: false, color: 6707790, scale: 1 },
+        map: { display: false, color: 0x665a4e, scale: 1 },
         terrain: { grass: true, beach: false },
         zIdx: 2,
         floor: {
@@ -27978,7 +27978,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                     pos: v2.create(0, 0),
                     scale: 1,
                     alpha: 1,
-                    tint: 6250335,
+                    tint: 0x5f5f5f,
                     rot: 0,
                     mirrorX: true,
                 },
@@ -28055,7 +28055,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -28065,7 +28065,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -28199,7 +28199,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -28214,35 +28214,35 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                             v2.create(0, 0),
                             v2.create(38.5, 12),
                         ),
-                        color: 2894124,
+                        color: 0x2c292c,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-16, -13),
                             v2.create(3, 1.5),
                         ),
-                        color: 3618615,
+                        color: 0x373737,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(16, -13),
                             v2.create(3, 1.5),
                         ),
-                        color: 3618615,
+                        color: 0x373737,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(-16, 13),
                             v2.create(3, 1.5),
                         ),
-                        color: 3618615,
+                        color: 0x373737,
                     },
                     {
                         collider: collider.createAabbExtents(
                             v2.create(16, 13),
                             v2.create(3, 1.5),
                         ),
-                        color: 3618615,
+                        color: 0x373737,
                     },
                 ],
             },
@@ -28557,7 +28557,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -28567,7 +28567,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "",
             scale: 0.5,
             alpha: 1,
-            tint: 4456448,
+            tint: 0x440000,
             zIdx: 10,
         },
     }),
@@ -28743,33 +28743,33 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     container_01: createContainer({
         open: false,
-        tint: 2703694,
+        tint: 0x29414e,
         ceilingSprite: "map-building-container-ceiling-01.img",
     }),
     container_02: createContainer({
         open: false,
-        tint: 2703694,
+        tint: 0x29414e,
         ceilingSprite: "map-building-container-ceiling-02.img",
     }),
     container_03: createContainer({
         open: false,
-        tint: 2703694,
+        tint: 0x29414e,
         ceilingSprite: "map-building-container-ceiling-03.img",
     }),
     container_04: createContainer({
         open: true,
-        tint: 3560807,
+        tint: 0x365567,
         ceilingSprite: "map-building-container-open-ceiling-01.img",
     }),
     container_01x: createContainer({
         open: false,
-        tint: 2703694,
+        tint: 0x29414e,
         ceilingImgs: [
             {
                 sprite: "map-building-container-ceiling-01.img",
                 scale: 0.5,
                 alpha: 1,
-                tint: 2703694,
+                tint: 0x29414e,
             },
             {
                 sprite: "map-snow-05.img",
@@ -28783,7 +28783,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     container_06: createContainer({
         open: false,
-        tint: 12227840,
+        tint: 0xba9500,
         ceilingSprite: "map-building-container-ceiling-01.img",
         loot_spawner_01: "loot_tier_sv98",
         loot_spawner_02: "loot_tier_scopes_sniper",
@@ -29000,7 +29000,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-barrel-res-01.img",
             scale: 0.12,
             alpha: 0.8,
-            tint: 2105376,
+            tint: 0x202020,
             zIdx: 11,
         },
     },
@@ -29013,7 +29013,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-barrel-res-01.img",
             scale: 0.1,
             alpha: 0.8,
-            tint: 3150346,
+            tint: 0x30120a,
             zIdx: 11,
         },
     },
@@ -29212,7 +29212,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-light-01.img",
             scale: 1,
             alpha: 0.5,
-            tint: 16751616,
+            tint: 0xff9c00,
             zIdx: 60,
             flicker: true,
             flickerMin: 0.9,
@@ -29230,7 +29230,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-light-01.img",
             scale: 0.75,
             alpha: 0.5,
-            tint: 16760397,
+            tint: 0xffbe4d,
             zIdx: 60,
             flicker: true,
             flickerMin: 0.8,
@@ -29248,7 +29248,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-light-01.img",
             scale: 0.75,
             alpha: 0.5,
-            tint: 8585216,
+            tint: 0x830000,
             zIdx: 60,
             flicker: true,
             flickerMin: 0.8,
@@ -29266,7 +29266,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-light-01.img",
             scale: 0.75,
             alpha: 0.5,
-            tint: 16734244,
+            tint: 0xff5824,
             zIdx: 60,
             flicker: true,
             flickerMin: 0.5,
@@ -29283,7 +29283,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "part-splat-01.img",
             scale: 0.25,
             alpha: 0.95,
-            tint: 4001294,
+            tint: 0x3d0e0e,
             zIdx: 0,
         },
     },
@@ -29295,7 +29295,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "part-splat-02.img",
             scale: 0.25,
             alpha: 0.95,
-            tint: 4001294,
+            tint: 0x3d0e0e,
             zIdx: 0,
         },
     },
@@ -29307,7 +29307,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "part-splat-03.img",
             scale: 0.25,
             alpha: 0.95,
-            tint: 4001294,
+            tint: 0x3d0e0e,
             zIdx: 0,
         },
     },
@@ -29402,23 +29402,23 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         surface: {
             type: "water",
             data: {
-                waterColor: 5157572,
-                rippleColor: 10478319,
+                waterColor: 0x4eb2c4,
+                rippleColor: 0x9fe2ef,
             },
         },
         img: {
             sprite: "map-bathhouse-pool-01.img",
             scale: 8,
             alpha: 0.5,
-            tint: 52721,
+            tint: 0xcdf1,
             zIdx: 5,
         },
         gore: {
             fade: { start: 0, end: 4, pow: 0.5, speed: 2 },
-            tint: 7667727,
+            tint: 0x75000f,
             alpha: 0.85,
-            waterColor: 8529201,
-            rippleColor: 11490399,
+            waterColor: 0x822531,
+            rippleColor: 0xaf545f,
         },
     },
     decal_club_01: {
@@ -29462,7 +29462,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "part-plank-01.img",
             scale: 0.5,
             alpha: 1,
-            tint: 4327436,
+            tint: 0x42080c,
             zIdx: 9,
         },
     },

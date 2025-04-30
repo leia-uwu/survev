@@ -442,7 +442,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             lerp: new Range(0.75, 1),
         },
         color: function () {
-            return util.rgbToInt(util.hsvToRgb(16711680, 1, util.random(0.45, 0.8)));
+            return util.rgbToInt(util.hsvToRgb(0xff0000, 1, util.random(0.45, 0.8)));
         },
     },
     barrelPlank: {
@@ -574,7 +574,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1),
         },
-        color: 7878664,
+        color: 0x783808,
     },
     bottleBrownBreak: {
         image: ["part-spark-02.img"],
@@ -591,7 +591,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1),
         },
-        color: 7878664,
+        color: 0x783808,
     },
     bottleBlueChip: {
         image: ["part-spark-02.img"],
@@ -608,7 +608,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1),
         },
-        color: 19544,
+        color: 0x4c58,
     },
     bottleWhiteBreak: {
         image: ["part-spark-02.img"],
@@ -659,7 +659,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1),
         },
-        color: 19544,
+        color: 0x4c58,
     },
     brickChip: {
         image: ["part-spark-02.img"],
@@ -771,7 +771,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1),
         },
-        color: 8444415,
+        color: 0x80d9ff,
     },
     glassPlank: {
         image: ["part-plank-01.img"],
@@ -788,7 +788,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1),
         },
-        color: 8444415,
+        color: 0x80d9ff,
     },
     goldChip: {
         image: ["part-spark-02.img"],
@@ -900,7 +900,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1),
         },
-        color: 3884335,
+        color: 0x3b452f,
     },
     greenhouseBreak: {
         image: ["part-spark-02.img", "part-plate-01.img", "part-panel-01.img"],
@@ -917,7 +917,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1),
         },
-        color: 8444415,
+        color: 0x80d9ff,
     },
     hutBreak: {
         image: ["part-panel-01.img"],
@@ -1352,7 +1352,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.95, 1),
         },
-        color: 2696225,
+        color: 0x292421,
     },
     rockEyeBreak: {
         image: ["map-stone-01.img"],
@@ -1369,7 +1369,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1),
         },
-        color: 2696225,
+        color: 0x292421,
     },
     shackBreak: {
         image: ["part-panel-01.img"],
@@ -1405,7 +1405,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.9, 1),
         },
-        color: 5730406,
+        color: 0x577066,
     },
     tanChip: {
         image: ["part-woodchip-01.img"],
@@ -1874,7 +1874,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.5, 1),
         },
-        color: 16767488,
+        color: 0xffda00,
     },
     fragPin: {
         image: ["part-frag-pin-01.img"],
@@ -2037,7 +2037,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1),
         },
-        color: 11363866,
+        color: 0xad661a,
     },
     explosionPotatoSMG: {
         image: ["part-frag-burst-01.img"],
@@ -2054,7 +2054,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             end: 0,
             lerp: new Range(0.75, 1),
         },
-        color: 12888074,
+        color: 0xc4a80a,
     },
     airdropSmoke: {
         image: ["part-smoke-02.img", "part-smoke-03.img"],
@@ -2396,7 +2396,7 @@ const ParticleDefs: Record<string, ParticleDef> = {
             start: 1,
             exp: -1,
         },
-        color: 11792639,
+        color: 0xb3f0ff,
     },
     leafAutumn: {
         image: [

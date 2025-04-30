@@ -95,7 +95,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-frag.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -163,7 +163,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-mirv.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -231,7 +231,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-frag.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -273,7 +273,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-frag.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -313,7 +313,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-smoke.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -380,7 +380,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-strobe.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -451,7 +451,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-snowball.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -516,7 +516,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-snowball.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -562,7 +562,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-potato.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -628,7 +628,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-potato.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -673,7 +673,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-potato.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -695,7 +695,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             maxLength: 25,
             width: 2.8,
             alpha: 1,
-            tint: 5916214,
+            tint: 0x5a4636,
         },
     },
     potato_smgshot: {
@@ -724,7 +724,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-potato.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
@@ -746,7 +746,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
             maxLength: 40,
             width: 2.8,
             alpha: 1,
-            tint: 5920310,
+            tint: 0x5a5636,
         },
     },
     bomb_iron: {
@@ -773,7 +773,7 @@ export const ThrowableDefs: Record<string, ThrowableDef> = {
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-throwable-frag.img",
-            tint: 65280,
+            tint: 0xff00,
             border: "loot-circle-outer-01.img",
             borderTint: 0,
             scale: 0.2,
