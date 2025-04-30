@@ -317,10 +317,10 @@ export interface ConfigType {
     rateLimitsEnabled: boolean;
 
     /**
-     * If default player name should be randomized instead of "Player".
+     * If in-game names should be unique.
      * Useful for banning players.
      */
-    randomizeDefaultPlayerName: boolean;
+    uniqueInGameNames: boolean;
 
     /**
      * Debugging config for development :)
