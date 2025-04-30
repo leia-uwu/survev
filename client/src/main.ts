@@ -649,7 +649,7 @@ class Application {
             const retry = () => {
                 setTimeout(() => {
                     helpers.verifyTurnstile(
-                        this.siteInfo.info.captchaEnabled,
+                        this.siteInfo.info.captchaEnabled && !this.account.loggedIn,
                         (token) => {
                             findGameImpl(iter + 1, maxAttempts, token);
                         },
@@ -664,13 +664,21 @@ class Application {
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
-                success: function (data: FindGameResponse) {
-                    if ("error" in data && data.error != "full") {
+                success: (data: FindGameResponse) => {
+                    if (data.error === "invalid_captcha") {
+                        // captch may have failed because the enabled state has changed since site info was loaded
+                        // so force it to true
+                        this.siteInfo.info.captchaEnabled = true;
+                        retry();
+                        return;
+                    }
+
+                    if (data.error && data.error != "full") {
                         cb(data.error);
                         return;
                     }
 
-                    if ("banned" in data) {
+                    if (data.banned) {
                         cb(null, undefined, data as FindGameResponse & { banned: true });
                         return;
                     }
@@ -687,9 +695,12 @@ class Application {
                 },
             });
         };
-        helpers.verifyTurnstile(this.siteInfo.info.captchaEnabled, (token) => {
-            findGameImpl(0, 2, token);
-        });
+        helpers.verifyTurnstile(
+            this.siteInfo.info.captchaEnabled && !this.account.loggedIn,
+            (token) => {
+                findGameImpl(0, 2, token);
+            },
+        );
     }
 
     joinGame(matchData: FindGameMatchData) {

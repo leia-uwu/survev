@@ -368,7 +368,7 @@ export class TeamMenu {
                 zones,
             };
 
-            helpers.verifyTurnstile(this.siteInfo.info.captchaEnabled, (token) => {
+            helpers.verifyTurnstile(this.roomData.captchaEnabled, (token) => {
                 matchArgs.turnstileToken = token;
                 this.sendMessage("playGame", matchArgs);
             });

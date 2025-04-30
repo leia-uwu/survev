@@ -107,6 +107,7 @@ class Room {
         enabledGameModeIdxs: [],
         gameModeIdx: 1,
         maxPlayers: 4,
+        captchaEnabled: false,
     };
 
     constructor(
@@ -116,6 +117,7 @@ class Room {
     ) {
         this.data.roomUrl = `#${id}`;
         this.data.enabledGameModeIdxs = teamMenu.allowedGameModeIdxs();
+        this.data.captchaEnabled = teamMenu.server.captchaEnabled;
 
         this.setProps(initialData);
     }
@@ -256,7 +258,7 @@ class Room {
             return;
         }
 
-        if (this.teamMenu.server.captchaEnabled) {
+        if (this.data.captchaEnabled) {
             if (!data.turnstileToken) {
                 this.data.lastError = "find_game_invalid_captcha";
                 this.sendState();
@@ -330,7 +332,9 @@ class Room {
 
     sendState() {
         const players = this.players.map((p) => p.data);
-
+        // all players must be logged in to disable it
+        this.data.captchaEnabled =
+            this.teamMenu.server.captchaEnabled && !this.players.every((p) => !!p.userId);
         for (const player of this.players) {
             player.send("state", {
                 localPlayerId: player.playerId,
