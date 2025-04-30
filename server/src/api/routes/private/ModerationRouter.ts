@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { and, desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { Config } from "../../../config";
@@ -176,7 +176,10 @@ export const ModerationRouter = new Hono()
 
             if (banAssociatedAccount) {
                 const user = await db.query.ipLogsTable.findFirst({
-                    where: eq(ipLogsTable.encodedIp, encodedIp),
+                    where: and(
+                        eq(ipLogsTable.encodedIp, encodedIp),
+                        ne(ipLogsTable.userId, ""),
+                    ),
                     columns: {
                         userId: true,
                     },
