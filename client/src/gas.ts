@@ -148,7 +148,7 @@ export class GasSafeZoneRenderer {
                 const isSafe = v2.length(v2.sub(playerPos, safePos)) < safeRad;
                 const alpha = isSafe ? 0.5 : 1;
                 this.lineGfx.clear();
-                this.lineGfx.lineStyle(2, 65280, alpha);
+                this.lineGfx.lineStyle(2, 0xff00, alpha);
                 this.lineGfx.moveTo(playerPos.x, playerPos.y);
                 this.lineGfx.lineTo(safePos.x, safePos.y);
             }

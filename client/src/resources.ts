@@ -123,8 +123,7 @@ export class ResourceManager {
         public config: ConfigManager,
     ) {
         this.textureRes = selectTextureRes(this.renderer, this.config);
-        // @ts-expect-error private field L
-        renderer.prepare.limiter.maxItemsPerFrame = 1;
+        PIXI.BasePrepare.uploadsPerFrame = 1;
     }
 
     isAtlasLoaded(name: Atlas) {

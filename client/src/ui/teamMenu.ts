@@ -131,7 +131,7 @@ export class TeamMenu {
                     },
                 },
             );
-            let codeToCopy = $("#team-url").html();
+            let codeToCopy = $("#team-url").text();
             // if running on an iframe
             if (window !== window.top) {
                 codeToCopy = this.roomData.roomUrl.substring(1);
@@ -467,11 +467,14 @@ export class TeamMenu {
 
             // Invite link
             if (this.roomData.roomUrl) {
-                const roomUrl = `${window.location.href.replace(window.location.hash, "")}${this.roomData.roomUrl}`;
+                const roomUrl = new URL(window.location.href);
+                roomUrl.search = ""; // removes ?t=423904234 that is set when the client receives an invalid protocol error
+                roomUrl.hash = this.roomData.roomUrl;
+
                 const roomCode = this.roomData.roomUrl.substring(1);
 
-                $("#team-url").html(roomUrl);
-                $("#team-code").html(roomCode);
+                $("#team-url").text(roomUrl.toString());
+                $("#team-code").text(roomCode);
 
                 if (window.history) {
                     window.history.replaceState("", "", this.roomData.roomUrl);

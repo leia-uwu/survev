@@ -114,7 +114,7 @@ const BaseDefs: Record<string, MeleeDef> = {
             sprite: "loot-weapon-fists.img",
             scale: 0.3,
             rad: 25,
-            tint: 65280,
+            tint: 0xff00,
         },
     },
     knuckles: {

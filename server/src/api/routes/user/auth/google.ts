@@ -22,13 +22,11 @@ GoogleRouter.use(async (c, next) => {
     await next();
 });
 
-GoogleRouter.get("/", async (c) => {
+GoogleRouter.get("/", (c) => {
     const state = generateState();
     const codeVerifier = generateCodeVerifier();
 
-    const url = await google.createAuthorizationURL(state, codeVerifier, {
-        scopes: ["openid", "email"],
-    });
+    const url = google.createAuthorizationURL(state, codeVerifier, ["openid", "email"]);
 
     setCookie(c, stateCookieName, state, {
         secure: process.env.NODE_ENV === "production",
@@ -63,7 +61,7 @@ GoogleRouter.get("/callback", async (c) => {
     const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
     const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
         headers: {
-            Authorization: `Bearer ${tokens.accessToken}`,
+            Authorization: `Bearer ${tokens.accessToken()}`,
         },
     });
 

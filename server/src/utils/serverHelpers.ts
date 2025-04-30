@@ -125,11 +125,7 @@ export function validateUserName(name: string): {
     originalWasInvalid: boolean;
     validName: string;
 } {
-    const randomNumber = Math.random().toString(10).slice(2, 6);
-
-    const defaultName = Config.randomizeDefaultPlayerName
-        ? `Player#${randomNumber}`
-        : "Player";
+    const defaultName = "Player";
 
     if (!name || typeof name !== "string")
         return {
