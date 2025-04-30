@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { desc, eq, lt } from "drizzle-orm";
+import { and, desc, eq, lt } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { Config } from "../../../config";
@@ -223,10 +223,11 @@ export const ModerationRouter = new Hono()
             z.object({
                 name: z.string(),
                 useAccountSlug: z.boolean().default(false),
+                gameId: z.string().optional(),
             }),
         ),
         async (c) => {
-            const { name, useAccountSlug } = c.req.valid("json");
+            const { name, useAccountSlug, gameId } = c.req.valid("json");
 
             let userId: string | null = null;
 
@@ -258,9 +259,12 @@ export const ModerationRouter = new Hono()
                 })
                 .from(ipLogsTable)
                 .where(
-                    userId
-                        ? eq(ipLogsTable.userId, userId)
-                        : eq(ipLogsTable.username, name),
+                    and(
+                        userId
+                            ? eq(ipLogsTable.userId, userId)
+                            : eq(ipLogsTable.username, name),
+                        gameId ? eq(ipLogsTable.gameId, gameId) : undefined,
+                    ),
                 )
                 .orderBy(desc(ipLogsTable.createdAt))
                 .limit(10);
