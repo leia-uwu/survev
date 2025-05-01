@@ -88,6 +88,7 @@ const mapDef: PartialMapDef = {
             },
             { name: "groza", count: 1, weight: 0.8 },
             { name: "scout_elite", count: 1, weight: 0.05 },
+            { name: "mkg45", count: 1, weight: 0.1 },
         ],
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
@@ -103,11 +104,12 @@ const mapDef: PartialMapDef = {
             { name: "scout_elite", count: 1, weight: 1.5 },
             { name: "model94", count: 1, weight: 2 },
             { name: "colt45", count: 1, weight: 1 },
+            { name: "mkg45", count: 1, weight: 2.5 }, // !
         ],
         tier_airdrop_rare: [
             { name: "garand", count: 1, weight: 6 },
             { name: "awc", count: 1, weight: 3 },
-            { name: "pkp", count: 1, weight: 3 },
+            { name: "pkp", count: 1, weight: 0.08 },
             { name: "m249", count: 1, weight: 0.1 },
             { name: "m4a1", count: 1, weight: 4 },
             { name: "ots38_dual", count: 1, weight: 4.5 },
