@@ -4,7 +4,7 @@
    height="32"
    version="1.1"
    id="svg4"
-   sodipodi:docname="gun-qbb97-bot-02.svg"
+   sodipodi:docname="gun-qbb97-bot-01.svg"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -41,8 +41,8 @@
      id="namedview6"
      showgrid="false"
      inkscape:zoom="21.190756"
-     inkscape:cx="29.564778"
-     inkscape:cy="12.434667"
+     inkscape:cx="29.517588"
+     inkscape:cy="12.411072"
      inkscape:window-x="-12"
      inkscape:window-y="-12"
      inkscape:window-maximized="1"
@@ -55,7 +55,7 @@
      inkscape:pagecheckerboard="1"
      inkscape:deskcolor="#505050" />
   <path
-     style="fill:#1e1e1e;fill-opacity:1;stroke:#000000;stroke-width:8.18331;stroke-opacity:1"
+     style="fill:#1e1e1e;fill-opacity:1;stroke:#000000;stroke-width:8;stroke-opacity:1;stroke-dasharray:none"
      d="m 10.016821,5.0885512 h 43.946286 c 1.069828,0 1.859706,0.7985213 1.931097,1.7869095 l 1.318125,18.2490773 c 0.07139,0.98839 -0.861268,1.78691 -1.931097,1.78691 H 8.7218734 c -1.0698277,0 -2.0012368,-0.798464 -1.9310971,-1.78691 L 8.0857236,6.8754607 C 8.1558631,5.8870179 8.946993,5.0885512 10.016821,5.0885512 Z"
      id="rect2"
      inkscape:connector-curvature="0"

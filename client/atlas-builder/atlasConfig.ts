@@ -43,22 +43,24 @@ export interface WorkerToMainMsg {
 }
 
 // sprites that are scaled inside the sheets
-// TODO: maybe just scale the files manually and remove this?
 export const scaledSprites: Record<string, number> = {
-    "guns/gun-dp28-top-01.svg": 2,
-    "guns/gun-long-01.svg": 2,
-    "guns/gun-m249-bot-01.svg": 2,
-    "guns/gun-med-01.svg": 2,
-    "guns/gun-short-01.svg": 2,
     "map/map-bathhouse-pool-01.svg": 0.28,
+
+    // Smaller ceilings
     "map/map-building-house-ceiling.svg": 0.75,
     "map/map-building-hut-ceiling-01.svg": 0.75,
     "map/map-building-hut-ceiling-02.svg": 0.75,
-    "map/map-building-mansion-ceiling.svg": 0.5,
+    "map/map-building-hut-ceiling-03.svg": 0.75,
     "map/map-building-police-ceiling-01.svg": 0.75,
     "map/map-building-police-ceiling-02.svg": 0.75,
+    "map/map-building-police-ceiling-03.svg": 0.75,
     "map/map-building-shack-ceiling-01.svg": 0.75,
     "map/map-building-shack-ceiling-02.svg": 0.75,
+    "map/map-building-barn-ceiling-01.svg": 0.5,
+    "map/map-building-barn-ceiling-02.svg": 0.75,
+
+    // Larger ceilings
+    "map/map-building-mansion-ceiling.svg": 0.5,
     "map/map-building-vault-ceiling.svg": 0.5,
     "map/map-building-warehouse-ceiling-01.svg": 0.5,
     "map/map-building-warehouse-ceiling-02.svg": 0.5,
