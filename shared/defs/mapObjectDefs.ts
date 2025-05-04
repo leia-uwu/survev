@@ -2471,14 +2471,14 @@ function createBarn<T extends BuildingDef>(e: Partial<T>): T {
                 {
                     sprite: "map-building-barn-ceiling-01.img",
                     pos: v2.create(0, -2),
-                    scale: 0.667,
+                    scale: 1,
                     alpha: 1,
                     tint: 0xffffff,
                 },
                 {
                     sprite: "map-building-barn-ceiling-02.img",
                     pos: v2.create(0, 13.2),
-                    scale: 0.5,
+                    scale: 0.667,
                     alpha: 1,
                     tint: 0xffffff,
                 },
@@ -17174,14 +17174,14 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
                 {
                     sprite: "map-building-barn-ceiling-01.img",
                     pos: v2.create(0, -2),
-                    scale: 0.667,
+                    scale: 1,
                     alpha: 1,
                     tint: 0xffffff,
                 },
                 {
                     sprite: "map-building-barn-ceiling-02.img",
                     pos: v2.create(0, 13.2),
-                    scale: 0.5,
+                    scale: 0.667,
                     alpha: 1,
                     tint: 0xffffff,
                 },
