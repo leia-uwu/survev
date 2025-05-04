@@ -15,5 +15,5 @@ mkdir $OUT_DIR
 cp -r ../public/img/ -T ./$OUT_DIR
 
 SVGS=$(find $OUT_DIR -iname \*svg)
-inkscape --export-type=png $SVGS
+echo $SVGS | xargs inkscape --export-type=png
 rm $SVGS
