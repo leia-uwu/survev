@@ -1,10 +1,64 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="14.000009" height="92.000099" version="1.1" id="svg2" sodipodi:docname="gun-long-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview id="namedview2" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="6.3543307" inkscape:cx="7.0030979" inkscape:cy="59.565675" inkscape:current-layer="svg2" />
-  <defs id="defs1">
-    <clipPath id="a">
-      <rect ry="3.836" rx="2.4690001" y="272.65799" x="0.52899998" height="24.341999" width="3.704" stroke-miterlimit="10" fill="#515151" stroke-width="1.323" stroke-opacity="0.49" id="rect1" />
+<svg
+   width="28"
+   height="184"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="gun-long-01.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="4"
+     inkscape:cx="32.625"
+     inkscape:cy="101.875"
+     inkscape:current-layer="svg2"
+     inkscape:window-width="2560"
+     inkscape:window-height="1560"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1" />
+  <defs
+     id="defs1">
+    <clipPath
+       id="a">
+      <rect
+         ry="3.836"
+         rx="2.4690001"
+         y="272.65799"
+         x="0.52899998"
+         height="24.341999"
+         width="3.704"
+         stroke-miterlimit="10"
+         fill="#515151"
+         stroke-width="1.323"
+         stroke-opacity="0.49"
+         id="rect1" />
     </clipPath>
   </defs>
-  <rect width="3.704" height="24.341999" x="0.52899998" y="272.65799" rx="2.4690001" ry="3.836" clip-path="url(#a)" stroke-miterlimit="10" transform="matrix(3.7797,0,0,3.77948,-1.9994612,-1030.5054)" fill="#fdfdfd" stroke="#4b4b4b" stroke-width="2.117" id="rect2" />
+  <rect
+     width="3.704"
+     height="24.341999"
+     x="0.52899998"
+     y="272.65799"
+     rx="2.4690001"
+     ry="3.836"
+     clip-path="url(#a)"
+     stroke-miterlimit="10"
+     transform="matrix(7.5593952,0,0,7.5589512,-3.9989199,-2061.0084)"
+     fill="#fdfdfd"
+     stroke="#4b4b4b"
+     stroke-width="2.117"
+     id="rect2"
+     style="stroke-width:2.1166336;stroke-dasharray:none" />
 </svg>

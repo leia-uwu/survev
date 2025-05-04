@@ -1,6 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="34.616173" height="34.616173" viewBox="0 0 9.1587106 9.1589997" version="1.1" id="svg1" sodipodi:docname="gun-dp28-top-01.svg" inkscape:version="1.4 (e7c3feb100, 2024-10-09)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <defs id="defs1" />
-  <sodipodi:namedview id="namedview1" pagecolor="#ffffff" bordercolor="#000000" borderopacity="0.25" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" inkscape:zoom="6.4047619" inkscape:cx="-0.5464684" inkscape:cy="27.557621" inkscape:current-layer="svg1" />
-  <circle cx="4.5793414" cy="4.5794997" r="3.997" stroke-miterlimit="10" fill="#181818" stroke="#080808" stroke-width="1.165" id="circle1" />
+<svg
+   width="70"
+   height="70"
+   viewBox="0 0 18.520526 18.521111"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="gun-dp28-top-01.svg"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="8"
+     inkscape:cx="30.6875"
+     inkscape:cy="55.6875"
+     inkscape:current-layer="svg1"
+     inkscape:window-width="2560"
+     inkscape:window-height="1560"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1" />
+  <circle
+     cx="9.2602644"
+     cy="9.2605562"
+     stroke-miterlimit="10"
+     fill="#181818"
+     stroke="#080808"
+     stroke-width="1.165"
+     id="circle1"
+     style="stroke-width:2.11666;stroke-dasharray:none"
+     r="8.2022276" />
 </svg>
