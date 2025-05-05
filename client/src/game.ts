@@ -5,6 +5,7 @@ import { GameConfig, Input, TeamMode, WeaponSlot } from "../../shared/gameConfig
 import * as net from "../../shared/net/net";
 import { ObjectType } from "../../shared/net/objectSerializeFns";
 import { math } from "../../shared/utils/math";
+import { util } from "../../shared/utils/util";
 import { v2 } from "../../shared/utils/v2";
 import type { Ambiance } from "./ambiance";
 import type { AudioManager } from "./audioManager";
@@ -1602,6 +1603,11 @@ export class Game {
                 const msg = new net.DisconnectMsg();
                 msg.deserialize(stream);
                 this.m_disconnectMsg = msg.reason;
+            }
+            case net.MsgType.KillFeedMsg: {
+                const msg = new net.KillFeedMsg();
+                msg.deserialize(stream);
+                this.m_ui2Manager.addKillFeedMessage(msg.text, util.intToHex(msg.color));
             }
         }
     }
