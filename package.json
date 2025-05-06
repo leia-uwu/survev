@@ -16,7 +16,7 @@
     "lint:ci": "biome check"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=20.12.0"
   },
   "author": "Leia",
   "license": "GPL-3.0-or-later",
