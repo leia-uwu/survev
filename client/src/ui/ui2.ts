@@ -13,6 +13,7 @@ import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
+import { type KillFeedSegment, styleKeys } from "../../../shared/net/killFeedMsg";
 import { PickupMsgType } from "../../../shared/net/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -28,6 +29,7 @@ import type { Player, PlayerBarn } from "../objects/player";
 import type { Localization } from "./localization";
 
 const maxKillFeedLines = 6;
+const maxSegmentsPerKillFeedLine = 10;
 const touchHoldDuration = 0.75 * 1000;
 const perkUiCount = 3;
 
@@ -141,8 +143,10 @@ class UiState {
     };
 
     killFeed = Array.from({ length: maxKillFeedLines }, () => ({
-        text: "",
-        color: "#000000",
+        segments: Array.from({ length: maxSegmentsPerKillFeedLine }, () => ({
+            text: "",
+            style: Object.fromEntries(styleKeys.map((k) => [k, undefined])),
+        })) as KillFeedSegment[],
         offset: 0,
         opacity: 0,
         ticker: Number.MAX_VALUE,
@@ -1037,8 +1041,15 @@ export class UiManager2 {
             const domK = dom.killFeed.lines[i];
             const x = state.killFeed[i];
 
-            if (patchK.text) {
-                domK.text.innerHTML = x.text;
+            if (patchK.segments.length != 0) {
+                const elements = [];
+                for (const segment of x.segments) {
+                    const element = document.createElement("span");
+                    Object.assign(element.style, segment.style);
+                    element.innerText = segment.text;
+                    elements.push(element);
+                }
+                domK.text.replaceChildren(...elements);
             }
 
             if (patchK.offset) {
@@ -1046,9 +1057,7 @@ export class UiManager2 {
                     device.uiLayout != device.UiLayout.Sm || device.tablet ? 35 : 15;
                 domK.line.style.top = `${Math.floor(x.offset * top)}px`;
             }
-            if (patchK.color) {
-                domK.text.style.color = x.color;
-            }
+
             if (patchK.opacity) {
                 domK.line.style.opacity = String(x.opacity);
             }
@@ -1381,8 +1390,17 @@ export class UiManager2 {
     addKillFeedMessage(text: string, color: string) {
         const killFeed = this.newState.killFeed;
         const oldest = killFeed[killFeed.length - 1];
-        oldest.text = text;
-        oldest.color = color;
+        oldest.segments = [{ text: text, style: { color: color } }];
+        oldest.ticker = 0;
+        killFeed.sort((a, b) => {
+            return a.ticker - b.ticker;
+        });
+    }
+
+    addCustomKillFeedMessage(segments: KillFeedSegment[]) {
+        const killFeed = this.newState.killFeed;
+        const oldest = killFeed[killFeed.length - 1];
+        oldest.segments = segments;
         oldest.ticker = 0;
         killFeed.sort((a, b) => {
             return a.ticker - b.ticker;
