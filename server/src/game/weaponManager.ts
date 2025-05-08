@@ -390,8 +390,10 @@ export class WeaponManager {
 
     isInfinite(weaponDef: GunDef): boolean {
         return (
-            !weaponDef.ignoreEndlessAmmo &&
-            (weaponDef.ammoInfinite || this.player.hasPerk("endless_ammo"))
+            (this.player.hasPerk("endless_ammo") &&
+                this.player.hasHelmet("helmet03_dm01")) ||
+            (!weaponDef.ignoreEndlessAmmo && weaponDef.ammoInfinite) ||
+            this.player.hasPerk("endless_ammo")
         );
     }
 
