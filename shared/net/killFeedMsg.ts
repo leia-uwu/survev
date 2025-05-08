@@ -40,6 +40,8 @@ function getFlags(style: KillFeedSegment["style"]) {
 
 export class KillFeedMsg implements AbstractMsg {
     segments: KillFeedSegment[] = [];
+    /** animation if endColor provided, static bg otherwise*/
+    background = { startColor: "", endColor: "" };
 
     pushSegment(text: KillFeedSegment["text"], style: KillFeedSegment["style"]): void {
         this.segments.push({ text, style });
@@ -59,6 +61,9 @@ export class KillFeedMsg implements AbstractMsg {
                 }
             }
         }
+
+        s.writeASCIIString(this.background.startColor);
+        s.writeASCIIString(this.background.endColor);
     }
 
     deserialize(s: BitStream) {
@@ -76,5 +81,8 @@ export class KillFeedMsg implements AbstractMsg {
 
             this.segments.push(segment);
         }
+
+        this.background.startColor = s.readASCIIString();
+        this.background.endColor = s.readASCIIString();
     }
 }

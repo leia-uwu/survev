@@ -117,6 +117,34 @@ function m() {
     return t;
 }
 
+function applyKfBackground(
+    line: HTMLElement,
+    props: UiState["killFeed"][number]["background"],
+): void {
+    if (!props.startColor) return;
+
+    if (props.endColor) {
+        //animated
+        line.classList.add("ui-killfeed-line-animation");
+        line.style.setProperty("--bg-start", props.startColor);
+        line.style.setProperty("--bg-end", props.endColor);
+        line.style.setProperty("--shadow-start", props.startColor);
+        line.style.setProperty("--shadow-end", props.endColor);
+    } else {
+        //static
+        line.style.backgroundColor = props.startColor;
+    }
+}
+
+function removeKfBackground(line: HTMLElement): void {
+    line.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+    line.classList.remove("ui-killfeed-line-animation");
+    line.style.removeProperty("--bg-start");
+    line.style.removeProperty("--bg-end");
+    line.style.removeProperty("--shadow-start");
+    line.style.removeProperty("--shadow-end");
+}
+
 class UiState {
     mobile = false;
     touch = false;
@@ -147,6 +175,7 @@ class UiState {
             text: "",
             style: Object.fromEntries(styleKeys.map((k) => [k, undefined])),
         })) as KillFeedSegment[],
+        background: { startColor: "", endColor: "" },
         offset: 0,
         opacity: 0,
         ticker: Number.MAX_VALUE,
@@ -1041,6 +1070,11 @@ export class UiManager2 {
             const domK = dom.killFeed.lines[i];
             const x = state.killFeed[i];
 
+            if (patchK.background) {
+                removeKfBackground(domK.line);
+                applyKfBackground(domK.line, x.background);
+            }
+
             if (patchK.segments.length != 0) {
                 const elements = [];
                 for (const segment of x.segments) {
@@ -1397,10 +1431,14 @@ export class UiManager2 {
         });
     }
 
-    addCustomKillFeedMessage(segments: KillFeedSegment[]) {
+    addCustomKillFeedMessage(
+        segments: KillFeedSegment[],
+        background: UiState["killFeed"][number]["background"],
+    ) {
         const killFeed = this.newState.killFeed;
         const oldest = killFeed[killFeed.length - 1];
         oldest.segments = segments;
+        oldest.background = background;
         oldest.ticker = 0;
         killFeed.sort((a, b) => {
             return a.ticker - b.ticker;

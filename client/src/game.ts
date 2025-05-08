@@ -1606,7 +1606,7 @@ export class Game {
             case net.MsgType.KillFeedMsg: {
                 const msg = new net.KillFeedMsg();
                 msg.deserialize(stream);
-                this.m_ui2Manager.addCustomKillFeedMessage(msg.segments);
+                this.m_ui2Manager.addCustomKillFeedMessage(msg.segments, msg.background);
             }
         }
     }
