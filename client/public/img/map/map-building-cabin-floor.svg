@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="1216"
    height="992"
    viewBox="0 0 321.73353 262.46666"
    version="1.1"
    id="svg306"
    sodipodi:docname="map-building-cabin-floor.svg"
-   inkscape:version="0.92.2 (5c3e80d, 2017-08-06)">
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <metadata
      id="metadata310">
     <rdf:RDF>
@@ -36,8 +36,8 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
+     inkscape:window-width="2560"
+     inkscape:window-height="1560"
      id="namedview308"
      showgrid="true"
      inkscape:object-paths="true"
@@ -48,15 +48,17 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:zoom="0.27314815"
-     inkscape:cx="979.60914"
-     inkscape:cy="457.48962"
-     inkscape:window-x="1912"
-     inkscape:window-y="-8"
+     inkscape:zoom="1.0925926"
+     inkscape:cx="398.13559"
+     inkscape:cy="456.71186"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg306"
      inkscape:showpageshadow="false"
-     showguides="false">
+     showguides="false"
+     inkscape:pagecheckerboard="1"
+     inkscape:deskcolor="#505050">
     <inkscape:grid
        type="xygrid"
        id="grid1869"
@@ -64,7 +66,9 @@
        spacingy="1.0583337"
        spacingx="1.0583337"
        originx="0"
-       originy="0" />
+       originy="0"
+       units="px"
+       visible="true" />
   </sodipodi:namedview>
   <defs
      id="defs190">
@@ -362,7 +366,7 @@
      id="path2709"
      transform="matrix(0.26458341,0,0,0.26458341,0,-3.5527558e-4)"
      d="M 0,63.998047 V 256.00195 H 31.998047 V 96 L 415.99805,96.002 V 64 Z m 543.99805,0 V 96 h 384 V 63.998047 Z m 479.99995,0 V 96 h 160 v 448 h 32.0019 V 63.998047 Z M 0,352 V 544 H 31.998047 V 352 Z M 0,640 V 832.00195 H 191.99805 V 800 H 31.998047 V 640 Z m 1184.002,0 V 800 H 800 v 32.00195 h 416 V 640 Z M 287.99805,800 v 31.99805 H 672 V 800 Z"
-     style="fill:#56220c;fill-opacity:1;stroke:#191919;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:#56220c;fill-opacity:1;stroke:#000000;stroke-width:12;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      clip-path="url(#clipPath2711)"
      inkscape:connector-curvature="0" />
   <rect
