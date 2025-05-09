@@ -159,7 +159,7 @@ export class Game {
     async init() {
         await this.pluginManager.loadPlugins();
         this.map.init();
-        this.pluginManager.emit("gameCreated", this);
+        this.pluginManager.emit("gameCreated", { game: this });
 
         this.allowJoin = true;
         this.logger.info(`Created in ${Date.now() - this.start} ms`);
@@ -188,6 +188,7 @@ export class Game {
         if (!this.started) {
             this.started = this.modeManager.isGameStarted();
             if (this.started) {
+                this.pluginManager.emit("gameStarted", { game: this });
                 this.gas.advanceGasStage();
             }
         }
