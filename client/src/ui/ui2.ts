@@ -13,6 +13,7 @@ import type { RoleDef } from "../../../shared/defs/gameObjects/roleDefs";
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { Action, DamageType, GameConfig, Input } from "../../../shared/gameConfig";
+import { type KillFeedSegment, styleKeys } from "../../../shared/net/killFeedMsg";
 import { PickupMsgType } from "../../../shared/net/net";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
@@ -28,6 +29,7 @@ import type { Player, PlayerBarn } from "../objects/player";
 import type { Localization } from "./localization";
 
 const maxKillFeedLines = 6;
+const maxSegmentsPerKillFeedLine = 10;
 const touchHoldDuration = 0.75 * 1000;
 const perkUiCount = 3;
 
@@ -115,6 +117,34 @@ function m() {
     return t;
 }
 
+function applyKfBackground(
+    line: HTMLElement,
+    props: UiState["killFeed"][number]["background"],
+): void {
+    if (!props.startColor) return;
+
+    if (props.endColor) {
+        //animated
+        line.style.animation = `generic-pulse 4s infinite`;
+        line.style.setProperty("--bg-start", props.startColor);
+        line.style.setProperty("--bg-end", props.endColor);
+        line.style.setProperty("--shadow-start", props.startColor);
+        line.style.setProperty("--shadow-end", props.endColor);
+    } else {
+        //static
+        line.style.backgroundColor = props.startColor;
+    }
+}
+
+function removeKfBackground(line: HTMLElement): void {
+    line.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
+    line.style.animation = "";
+    line.style.removeProperty("--bg-start");
+    line.style.removeProperty("--bg-end");
+    line.style.removeProperty("--shadow-start");
+    line.style.removeProperty("--shadow-end");
+}
+
 class UiState {
     mobile = false;
     touch = false;
@@ -141,8 +171,11 @@ class UiState {
     };
 
     killFeed = Array.from({ length: maxKillFeedLines }, () => ({
-        text: "",
-        color: "#000000",
+        segments: Array.from({ length: maxSegmentsPerKillFeedLine }, () => ({
+            text: "",
+            style: Object.fromEntries(styleKeys.map((k) => [k, undefined])),
+        })) as KillFeedSegment[],
+        background: { startColor: "", endColor: "" },
         offset: 0,
         opacity: 0,
         ticker: Number.MAX_VALUE,
@@ -1037,8 +1070,20 @@ export class UiManager2 {
             const domK = dom.killFeed.lines[i];
             const x = state.killFeed[i];
 
-            if (patchK.text) {
-                domK.text.innerHTML = x.text;
+            if (patchK.background.startColor && patchK.background.endColor) {
+                removeKfBackground(domK.line);
+                applyKfBackground(domK.line, x.background);
+            }
+
+            if (patchK.segments.some((s) => s.text)) {
+                const elements = [];
+                for (const segment of x.segments) {
+                    const element = document.createElement("span");
+                    Object.assign(element.style, segment.style);
+                    element.innerText = segment.text;
+                    elements.push(element);
+                }
+                domK.text.replaceChildren(...elements);
             }
 
             if (patchK.offset) {
@@ -1046,9 +1091,7 @@ export class UiManager2 {
                     device.uiLayout != device.UiLayout.Sm || device.tablet ? 35 : 15;
                 domK.line.style.top = `${Math.floor(x.offset * top)}px`;
             }
-            if (patchK.color) {
-                domK.text.style.color = x.color;
-            }
+
             if (patchK.opacity) {
                 domK.line.style.opacity = String(x.opacity);
             }
@@ -1380,13 +1423,23 @@ export class UiManager2 {
 
     addKillFeedMessage(text: string, color: string) {
         const killFeed = this.newState.killFeed;
-        const oldest = killFeed[killFeed.length - 1];
-        oldest.text = text;
-        oldest.color = color;
-        oldest.ticker = 0;
-        killFeed.sort((a, b) => {
-            return a.ticker - b.ticker;
-        });
+        util.rotateRight(killFeed);
+        const newLine = killFeed[0];
+        newLine.segments = [{ text: text, style: { color: color } }];
+        newLine.background = { startColor: "", endColor: "" };
+        newLine.ticker = 0;
+    }
+
+    addCustomKillFeedMessage(
+        segments: KillFeedSegment[],
+        background: UiState["killFeed"][number]["background"],
+    ) {
+        const killFeed = this.newState.killFeed;
+        util.rotateRight(killFeed);
+        const newLine = killFeed[0];
+        newLine.segments = segments;
+        newLine.background = background;
+        newLine.ticker = 0;
     }
 
     getKillFeedText(

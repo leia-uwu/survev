@@ -409,6 +409,8 @@ export class GameMap {
         this.generateObjects();
         this.timerEnd("Generating all objects");
 
+        this.game.pluginManager.emit("mapCreated", { map: this });
+
         this.mapStream.stream.index = 0;
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }

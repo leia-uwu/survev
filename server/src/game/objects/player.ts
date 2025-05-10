@@ -129,7 +129,15 @@ export class PlayerBarn {
     addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now()) {
+        if (
+            !joinData ||
+            joinData.expiresAt < Date.now() ||
+            this.game.pluginManager.emit("playerWillJoin", {
+                joinMsg,
+                ip,
+                userId: joinData.userId,
+            })
+        ) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
@@ -246,9 +254,10 @@ export class PlayerBarn {
             this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
         this.aliveCountDirty = true;
-        this.game.pluginManager.emit("playerJoin", player);
 
         this.game.updateData();
+
+        this.game.pluginManager.emit("playerDidJoin", { player: player });
 
         return player;
     }
@@ -1485,7 +1494,9 @@ export class Player extends BaseGameObject {
                         if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
-                        this.game.pluginManager.emit("playerRevived", target);
+                        this.game.pluginManager.emit("playerWasRevived", {
+                            player: target,
+                        });
                     });
                 }
 
@@ -2464,6 +2475,14 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (
+            this.game.pluginManager.emit("playerWillTakeDamage", {
+                player: this,
+                params: params,
+            })
+        )
+            return;
+
         let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
@@ -2512,8 +2531,6 @@ export class Player extends BaseGameObject {
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
-        this.game.pluginManager.emit("playerDamage", { ...params, player: this });
-
         this.damageTaken += finalDamage;
         if (sourceIsPlayer && params.source !== this) {
             if ((params.source as Player).groupId !== this.groupId) {
@@ -2523,6 +2540,11 @@ export class Player extends BaseGameObject {
         }
 
         this.health -= finalDamage;
+
+        this.game.pluginManager.emit("playerDidTakeDamage", {
+            player: this,
+            params: params,
+        });
 
         if (this.game.isTeamMode) {
             this.setGroupStatuses();
@@ -2624,6 +2646,13 @@ export class Player extends BaseGameObject {
 
     kill(params: DamageParams): void {
         if (this.dead) return;
+        if (
+            this.game.pluginManager.emit("playerWillDie", {
+                player: this,
+                params: params,
+            })
+        )
+            return;
         if (this.downed) this.downed = false;
         this.dead = true;
         this.killedIndex = this.game.playerBarn.nextKilledNumber++;
@@ -2798,7 +2827,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        this.game.pluginManager.emit("playerKill", { ...params, player: this });
+        this.game.pluginManager.emit("playerDidDie", { player: this, params: params });
 
         //
         // Give spectators someone new to spectate
@@ -3146,6 +3175,9 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
 
+        if (this.game.pluginManager.emit("playerWillInput", { player: this, msg: msg }))
+            return;
+
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
             this.dirOld = v2.copy(this.dir);
@@ -3373,6 +3405,8 @@ export class Player extends BaseGameObject {
                 }
                 break;
         }
+
+        this.game.pluginManager.emit("playerDidInput", { player: this });
     }
 
     getClosestLoot(): Loot | undefined {
