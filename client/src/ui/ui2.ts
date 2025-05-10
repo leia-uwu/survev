@@ -125,7 +125,7 @@ function applyKfBackground(
 
     if (props.endColor) {
         //animated
-        line.classList.add("ui-killfeed-line-animation");
+        line.style.animation = `generic-pulse 4s infinite`;
         line.style.setProperty("--bg-start", props.startColor);
         line.style.setProperty("--bg-end", props.endColor);
         line.style.setProperty("--shadow-start", props.startColor);
@@ -138,7 +138,7 @@ function applyKfBackground(
 
 function removeKfBackground(line: HTMLElement): void {
     line.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
-    line.classList.remove("ui-killfeed-line-animation");
+    line.style.animation = "";
     line.style.removeProperty("--bg-start");
     line.style.removeProperty("--bg-end");
     line.style.removeProperty("--shadow-start");
@@ -1070,12 +1070,12 @@ export class UiManager2 {
             const domK = dom.killFeed.lines[i];
             const x = state.killFeed[i];
 
-            if (patchK.background) {
+            if (patchK.background.startColor && patchK.background.endColor) {
                 removeKfBackground(domK.line);
                 applyKfBackground(domK.line, x.background);
             }
 
-            if (patchK.segments.length != 0) {
+            if (patchK.segments.some((s) => s.text)) {
                 const elements = [];
                 for (const segment of x.segments) {
                     const element = document.createElement("span");
