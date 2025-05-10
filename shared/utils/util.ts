@@ -322,6 +322,14 @@ export const util = {
         return arr.at(index % arr.length) as T;
     },
 
+    rotateRight(arr: unknown[]) {
+        const lastElem = arr.at(-1);
+        for (let i = arr.length - 1; i >= 1; i--) {
+            arr[i] = arr[i - 1];
+        }
+        arr[0] = lastElem;
+    },
+
     weightedRandom<T extends Object>(
         items: Array<T & { weight: number }>,
         rand = Math.random,

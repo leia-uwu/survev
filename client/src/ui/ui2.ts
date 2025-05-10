@@ -1423,12 +1423,11 @@ export class UiManager2 {
 
     addKillFeedMessage(text: string, color: string) {
         const killFeed = this.newState.killFeed;
-        const oldest = killFeed[killFeed.length - 1];
-        oldest.segments = [{ text: text, style: { color: color } }];
-        oldest.ticker = 0;
-        killFeed.sort((a, b) => {
-            return a.ticker - b.ticker;
-        });
+        util.rotateRight(killFeed);
+        const newLine = killFeed[0];
+        newLine.segments = [{ text: text, style: { color: color } }];
+        newLine.background = { startColor: "", endColor: "" };
+        newLine.ticker = 0;
     }
 
     addCustomKillFeedMessage(
@@ -1436,13 +1435,11 @@ export class UiManager2 {
         background: UiState["killFeed"][number]["background"],
     ) {
         const killFeed = this.newState.killFeed;
-        const oldest = killFeed[killFeed.length - 1];
-        oldest.segments = segments;
-        oldest.background = background;
-        oldest.ticker = 0;
-        killFeed.sort((a, b) => {
-            return a.ticker - b.ticker;
-        });
+        util.rotateRight(killFeed);
+        const newLine = killFeed[0];
+        newLine.segments = segments;
+        newLine.background = background;
+        newLine.ticker = 0;
     }
 
     getKillFeedText(
