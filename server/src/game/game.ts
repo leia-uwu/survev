@@ -285,6 +285,8 @@ export class Game {
                 this.tickTimes = [];
             }
         }
+
+        this.pluginManager.emit("gameUpdate", { game: this, dt: dt });
     }
 
     netSync() {

@@ -61,6 +61,7 @@ export const GameEvents = {
 
     gameCreated: makeEvent<{ game: Game }>(),
     gameStarted: makeEvent<{ game: Game }>(),
+    gameUpdate: makeEvent<{ game: Game; dt: number }>(),
 
     mapCreated: makeEvent<{ map: GameMap }>(),
 };
