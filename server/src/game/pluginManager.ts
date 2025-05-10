@@ -146,11 +146,11 @@ export class PluginManager {
         for (const p of pluginPaths) {
             const pluginPath = `./${path.relative(import.meta.dirname, p)}`;
             this.game.logger.info("Loading plugin", pluginPath);
-            const plugin = (
-                (await import(pluginPath)) as { default: new () => GamePlugin }
-            ).default;
-
-            this.loadPlugin(plugin);
+            const module = await import(pluginPath);
+            if ("default" in module) {
+                const plugin = (module as { default: new () => GamePlugin }).default;
+                this.loadPlugin(plugin);
+            }
         }
     }
 }
