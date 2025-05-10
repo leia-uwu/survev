@@ -123,12 +123,11 @@ export class PluginManager {
 
     /** returns true if event cancelled, false otherwise */
     emit<E extends EventName>(eventName: E, data: EventData<E>): boolean {
+        const handlers = this.eventToHandlers[eventName];
+        if (!handlers) return false;
         //any because typescript cannot correctly infer the event constructor type yet
         const eventFactory = GameEvents[eventName] as any;
         const event = new eventFactory(data) as GameEvent<E>;
-
-        const handlers = this.eventToHandlers[eventName];
-        if (!handlers) return false;
 
         for (const handler of handlers) {
             handler(event);
