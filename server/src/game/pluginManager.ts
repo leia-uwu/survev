@@ -1,9 +1,12 @@
 import fs from "fs";
 import path from "path";
 import type * as net from "../../../shared/net/net";
+import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { GameMap } from "./map";
 import type { DamageParams } from "./objects/gameObject";
+import type { Loot } from "./objects/loot";
+import type { Obstacle } from "./objects/obstacle";
 import type { Player } from "./objects/player";
 
 class BaseGameEvent<T> {
@@ -58,6 +61,29 @@ export const GameEvents = {
 
     playerWillInput: makeEvent<{ player: Player; msg: net.InputMsg }>(true),
     playerDidInput: makeEvent<{ player: Player }>(),
+
+    playerWillPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
+    playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
+
+    //TODO: add cancel support
+    obstacleWillGenerate: makeEvent<{
+        type: string;
+        pos: Vec2;
+        layer: number;
+        ori?: number;
+        scale?: number;
+        buildingId?: number;
+        puzzlePiece?: string;
+        hideFromMap?: boolean;
+    }>(true),
+    obstacleDidGenerate: makeEvent<{ obstacle: Obstacle }>(),
+
+    /** obstacle already dead, but before side effects such as explosions and loot dropping */
+    obstacleDeathBeforeEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(
+        true,
+    ),
+    /** obstacle already dead and after all side effects */
+    obstacleDeathAfterEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(),
 
     gameCreated: makeEvent<{ game: Game }>(),
     gameStarted: makeEvent<{ game: Game }>(),

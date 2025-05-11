@@ -3553,6 +3553,15 @@ export class Player extends BaseGameObject {
     pickupLoot(obj: Loot) {
         if (obj.destroyed) return;
         if (this.pickupTicker > 0) return;
+
+        if (
+            this.game.pluginManager.emit("playerWillPickupLoot", {
+                player: this,
+                loot: obj,
+            })
+        )
+            return;
+
         this.pickupTicker = 0.1;
         const def = GameObjectDefs[obj.type];
 
@@ -3892,6 +3901,8 @@ export class Player extends BaseGameObject {
             type: net.MsgType.Pickup,
             msg: pickupMsg,
         });
+
+        this.game.pluginManager.emit("playerDidPickupLoot", { player: this, loot: obj });
     }
 
     // in original game, only called on snowball or potato collision
