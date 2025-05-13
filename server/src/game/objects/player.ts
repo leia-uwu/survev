@@ -263,9 +263,9 @@ export class PlayerBarn {
         }
         this.aliveCountDirty = true;
 
-        this.game.updateData();
-
         this.game.pluginManager.emit("playerDidJoin", { player: player });
+
+        this.game.updateData();
 
         return player;
     }

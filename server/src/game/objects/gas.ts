@@ -313,6 +313,8 @@ export class Gas {
             return;
         }
 
+        this.game.pluginManager.emit("gasWillAdvance", { gas: this });
+
         this.mode = stage.mode;
         this.radOld = this.currentRad;
         this.radNew = stage.rad * this.mapSize;
@@ -371,6 +373,8 @@ export class Gas {
         this.gasT = 0;
         this.dirty = true;
         this.timeDirty = true;
+
+        this.game.pluginManager.emit("gasDidAdvance", { gas: this });
 
         this.game.updateData();
     }

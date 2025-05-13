@@ -5,9 +5,11 @@ import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { GameMap } from "./map";
 import type { DamageParams } from "./objects/gameObject";
+import type { Gas } from "./objects/gas";
 import type { Loot } from "./objects/loot";
 import type { Obstacle } from "./objects/obstacle";
 import type { Player } from "./objects/player";
+import type { Weapon } from "./weaponManager";
 
 class BaseGameEvent<T> {
     data: T;
@@ -65,6 +67,16 @@ export const GameEvents = {
     playerWillPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
     playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
 
+    playerWillSwitchIdx: makeEvent<{
+        player: Player;
+        idx: number;
+        cancelAction: boolean;
+        cancelSlowdown: boolean;
+        forceSwitch: boolean;
+        changeCooldown: boolean;
+    }>(true),
+    playerDidSwitchIdx: makeEvent<{ player: Player; nextWeapon: Weapon }>(true),
+
     //TODO: add cancel support
     obstacleWillGenerate: makeEvent<{
         type: string;
@@ -89,10 +101,14 @@ export const GameEvents = {
     gameStarted: makeEvent<{ game: Game }>(),
     gameUpdate: makeEvent<{ game: Game; dt: number }>(),
 
+    //TODO: add cancel support
+    gasWillAdvance: makeEvent<{ gas: Gas }>(true),
+    gasDidAdvance: makeEvent<{ gas: Gas }>(),
+
     mapCreated: makeEvent<{ map: GameMap }>(),
 };
 
-type EventName = keyof typeof GameEvents;
+export type EventName = keyof typeof GameEvents;
 
 export type GameEvent<T extends EventName> = InstanceType<(typeof GameEvents)[T]>;
 export type EventData<T extends EventName> = GameEvent<T>["data"];
