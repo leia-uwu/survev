@@ -30,7 +30,7 @@ export interface KillFeedSegment {
     style: KillFeedStyleObj;
 }
 
-function getFlags(style: KillFeedSegment["style"]) {
+function getFlags(style: KillFeedStyleObj) {
     let flags = 0;
     for (let i = 0; i < styleKeys.length; i++) {
         const key = styleKeys[i];
@@ -43,8 +43,6 @@ function getFlags(style: KillFeedSegment["style"]) {
 
 export class KillFeedMsg implements AbstractMsg {
     segments: KillFeedSegment[] = [];
-    /** animation if endColor provided, static bg otherwise*/
-    background = { startColor: "", endColor: "" };
 
     serialize(s: BitStream) {
         s.writeUint8(this.segments.length);
@@ -60,9 +58,6 @@ export class KillFeedMsg implements AbstractMsg {
                 }
             }
         }
-
-        s.writeASCIIString(this.background.startColor);
-        s.writeASCIIString(this.background.endColor);
     }
 
     deserialize(s: BitStream) {
@@ -80,8 +75,5 @@ export class KillFeedMsg implements AbstractMsg {
 
             this.segments.push(segment);
         }
-
-        this.background.startColor = s.readASCIIString();
-        this.background.endColor = s.readASCIIString();
     }
 }

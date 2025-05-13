@@ -72,10 +72,7 @@ interface Emote {
 
 interface KillFeedLine {
     segments: KillFeedSegment[];
-    background: {
-        startColor: string;
-        endColor: string;
-    };
+    /** who can see the killfeed line, -1 is everyone */
     canSeeId: number;
 }
 
@@ -2158,15 +2155,15 @@ export class Player extends BaseGameObject {
 
         for (let i = 0; i < playerBarn.killFeedLines.length; i++) {
             const killFeedLine = playerBarn.killFeedLines[i];
+            const canSeeId = killFeedLine.canSeeId;
             if (
-                -1 == killFeedLine.canSeeId ||
-                player.__id == killFeedLine.canSeeId ||
-                player.groupId == killFeedLine.canSeeId ||
-                player.teamId == killFeedLine.canSeeId
+                -1 == canSeeId ||
+                player.__id == canSeeId ||
+                player.groupId == canSeeId ||
+                player.teamId == canSeeId
             ) {
                 const killFeedMsg = new net.KillFeedMsg();
                 killFeedMsg.segments = killFeedLine.segments;
-                killFeedMsg.background = killFeedLine.background;
                 msgStream.serializeMsg(net.MsgType.KillFeedMsg, killFeedMsg);
             }
         }

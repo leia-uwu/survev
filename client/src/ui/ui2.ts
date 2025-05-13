@@ -117,34 +117,6 @@ function m() {
     return t;
 }
 
-function applyKfBackground(
-    line: HTMLElement,
-    props: UiState["killFeed"][number]["background"],
-): void {
-    if (!props.startColor) return;
-
-    if (props.endColor) {
-        //animated
-        line.style.animation = `generic-pulse 4s infinite`;
-        line.style.setProperty("--bg-start", props.startColor);
-        line.style.setProperty("--bg-end", props.endColor);
-        line.style.setProperty("--shadow-start", props.startColor);
-        line.style.setProperty("--shadow-end", props.endColor);
-    } else {
-        //static
-        line.style.backgroundColor = props.startColor;
-    }
-}
-
-function removeKfBackground(line: HTMLElement): void {
-    line.style.backgroundColor = "rgba(0, 0, 0, 0.4)";
-    line.style.animation = "";
-    line.style.removeProperty("--bg-start");
-    line.style.removeProperty("--bg-end");
-    line.style.removeProperty("--shadow-start");
-    line.style.removeProperty("--shadow-end");
-}
-
 class UiState {
     mobile = false;
     touch = false;
@@ -175,7 +147,6 @@ class UiState {
             text: "",
             style: Object.fromEntries(styleKeys.map((k) => [k, undefined])),
         })) as KillFeedSegment[],
-        background: { startColor: "", endColor: "" },
         offset: 0,
         opacity: 0,
         ticker: Number.MAX_VALUE,
@@ -1070,11 +1041,6 @@ export class UiManager2 {
             const domK = dom.killFeed.lines[i];
             const x = state.killFeed[i];
 
-            if (patchK.background.startColor && patchK.background.endColor) {
-                removeKfBackground(domK.line);
-                applyKfBackground(domK.line, x.background);
-            }
-
             if (patchK.segments.some((s) => s.text)) {
                 const elements = [];
                 for (const segment of x.segments) {
@@ -1426,19 +1392,14 @@ export class UiManager2 {
         util.rotateRight(killFeed);
         const newLine = killFeed[0];
         newLine.segments = [{ text: text, style: { color: color } }];
-        newLine.background = { startColor: "", endColor: "" };
         newLine.ticker = 0;
     }
 
-    addCustomKillFeedMessage(
-        segments: KillFeedSegment[],
-        background: UiState["killFeed"][number]["background"],
-    ) {
+    addCustomKillFeedMessage(segments: KillFeedSegment[]) {
         const killFeed = this.newState.killFeed;
         util.rotateRight(killFeed);
         const newLine = killFeed[0];
         newLine.segments = segments;
-        newLine.background = background;
         newLine.ticker = 0;
     }
 
