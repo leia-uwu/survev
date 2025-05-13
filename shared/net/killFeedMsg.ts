@@ -22,9 +22,12 @@ export const styleKeys = [
     "fontStyle",
 ] as const;
 
+type StyleObj = Record<(typeof styleKeys)[number], string>;
+export type KillFeedStyleObj = Partial<StyleObj>;
+
 export interface KillFeedSegment {
     text: string;
-    style: Partial<Record<(typeof styleKeys)[number], string>>;
+    style: KillFeedStyleObj;
 }
 
 function getFlags(style: KillFeedSegment["style"]) {
@@ -42,10 +45,6 @@ export class KillFeedMsg implements AbstractMsg {
     segments: KillFeedSegment[] = [];
     /** animation if endColor provided, static bg otherwise*/
     background = { startColor: "", endColor: "" };
-
-    pushSegment(text: KillFeedSegment["text"], style: KillFeedSegment["style"]): void {
-        this.segments.push({ text, style });
-    }
 
     serialize(s: BitStream) {
         s.writeUint8(this.segments.length);

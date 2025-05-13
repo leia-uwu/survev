@@ -27,6 +27,7 @@ import {
     GameConfig,
     type HasteType,
 } from "../../../../shared/gameConfig";
+import type { KillFeedSegment } from "../../../../shared/net/killFeedMsg";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import type { GroupStatus } from "../../../../shared/net/updateMsg";
@@ -69,6 +70,15 @@ interface Emote {
     itemType: string;
 }
 
+interface KillFeedLine {
+    segments: KillFeedSegment[];
+    background: {
+        startColor: string;
+        endColor: string;
+    };
+    canSeeId: number;
+}
+
 export class PlayerBarn {
     players: Player[] = [];
     livingPlayers: Player[] = [];
@@ -81,6 +91,8 @@ export class PlayerBarn {
     socketIdToPlayer = new Map<string, Player>();
 
     emotes: Emote[] = [];
+    /** currently just used by plugins */
+    killFeedLines: KillFeedLine[] = [];
 
     killLeaderDirty = false;
     killLeader?: Player;
@@ -354,6 +366,7 @@ export class PlayerBarn {
         this.newPlayers.length = 0;
         this.deletedPlayers.length = 0;
         this.emotes.length = 0;
+        this.killFeedLines.length = 0;
         this.aliveCountDirty = false;
         this.killLeaderDirty = false;
 
@@ -2120,20 +2133,6 @@ export class Player extends BaseGameObject {
             msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
-        const updateMsg = new net.UpdateMsg();
-
-        updateMsg.ack = this.ack;
-
-        if (game.gas.dirty || this._firstUpdate) {
-            updateMsg.gasDirty = true;
-            updateMsg.gasData = game.gas;
-        }
-
-        if (game.gas.timeDirty || this._firstUpdate) {
-            updateMsg.gasTDirty = true;
-            updateMsg.gasT = game.gas.gasT;
-        }
-
         let player: Player;
         if (this.spectating == undefined) {
             // not spectating anyone
@@ -2155,6 +2154,35 @@ export class Player extends BaseGameObject {
         // temporary guard while the spectating code is not fixed
         if (!player) {
             player = this;
+        }
+
+        for (let i = 0; i < playerBarn.killFeedLines.length; i++) {
+            const killFeedLine = playerBarn.killFeedLines[i];
+            if (
+                -1 == killFeedLine.canSeeId ||
+                player.__id == killFeedLine.canSeeId ||
+                player.groupId == killFeedLine.canSeeId ||
+                player.teamId == killFeedLine.canSeeId
+            ) {
+                const killFeedMsg = new net.KillFeedMsg();
+                killFeedMsg.segments = killFeedLine.segments;
+                killFeedMsg.background = killFeedLine.background;
+                msgStream.serializeMsg(net.MsgType.KillFeedMsg, killFeedMsg);
+            }
+        }
+
+        const updateMsg = new net.UpdateMsg();
+
+        updateMsg.ack = this.ack;
+
+        if (game.gas.dirty || this._firstUpdate) {
+            updateMsg.gasDirty = true;
+            updateMsg.gasData = game.gas;
+        }
+
+        if (game.gas.timeDirty || this._firstUpdate) {
+            updateMsg.gasTDirty = true;
+            updateMsg.gasT = game.gas.gasT;
         }
 
         const radius = player.cullingZoom + 4;
