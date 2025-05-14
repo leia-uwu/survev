@@ -70,7 +70,7 @@ interface Emote {
     itemType: string;
 }
 
-interface KillFeedLine {
+export interface KillFeedLine {
     segments: KillFeedSegment[];
     /** who can see the killfeed line, -1 is everyone */
     canSeeId: number;
@@ -538,6 +538,10 @@ export class PlayerBarn {
             playerId,
             itemType: "",
         });
+    }
+
+    addKillFeedLine(canSeeId = -1, segments: KillFeedSegment[]) {
+        this.killFeedLines.push({ canSeeId, segments });
     }
 }
 
