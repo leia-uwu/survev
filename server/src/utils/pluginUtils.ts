@@ -15,7 +15,7 @@ export function createSimpleSegment(
     return { text, style };
 }
 
-function createSegment(text: string, style: KillFeedStyleObj): KillFeedSegment {
+export function createSegment(text: string, style: KillFeedStyleObj): KillFeedSegment {
     return { text, style };
 }
 

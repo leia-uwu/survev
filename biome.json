@@ -35,18 +35,6 @@
     },
     "ignore": ["drizzle/*"]
   },
-  "overrides": [
-    {
-      "include": ["pluginUtils.ts"],
-      "linter": {
-        "rules": {
-          "correctness": {
-            "noUnusedVariables": "off"
-          }
-        }
-      }
-    }
-  ],
   "formatter": {
     "indentWidth": 4,
     "indentStyle": "space",
