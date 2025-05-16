@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import type * as net from "../../../shared/net/net";
-import { util } from "../../../shared/utils/util";
 import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { GameMap } from "./map";
@@ -24,15 +23,6 @@ class BaseGameEvent<T> {
 
     constructor(data: T) {
         this.data = data;
-    }
-
-    protected _unregistered = false;
-    get unregistered() {
-        return this._unregistered;
-    }
-
-    unregister() {
-        this._unregistered = true;
     }
 }
 
@@ -128,7 +118,21 @@ export type EventName = keyof typeof GameEvents;
 export type GameEvent<T extends EventName> = InstanceType<(typeof GameEvents)[T]>;
 export type EventData<T extends EventName> = GameEvent<T>["data"];
 
-export type EventHandler<T extends EventName> = (event: GameEvent<T>) => void;
+class ListenerContext {
+    protected _unregistered = false;
+    get unregistered() {
+        return this._unregistered;
+    }
+
+    unregister() {
+        this._unregistered = true;
+    }
+}
+
+export type EventHandler<T extends EventName> = (
+    event: GameEvent<T>,
+    ctx: ListenerContext,
+) => void;
 export type EventHandlersMap = Partial<{
     [E in EventName]: EventHandler<E>[];
 }>;
@@ -183,14 +187,18 @@ export class PluginManager {
         const handlers = this.eventToHandlers[eventName];
         if (!handlers) return false;
         //any because typescript cannot correctly infer the event constructor type yet
-        const eventFactory = GameEvents[eventName] as any;
-        const event = new eventFactory(data) as GameEvent<E>;
+        const eventConstructor = GameEvents[eventName] as any;
+        const event = new eventConstructor(data) as GameEvent<E>;
 
-        //backwards loop for safe removal
-        for (let i = handlers.length - 1; i >= 0; i--) {
+        // for..of loop provides safe removal
+        for (let i = 0; i < handlers.length; i++) {
             const handler = handlers[i];
-            handler(event);
-            if (event.unregistered) util.removeElem(handlers, handler);
+            const ctx = new ListenerContext();
+            handler(event, ctx);
+            if (ctx.unregistered) {
+                handlers.splice(i, 1);
+                i--;
+            }
             if (event.shouldStopPropagation) break;
         }
 

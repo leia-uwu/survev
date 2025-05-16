@@ -91,6 +91,7 @@ export class TimerManager {
         this.idAllocator.give(id);
     }
 
+    /** interval units are seconds */
     countdown(
         n: number,
         interval: number,
