@@ -322,6 +322,15 @@ export const util = {
         return arr.at(index % arr.length) as T;
     },
 
+    removeElem<T>(arr: T[], element: T) {
+        const index = arr.indexOf(element);
+        if (index != -1) arr.splice(index, 1);
+    },
+
+    randomElem<T>(arr: T[]): T {
+        return arr[Math.floor(Math.random() * arr.length)];
+    },
+
     rotateRight(arr: unknown[]) {
         const lastElem = arr.at(-1);
         for (let i = arr.length - 1; i >= 1; i--) {
