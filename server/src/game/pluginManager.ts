@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import type * as net from "../../../shared/net/net";
+import { util } from "../../../shared/utils/util";
 import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { GameMap } from "./map";
@@ -17,13 +18,21 @@ class BaseGameEvent<T> {
     get shouldStopPropagation() {
         return this._stopPropogation;
     }
+    stopPropagation() {
+        this._stopPropogation = true;
+    }
 
     constructor(data: T) {
         this.data = data;
     }
 
-    stopPropagation() {
-        this._stopPropogation = true;
+    protected _unregistered = false;
+    get unregistered() {
+        return this._unregistered;
+    }
+
+    unregister() {
+        this._unregistered = true;
     }
 }
 
@@ -65,7 +74,7 @@ export const GameEvents = {
     playerDidInput: makeEvent<{ player: Player }>(),
 
     playerWillPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
-    playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
+    playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(),
 
     playerWillSwitchIdx: makeEvent<{
         player: Player;
@@ -164,7 +173,6 @@ export class PluginManager {
 
     constructor(readonly game: Game) {}
 
-    /** returns true if event cancelled, false otherwise */
     emit<E extends EventName>(eventName: E, data: EventData<E>): boolean {
         const handlers = this.eventToHandlers[eventName];
         if (!handlers) return false;
@@ -172,8 +180,11 @@ export class PluginManager {
         const eventFactory = GameEvents[eventName] as any;
         const event = new eventFactory(data) as GameEvent<E>;
 
-        for (const handler of handlers) {
+        //backwards loop for safe removal
+        for (let i = handlers.length - 1; i >= 0; i--) {
+            const handler = handlers[i];
             handler(event);
+            if (event.unregistered) util.removeElem(handlers, handler);
             if (event.shouldStopPropagation) break;
         }
 
