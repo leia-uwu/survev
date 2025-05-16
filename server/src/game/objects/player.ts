@@ -58,7 +58,7 @@ type GodMode = {
     selectPos?: Vec2;
 };
 
-interface Emote {
+export interface Emote {
     playerId: number;
     pos: Vec2;
     type: string;
@@ -68,6 +68,11 @@ interface Emote {
      * "m870", "mosin", "1xscope", "762mm", etc
      */
     itemType: string;
+}
+
+export interface Ping extends Emote {
+    isPing: true;
+    itemType: "";
 }
 
 export interface KillFeedLine {
@@ -521,23 +526,31 @@ export class PlayerBarn {
     }
 
     addEmote(type: string, playerId: number, itemType = "") {
-        this.emotes.push({
+        if (this.game.pluginManager.emit("emoteWillOccur", { type, playerId, itemType }))
+            return;
+        const emote: Emote = {
             isPing: false,
             playerId,
             pos: v2.create(0, 0),
             type,
             itemType,
-        });
+        };
+        this.emotes.push(emote);
+        this.game.pluginManager.emit("emoteDidOccur", { emote });
     }
 
     addMapPing(type: string, pos: Vec2, playerId = 0) {
-        this.emotes.push({
+        if (this.game.pluginManager.emit("pingWillOccur", { type, pos, playerId }))
+            return;
+        const ping: Ping = {
             isPing: true,
             type,
             pos,
             playerId,
             itemType: "",
-        });
+        };
+        this.emotes.push(ping);
+        this.game.pluginManager.emit("pingDidOccur", { ping });
     }
 
     addKillFeedLine(canSeeId = -1, segments: KillFeedSegment[]) {

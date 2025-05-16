@@ -9,7 +9,7 @@ import type { DamageParams } from "./objects/gameObject";
 import type { Gas } from "./objects/gas";
 import type { Loot } from "./objects/loot";
 import type { Obstacle } from "./objects/obstacle";
-import type { Player } from "./objects/player";
+import type { Emote, Ping, Player } from "./objects/player";
 import type { Weapon } from "./weaponManager";
 
 class BaseGameEvent<T> {
@@ -85,6 +85,12 @@ export const GameEvents = {
         changeCooldown: boolean;
     }>(true),
     playerDidSwitchIdx: makeEvent<{ player: Player; nextWeapon: Weapon }>(true),
+
+    emoteWillOccur: makeEvent<{ type: string; playerId: number; itemType: string }>(true),
+    emoteDidOccur: makeEvent<{ emote: Emote }>(),
+
+    pingWillOccur: makeEvent<{ type: string; pos: Vec2; playerId: number }>(true),
+    pingDidOccur: makeEvent<{ ping: Ping }>(),
 
     //TODO: add cancel support
     obstacleWillGenerate: makeEvent<{
