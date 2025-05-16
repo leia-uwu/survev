@@ -190,7 +190,6 @@ export class PluginManager {
         const eventConstructor = GameEvents[eventName] as any;
         const event = new eventConstructor(data) as GameEvent<E>;
 
-        // for..of loop provides safe removal
         for (let i = 0; i < handlers.length; i++) {
             const handler = handlers[i];
             const ctx = new ListenerContext();
