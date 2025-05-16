@@ -1,5 +1,6 @@
 import type { KillFeedSegment, KillFeedStyleObj } from "../../../shared/net/killFeedMsg";
 import type { Game } from "../game/game";
+import type { GameObject } from "../game/objects/gameObject";
 import type { EventName, GamePlugin } from "../game/pluginManager";
 import { IDAllocator } from "./IDAllocator";
 
@@ -27,6 +28,10 @@ export function attachEventLogger(plugin: GamePlugin, eventName: EventName) {
         ];
         plugin.game.playerBarn.addKillFeedLine(-1, segments);
     });
+}
+
+export function addLootAtObj(obj: GameObject, type: string) {
+    obj.game.lootBarn.addLoot(type, obj.pos, obj.layer, 1);
 }
 
 interface Timer {
