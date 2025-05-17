@@ -28,6 +28,9 @@ import type { Player } from "./objects/player";
 import { Structure } from "./objects/structure";
 import { RiverCreator } from "./riverCreator";
 import type { Team } from "./team";
+import { collisionHelpers } from "../../../shared/utils/collisionHelpers";
+import { config } from "process";
+import { or } from "drizzle-orm";
 
 // most of this logic is based on the `renderMapBuildingBounds` from client debugHelpers
 // which was found on BHA leak
@@ -1997,11 +2000,12 @@ export class GameMap {
             getPos = () => {
                 return v2.add(pos, util.randomPointInCircle(rad));
             };
+            return this.getRandomSpawnPos(getPos, pos);
         }
         return this.getRandomSpawnPos(getPos);
     }
 
-    getRandomSpawnPos(getPos: () => Vec2, group?: Group, team?: Team): Vec2 {
+    getRandomSpawnPos(getPos: () => Vec2, origin?: Vec2, group?: Group, team?: Team): Vec2 {
         let attempts = 0;
         let collided = true;
 
@@ -2014,6 +2018,12 @@ export class GameMap {
             if (this.isOnWater(circle.pos, 0)) {
                 collided = true;
                 continue;
+            }
+
+            if (origin) {
+                if (this.isInUnlockedPuzzle(circle.pos, origin, 0)) {
+                    return origin;
+                }          
             }
 
             const objs = this.grid.intersectCollider(circle);
@@ -2062,6 +2072,9 @@ export class GameMap {
                     break;
                 }
             }
+
+            collided = false;
+
         }
 
         return circle.pos;
@@ -2241,5 +2254,20 @@ export class GameMap {
         }
 
         return true;
+    }
+
+    isInUnlockedPuzzle(pos: Vec2, origin: Vec2, layer: number) {
+        const objs = this.game.grid.intersectPos(pos);
+
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.__type !== ObjectType.Building) continue;
+            if (obj.layer !== layer) continue;
+            if (!obj.hasPuzzle) continue;
+            if (obj.puzzleSolved) continue;
+            return true;
+        }
+
+        return false;
     }
 }
