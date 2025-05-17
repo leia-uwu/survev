@@ -1,28 +1,145 @@
 import fs from "fs";
 import path from "path";
+import type * as net from "../../../shared/net/net";
+import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
+import type { GameMap } from "./map";
 import type { DamageParams } from "./objects/gameObject";
-import type { Player } from "./objects/player";
+import type { Gas } from "./objects/gas";
+import type { Loot } from "./objects/loot";
+import type { Obstacle } from "./objects/obstacle";
+import type { Emote, Ping, Player } from "./objects/player";
+import type { Weapon } from "./weaponManager";
 
-interface PlayerDamageEvent extends DamageParams {
-    player: Player;
+class BaseGameEvent<T> {
+    data: T;
+    protected _stopPropogation = false;
+    get shouldStopPropagation() {
+        return this._stopPropogation;
+    }
+    stopPropagation() {
+        this._stopPropogation = true;
+    }
+
+    constructor(data: T) {
+        this.data = data;
+    }
 }
 
-export interface Events {
-    playerRevived: Player; // player who was revived
-    playerJoin: Player;
-    playerDamage: PlayerDamageEvent;
-    playerKill: Omit<PlayerDamageEvent, "amount">;
-    gameCreated: Game;
+class CancelableEvent<T> extends BaseGameEvent<T> {
+    protected _canceled = false;
+    get canceled() {
+        return this._canceled;
+    }
+
+    cancel() {
+        this._canceled = true;
+    }
 }
 
-export type EventType = keyof Events;
+function makeEvent<T>(cancelable: true): new (data: T) => CancelableEvent<T>;
+function makeEvent<T>(cancelable?: false): new (data: T) => BaseGameEvent<T>;
+function makeEvent<T>(cancelable?: boolean) {
+    return cancelable ? CancelableEvent<T> : BaseGameEvent<T>;
+}
 
-type EventHandler<E extends EventType> = (data: Events[E]) => void;
+export const GameEvents = {
+    playerWillBeRevived: makeEvent<{ player: Player }>(true),
+    playerWasRevived: makeEvent<{ player: Player }>(),
 
-type EventHandlers = {
-    [E in keyof Events]?: Set<EventHandler<E>>; // optional since handlers are not determined on object initialization
+    playerWillJoin: makeEvent<{
+        joinMsg: net.JoinMsg;
+        ip: string;
+        userId: string | null;
+    }>(true),
+    playerDidJoin: makeEvent<{ player: Player }>(),
+
+    playerWillTakeDamage: makeEvent<{ player: Player; params: DamageParams }>(true),
+    playerDidTakeDamage: makeEvent<{ player: Player; params: DamageParams }>(),
+
+    playerWillDie: makeEvent<{ player: Player; params: DamageParams }>(true),
+    playerDidDie: makeEvent<{ player: Player; params: DamageParams }>(),
+
+    playerWillInput: makeEvent<{ player: Player; msg: net.InputMsg }>(true),
+    playerDidInput: makeEvent<{ player: Player; msg: net.InputMsg }>(),
+
+    playerWillPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
+    playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(),
+
+    playerWillSwitchIdx: makeEvent<{
+        player: Player;
+        idx: number;
+        cancelAction: boolean;
+        cancelSlowdown: boolean;
+        forceSwitch: boolean;
+        changeCooldown: boolean;
+    }>(true),
+    playerDidSwitchIdx: makeEvent<{ player: Player; nextWeapon: Weapon }>(true),
+
+    //role promotions
+    playerWillBePromoted: makeEvent<{ player: Player; role: string }>(true),
+    playerDidGetPromoted: makeEvent<{ player: Player; role: string }>(),
+
+    emoteWillOccur: makeEvent<{ type: string; playerId: number; itemType: string }>(true),
+    emoteDidOccur: makeEvent<{ emote: Emote }>(),
+
+    pingWillOccur: makeEvent<{ type: string; pos: Vec2; playerId: number }>(true),
+    pingDidOccur: makeEvent<{ ping: Ping }>(),
+
+    //TODO: add cancel support
+    obstacleWillGenerate: makeEvent<{
+        type: string;
+        pos: Vec2;
+        layer: number;
+        ori?: number;
+        scale?: number;
+        buildingId?: number;
+        puzzlePiece?: string;
+        hideFromMap?: boolean;
+    }>(true),
+    obstacleDidGenerate: makeEvent<{ obstacle: Obstacle }>(),
+
+    /** obstacle already dead, but before side effects such as explosions and loot dropping */
+    obstacleDeathBeforeEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(
+        true,
+    ),
+    /** obstacle already dead and after all side effects */
+    obstacleDeathAfterEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(),
+
+    gameCreated: makeEvent<{ game: Game }>(),
+    gameStarted: makeEvent<{ game: Game }>(),
+    gameUpdate: makeEvent<{ game: Game; dt: number }>(),
+
+    //TODO: add cancel support
+    gasWillAdvance: makeEvent<{ gas: Gas }>(true),
+    gasDidAdvance: makeEvent<{ gas: Gas }>(),
+
+    mapCreated: makeEvent<{ map: GameMap }>(),
 };
+
+export type EventName = keyof typeof GameEvents;
+
+export type GameEvent<T extends EventName> = InstanceType<(typeof GameEvents)[T]>;
+export type EventData<T extends EventName> = GameEvent<T>["data"];
+
+class ListenerContext {
+    protected _unregistered = false;
+    get unregistered() {
+        return this._unregistered;
+    }
+
+    unregister() {
+        this._unregistered = true;
+    }
+}
+
+export type EventHandler<T extends EventName> = (
+    event: GameEvent<T>,
+    ctx: ListenerContext,
+) => void;
+export type EventHandlersMap = Partial<{
+    [E in EventName]: EventHandler<E>[];
+}>;
 
 export function readDirectory(dir: string): string[] {
     let results: string[] = [];
@@ -50,34 +167,45 @@ if (fs.existsSync(pluginDir)) {
 }
 
 export abstract class GamePlugin {
-    handlers: EventHandlers = {};
-
     constructor(public readonly game: Game) {
         this.initListeners();
     }
 
     protected abstract initListeners(): void;
 
-    on<E extends keyof Events>(eventName: E, handler: EventHandler<E>): void {
-        // eslint-disable-next-line
-        ((this.handlers[eventName] as Set<typeof handler>) ??= new Set()).add(handler);
+    on<E extends EventName>(eventName: E, handler: EventHandler<E>): void {
+        (
+            (this.game.pluginManager.eventToHandlers[eventName] ??=
+                []) as EventHandler<E>[]
+        ).push(handler);
     }
 }
 
 export class PluginManager {
     private readonly _plugins = new Set<GamePlugin>();
+    eventToHandlers: EventHandlersMap = {};
 
     constructor(readonly game: Game) {}
 
-    emit<E extends keyof Events>(eventName: E, data: Events[E]): void {
-        for (const plugin of this._plugins) {
-            const handlers: EventHandlers[E] = plugin.handlers[eventName];
-            if (handlers) {
-                for (const handler of handlers) {
-                    handler(data);
-                }
+    emit<E extends EventName>(eventName: E, data: EventData<E>): boolean {
+        const handlers = this.eventToHandlers[eventName];
+        if (!handlers) return false;
+        //any because typescript cannot correctly infer the event constructor type yet
+        const eventConstructor = GameEvents[eventName] as any;
+        const event = new eventConstructor(data) as GameEvent<E>;
+
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+            const ctx = new ListenerContext();
+            handler(event, ctx);
+            if (ctx.unregistered) {
+                handlers.splice(i, 1);
+                i--;
             }
+            if (event.shouldStopPropagation) break;
         }
+
+        return event instanceof CancelableEvent ? event.canceled : false;
     }
 
     private loadPlugin(PluginConstructor: new (game: Game) => GamePlugin): void {
@@ -86,12 +214,14 @@ export class PluginManager {
     }
 
     async loadPlugins() {
-        for (const path of pluginPaths) {
-            this.game.logger.info("Loading plugin", path);
-            const plugin = ((await import(path)) as { default: new () => GamePlugin })
-                .default;
-
-            this.loadPlugin(plugin);
+        for (const p of pluginPaths) {
+            const pluginPath = `./${path.relative(import.meta.dirname, p)}`;
+            this.game.logger.info("Loading plugin", pluginPath);
+            const module = await import(pluginPath);
+            if ("default" in module) {
+                const plugin = (module as { default: new () => GamePlugin }).default;
+                this.loadPlugin(plugin);
+            }
         }
     }
 }

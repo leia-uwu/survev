@@ -242,6 +242,12 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    makeDynamic() {
+        if (this.isDynamic) return;
+        this.isDynamic = true;
+        this.game.map.dynamicObstacles.push(this);
+    }
+
     delayedToggle(delay: number, player?: Player, dir?: Vec2) {
         this.toggleTicker = delay;
         this.togglePlayer = player;
@@ -390,6 +396,14 @@ export class Obstacle extends BaseGameObject {
         this.scale = this.minScale;
         this.updateCollider();
 
+        if (
+            this.game.pluginManager.emit("obstacleDeathBeforeEffects", {
+                obstacle: this,
+                params,
+            })
+        )
+            return;
+
         if (def.destroyType) {
             let destroyType: string;
             //in cobalt, class shells need to spawn a pod that corresponds to the player's class (role)
@@ -517,6 +531,10 @@ export class Obstacle extends BaseGameObject {
                 }
             }
         }
+        this.game.pluginManager.emit("obstacleDeathAfterEffects", {
+            obstacle: this,
+            params,
+        });
     }
 
     interact(player?: Player, auto = false): void {
