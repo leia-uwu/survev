@@ -866,11 +866,11 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        if (this.role === role) return;
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
         }
-        if (this.role === role) return;
 
         //switching from one role to another
         //need to delete any non-droppables so they can be overwritten
