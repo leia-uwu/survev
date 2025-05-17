@@ -86,12 +86,27 @@ export class TimerManager {
         return id;
     }
 
+    setIntervalImmediately(callback: () => void, delay: number = 0): number {
+        const id = this.idAllocator.getNextId();
+        this.idToTimer.set(id, {
+            callback,
+            remaining: 0,
+            repeat: delay,
+            destroyed: false,
+        });
+        return id;
+    }
+
     clearTimer(id: number) {
         this.idToTimer.delete(id);
         this.idAllocator.give(id);
     }
 
-    /** interval units are seconds */
+    /**
+     * interval units are seconds
+     *
+     * if onComplete is defined, countdown will tick for one extra interval before executing it
+     */
     countdown(
         n: number,
         interval: number,
@@ -99,14 +114,17 @@ export class TimerManager {
         onComplete?: () => void,
     ) {
         let ticksLeft = n;
-        const id = this.setInterval(() => {
-            if (ticksLeft <= 0) {
-                onComplete?.();
-                this.clearTimer(id);
-                return;
-            }
+        const id = this.setIntervalImmediately(() => {
             onTick(ticksLeft);
             ticksLeft -= 1;
+
+            if (ticksLeft <= 0) {
+                this.clearTimer(id);
+                if (onComplete) {
+                    this.setTimeout(onComplete, interval);
+                }
+                return;
+            }
         }, interval);
     }
 }
