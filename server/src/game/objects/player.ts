@@ -867,6 +867,10 @@ export class Player extends BaseGameObject {
         }
 
         if (this.role === role) return;
+
+        if (this.game.pluginManager.emit("playerWillBePromoted", { player: this, role }))
+            return;
+
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
@@ -1025,6 +1029,8 @@ export class Player extends BaseGameObject {
                 this.addPerk(perkType, false, undefined, true);
             }
         }
+
+        this.game.pluginManager.emit("playerDidGetPromoted", { player: this, role });
     }
 
     roleSelect(role: string): void {

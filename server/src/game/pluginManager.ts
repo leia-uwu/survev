@@ -76,6 +76,10 @@ export const GameEvents = {
     }>(true),
     playerDidSwitchIdx: makeEvent<{ player: Player; nextWeapon: Weapon }>(true),
 
+    //role promotions
+    playerWillBePromoted: makeEvent<{ player: Player; role: string }>(true),
+    playerDidGetPromoted: makeEvent<{ player: Player; role: string }>(),
+
     emoteWillOccur: makeEvent<{ type: string; playerId: number; itemType: string }>(true),
     emoteDidOccur: makeEvent<{ emote: Emote }>(),
 
