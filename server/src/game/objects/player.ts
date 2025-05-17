@@ -3476,7 +3476,7 @@ export class Player extends BaseGameObject {
                 break;
         }
 
-        this.game.pluginManager.emit("playerDidInput", { player: this });
+        this.game.pluginManager.emit("playerDidInput", { player: this, msg });
     }
 
     getClosestLoot(): Loot | undefined {

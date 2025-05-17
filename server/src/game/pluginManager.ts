@@ -61,7 +61,7 @@ export const GameEvents = {
     playerDidDie: makeEvent<{ player: Player; params: DamageParams }>(),
 
     playerWillInput: makeEvent<{ player: Player; msg: net.InputMsg }>(true),
-    playerDidInput: makeEvent<{ player: Player }>(),
+    playerDidInput: makeEvent<{ player: Player; msg: net.InputMsg }>(),
 
     playerWillPickupLoot: makeEvent<{ player: Player; loot: Loot }>(true),
     playerDidPickupLoot: makeEvent<{ player: Player; loot: Loot }>(),
