@@ -155,13 +155,7 @@ export default defineConfig(({ mode }) => {
             MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
             AIP_PLACEMENT_ID: JSON.stringify(Config.secrets.AIP_PLACEMENT_ID),
             IS_DEV: isDev,
-            GOOGLE_LOGIN_SUPPORTED: JSON.stringify(
-                Config.secrets.GOOGLE_CLIENT_ID && Config.secrets.GOOGLE_SECRET_ID,
-            ),
-            DISCORD_LOGIN_SUPPORTED: JSON.stringify(
-                Config.secrets.DISCORD_CLIENT_ID && Config.secrets.DISCORD_SECRET_ID,
-            ),
-            MOCK_LOGIN_SUPPORTED: JSON.stringify(Config.debug.allowMockAccount),
+            PROXY_DEFS: JSON.stringify(Config.proxies),
             TURNSTILE_SITE_KEY: JSON.stringify(Config.secrets.TURNSTILE_SITE_KEY),
         },
         plugins,

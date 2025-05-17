@@ -67,10 +67,6 @@ declare global {
     const GIT_VERSION: string;
     const AIP_PLACEMENT_ID: string;
 
-    const GOOGLE_LOGIN_SUPPORTED: boolean;
-    const DISCORD_LOGIN_SUPPORTED: boolean;
-    const MOCK_LOGIN_SUPPORTED: boolean;
-
     const TURNSTILE_SITE_KEY: string;
 }
 

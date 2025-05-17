@@ -4,6 +4,7 @@ import type { Account } from "../account";
 import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
+import { proxy } from "../proxy";
 import type { LoadoutMenu } from "./loadoutMenu";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
@@ -66,18 +67,18 @@ function createLoginOptions(
     };
 
     // Define the available login methods
-    if (GOOGLE_LOGIN_SUPPORTED) {
+    if (proxy.loginSupported("google")) {
         addLoginOption("google", account.profile.linkedGoogle, () => {
             window.location.href = "/api/auth/google";
         });
     }
-    if (DISCORD_LOGIN_SUPPORTED) {
+    if (proxy.loginSupported("discord")) {
         addLoginOption("discord", account.profile.linkedDiscord, () => {
             window.location.href = "/api/auth/discord";
         });
     }
 
-    if (MOCK_LOGIN_SUPPORTED) {
+    if (proxy.loginSupported("mock")) {
         addLoginOption("mock", false, () => {
             window.location.href = "/api/auth/mock";
         });

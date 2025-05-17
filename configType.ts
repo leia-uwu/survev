@@ -1,5 +1,6 @@
 import type { MapDefs } from "./shared/defs/mapDefs";
 import type { TeamMode } from "./shared/gameConfig";
+import type { ProxyDef } from "./shared/types/api";
 import type { Vec2 } from "./shared/utils/v2";
 
 /**
@@ -99,6 +100,8 @@ export interface ConfigType {
             l10n: string;
         }
     >;
+
+    proxies: Record<string, ProxyDef>;
 
     /**
      * Enabled game modes. this will update on the UI without requiring a client rebuild, since they are fetched from the server every time the page is loaded.
