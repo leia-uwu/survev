@@ -113,6 +113,8 @@ export const GameEvents = {
     gameStarted: makeEvent<{ game: Game }>(),
     gameUpdate: makeEvent<{ game: Game; dt: number }>(),
 
+    gameCheckGameOver: makeEvent<{ game: Game; shouldGameEnd: boolean }>(true),
+
     //TODO: add cancel support
     gasWillAdvance: makeEvent<{ gas: Gas }>(true),
     gasDidAdvance: makeEvent<{ gas: Gas }>(),

@@ -478,9 +478,12 @@ export class Game {
 
     checkGameOver(): void {
         if (this.over) return;
-        const didGameEnd: boolean = this.modeManager.handleGameEnd();
+        const shouldGameEnd = this.modeManager.shouldGameEnd();
+        if (this.pluginManager.emit("gameCheckGameOver", { game: this, shouldGameEnd }))
+            return;
 
-        if (didGameEnd) {
+        if (shouldGameEnd) {
+            this.modeManager.handleGameEnd();
             this.over = true;
 
             // send win emoji after 1 second
