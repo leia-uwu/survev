@@ -1,5 +1,12 @@
 import { isIP } from "net";
 import type { Context } from "hono";
+import {
+    DataSet,
+    RegExpMatcher,
+    englishDataset,
+    englishRecommendedTransformers,
+    pattern,
+} from "obscenity";
 import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
 import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
@@ -97,25 +104,37 @@ export function readPostedJSON<T>(
     res.onAborted(err);
 }
 
-// credits: https://github.com/Blank-Cheque/Slurs
-const badWordsFilter = [
-    /(s[a4]nd)?n[ila4o10íĩî|!][gq]{1,2}(l[e3]t|[e3]r|[a4]|n[o0]g)?s?/i,
-    /f[a@4](g{1,2}|qq)([e3i1líĩî|!o0]t{1,2}(ry|r[i1líĩî|!]e)?)?/i,
-    /k[il1y]k[e3](ry|rie)?s?/i,
-    /tr[a4]n{1,2}([i1líĩî|!][e3]|y|[e3]r)s?/i,
-    /c[o0]{2}ns?/i,
-    /ch[i1líĩî|!]nks?/i,
-];
+const badWordsdataSet = new DataSet<{ originalWord: string }>()
+    .addAll(englishDataset)
+    .removePhrasesIf((phrase) => {
+        // if you really think "shit" is a bad word worth censoring i cant take you seriously
+        return phrase.metadata?.originalWord === "shit";
+    })
+    .addPhrase((phrase) =>
+        // https://github.com/jo3-l/obscenity/blob/9564653e9f8563e178cd0790ccf256dc2b610494/src/preset/english.ts#L269 only matches it without the "a"??
+        phrase
+            .setMetadata({ originalWord: "faggot" })
+            .addPattern(pattern`faggot`),
+    )
+    .addPhrase((phrase) =>
+        phrase.setMetadata({ originalWord: "hitler" }).addPattern(pattern`hitler`),
+    )
+    .addPhrase((phrase) =>
+        phrase
+            .setMetadata({ originalWord: "kill yourself" })
+            .addPattern(pattern`|kys|`)
+            .addPattern(pattern`kill yourself`)
+            .addPattern(pattern`hang yourself`)
+            .addPattern(pattern`unalive yourself`),
+    );
+
+const matcher = new RegExpMatcher({
+    ...badWordsdataSet.build(),
+    ...englishRecommendedTransformers,
+});
 
 export function checkForBadWords(name: string) {
-    const santized = name.replace(/[^a-zA-Z0-9|$|@]|\^/g, "");
-
-    for (const regex of badWordsFilter) {
-        if (name.match(regex) || santized.match(regex)) {
-            return true;
-        }
-    }
-    return false;
+    return matcher.hasMatch(name);
 }
 
 const allowedCharsRegex =

@@ -127,6 +127,9 @@ importers:
       nanotimer:
         specifier: ^0.3.15
         version: 0.3.15
+      obscenity:
+        specifier: ^0.4.3
+        version: 0.4.3
       pg:
         specifier: ^8.16.0
         version: 8.16.0
@@ -1615,6 +1618,10 @@ packages:
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
+
+  obscenity@0.4.3:
+    resolution: {integrity: sha512-DZKM0xUEksY5dVGaZoyC5VmIRMSbI6O0Gyb/07L+77d4zWJKKf5tQZrhlT0aiVYD6prTmnxiS3RhN0sfh5Q95Q==}
+    engines: {node: '>=14.0.0'}
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
@@ -3124,6 +3131,8 @@ snapshots:
       whatwg-url: 5.0.0
 
   object-inspect@1.13.4: {}
+
+  obscenity@0.4.3: {}
 
   obuf@1.1.2: {}
 
