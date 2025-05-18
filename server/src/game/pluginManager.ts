@@ -54,6 +54,9 @@ export const GameEvents = {
     }>(true),
     playerDidJoin: makeEvent<{ player: Player }>(),
 
+    //if socket closes, unrelated to if the player despawns or not
+    playerDisconnect: makeEvent<{ player: Player }>(),
+
     playerWillTakeDamage: makeEvent<{ player: Player; params: DamageParams }>(true),
     playerDidTakeDamage: makeEvent<{ player: Player; params: DamageParams }>(),
 

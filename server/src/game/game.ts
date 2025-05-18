@@ -469,6 +469,7 @@ export class Game {
         if (player.canDespawn()) {
             player.game.playerBarn.removePlayer(player);
         }
+        this.pluginManager.emit("playerDisconnect", { player });
     }
 
     broadcastMsg(type: net.MsgType, msg: net.Msg) {
