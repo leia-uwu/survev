@@ -213,7 +213,7 @@ export const helpers = {
         return r32() + r32();
     },
     verifyTurnstile: function (enabled: boolean, cb: (token: string) => void) {
-        if (!enabled || !window.turnstile) {
+        if (!enabled || !window.turnstile || !TURNSTILE_SITE_KEY) {
             cb("");
             return;
         }
