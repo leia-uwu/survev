@@ -10,7 +10,11 @@ import { createSession, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
 
-export const cookieDomain = URL.parse(Config.oauthBasePath)?.hostname;
+let oauthBaseURL: URL | undefined = undefined;
+if (URL.canParse(Config.oauthBasePath)) {
+    oauthBaseURL = new URL(Config.oauthBasePath);
+}
+export const cookieDomain = oauthBaseURL?.hostname;
 
 const random = {
     read(bytes: Uint8Array) {
