@@ -6,7 +6,7 @@ import { validateSessionToken } from ".";
 import { Config } from "../../config";
 import { HTTPRateLimit, getHonoIp } from "../../utils/serverHelpers";
 import { server } from "../apiServer";
-import { deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
+import { cookieDomain, deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
 
 export const authMiddleware = async (c: Context, next: Next) => {
     try {
@@ -30,6 +30,7 @@ export const authMiddleware = async (c: Context, next: Next) => {
                 sameSite: "lax",
                 path: "/",
                 expires: session.expiresAt,
+                domain: cookieDomain,
             });
         } else {
             deleteSessionTokenCookie(c);

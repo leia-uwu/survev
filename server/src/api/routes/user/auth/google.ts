@@ -2,7 +2,7 @@ import { Google, generateCodeVerifier, generateState } from "arctic";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { getRedirectUri, handleAuthUser } from "./authUtils";
+import { cookieDomain, getRedirectUri, handleAuthUser } from "./authUtils";
 
 const google = new Google(
     Config.secrets.GOOGLE_CLIENT_ID!,
@@ -34,6 +34,7 @@ GoogleRouter.get("/", (c) => {
         httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
+        domain: cookieDomain,
     });
 
     setCookie(c, codeVerifierCookieName, codeVerifier, {
@@ -42,6 +43,7 @@ GoogleRouter.get("/", (c) => {
         httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
+        domain: cookieDomain,
     });
 
     return c.redirect(url);

@@ -1,3 +1,4 @@
+import { URL } from "node:url";
 import { generateRandomString } from "@oslojs/crypto/random";
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
@@ -9,6 +10,8 @@ import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { createSession, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
+
+export const cookieDomain = URL.parse(Config.oauthBasePath)?.hostname;
 
 const random = {
     read(bytes: Uint8Array) {
@@ -49,6 +52,7 @@ export async function setSessionTokenCookie(userId: string, c: Context) {
         sameSite: "lax",
         path: "/",
         expires: session.expiresAt,
+        domain: cookieDomain,
     });
     return session;
 }
@@ -66,6 +70,7 @@ export function deleteSessionTokenCookie(c: Context) {
         sameSite: "lax",
         path: "/",
         maxAge: 0,
+        domain: cookieDomain,
     });
 }
 
@@ -81,6 +86,7 @@ export async function handleAuthUser(c: Context, provider: Provider, authId: str
 
     setCookie(c, "app-data", "1", {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        domain: cookieDomain,
     });
 
     if (existingUser) {
