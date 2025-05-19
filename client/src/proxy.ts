@@ -9,6 +9,14 @@ export const proxy = {
                 return { proxy: proxy, def: PROXY_DEFS[proxy] };
             }
         }
+
+        if (PROXY_DEFS.default) {
+            return {
+                proxy: window.location.hostname,
+                def: PROXY_DEFS.default,
+            };
+        }
+
         return null;
     },
 
