@@ -5,6 +5,7 @@ import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import { proxy } from "../proxy";
+import { SDK } from "../sdk";
 import type { LoadoutMenu } from "./loadoutMenu";
 import type { Localization } from "./localization";
 import { MenuModal } from "./menuModal";
@@ -336,6 +337,14 @@ export class ProfileUi {
             });
             return false;
         });
+
+        const loginSupported =
+            !SDK.isAnySDK &&
+            (proxy.loginSupported("google") ||
+                proxy.loginSupported("discord") ||
+                proxy.loginSupported("mock"));
+
+        $(".account-block").toggle(loginSupported);
     }
 
     onError(type: string, data?: string) {
