@@ -1,3 +1,5 @@
+import { api } from "./api";
+
 class ErrorLog {
     private requests = 0;
     private enabled = true || import.meta.env.PROD;
@@ -39,7 +41,7 @@ class ErrorLog {
             this.throttle = true;
             return;
         }
-        fetch("/api/report_error", {
+        fetch(api.resolveUrl("/api/report_error"), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -54,6 +54,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             port: 5432,
         },
         oauthRedirectURI: "",
+        oauthBasePath: "/",
         secrets: {
             SURVEV_API_KEY: "",
             SURVEV_LOADOUT_SECRET: "",

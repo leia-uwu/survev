@@ -44,7 +44,7 @@ GoogleRouter.get("/", (c) => {
         sameSite: "Lax",
     });
 
-    return c.redirect(url.toString());
+    return c.redirect(url);
 });
 
 GoogleRouter.get("/callback", async (c) => {
@@ -76,5 +76,5 @@ GoogleRouter.get("/callback", async (c) => {
 
     await handleAuthUser(c, "google", resData.sub);
 
-    return c.redirect("/");
+    return c.redirect(Config.oauthBasePath);
 });

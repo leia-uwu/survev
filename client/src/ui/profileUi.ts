@@ -1,6 +1,7 @@
 import $ from "jquery";
 import loadout from "../../../shared/utils/loadout";
 import type { Account } from "../account";
+import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import { proxy } from "../proxy";
@@ -68,18 +69,18 @@ function createLoginOptions(
     // Define the available login methods
     if (proxy.loginSupported("google")) {
         addLoginOption("google", account.profile.linkedGoogle, () => {
-            window.location.href = "/api/auth/google";
+            window.location.href = api.resolveUrl("/api/auth/google");
         });
     }
     if (proxy.loginSupported("discord")) {
         addLoginOption("discord", account.profile.linkedDiscord, () => {
-            window.location.href = "/api/auth/discord";
+            window.location.href = api.resolveUrl("/api/auth/discord");
         });
     }
 
     if (proxy.loginSupported("mock")) {
         addLoginOption("mock", false, () => {
-            window.location.href = "/api/auth/mock";
+            window.location.href = api.resolveUrl("/api/auth/mock");
         });
     }
 }

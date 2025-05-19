@@ -48,7 +48,7 @@ DiscordRouter.get("/", (c) => {
     });
 
     url.searchParams.append("prompt", "none");
-    return c.redirect(url.toString());
+    return c.redirect(url);
 });
 
 DiscordRouter.get("/callback", async (c) => {
@@ -80,5 +80,5 @@ DiscordRouter.get("/callback", async (c) => {
 
     await handleAuthUser(c, "discord", resData.id);
 
-    return c.redirect("/");
+    return c.redirect(Config.oauthBasePath);
 });
