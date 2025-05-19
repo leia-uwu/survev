@@ -77,11 +77,11 @@ export class App {
 
         window.addEventListener("load", () => {
             if (helpers.getParameterByName("slug")) {
-                this.setView("player")
+                this.setView("player");
             } else {
                 this.setView("main");
             }
-        })
+        });
     }
     setView(name?: Routes) {
         const phoneDetected = device.mobile && !device.tablet;
@@ -117,30 +117,18 @@ export class App {
 
         // show ads
         const slotIds = [];
-        if (
-            elAdsLeaderboardTop &&
-            elAdsLeaderboardTop.css("display") != "none"
-        ) {
+        if (elAdsLeaderboardTop && elAdsLeaderboardTop.css("display") != "none") {
             slotIds.push("survevio_728x90_leaderboard_top");
             slotIds.push("survevio_300x250_leaderboard_top");
         }
-        if (
-            elAdsLeaderboardBottom &&
-            elAdsLeaderboardBottom.css("display") != "none"
-        ) {
+        if (elAdsLeaderboardBottom && elAdsLeaderboardBottom.css("display") != "none") {
             slotIds.push("survevio_300x250_leaderboard_bottom");
         }
-        if (
-            elAdsPlayerTop &&
-            elAdsPlayerTop.css("display") != "none"
-        ) {
+        if (elAdsPlayerTop && elAdsPlayerTop.css("display") != "none") {
             slotIds.push("survevio_728x90_playerprofile_top");
             slotIds.push("survevio_300x250_playerprofile_top");
         }
-        if (
-            elAdsPlayerBottom &&
-            elAdsPlayerBottom.css("display") != "none"
-        ) {
+        if (elAdsPlayerBottom && elAdsPlayerBottom.css("display") != "none") {
             slotIds.push("survevio_300x250_playerprofile_bottom");
         }
         this.adManager.showFreestarAds(slotIds);

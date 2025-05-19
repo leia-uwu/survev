@@ -1,6 +1,7 @@
 import $ from "jquery";
 import { MinGames } from "../../../../shared/constants";
 import type { LeaderboardRequest } from "../../../../shared/types/stats";
+import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
@@ -76,7 +77,7 @@ export class MainView {
         };
 
         $.ajax({
-            url: "/api/leaderboard",
+            url: api.resolveUrl("/api/leaderboard"),
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",

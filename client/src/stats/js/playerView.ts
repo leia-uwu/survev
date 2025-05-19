@@ -12,6 +12,7 @@ import type {
     UserStatsRequest,
     UserStatsResponse,
 } from "../../../../shared/types/stats";
+import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
@@ -174,7 +175,7 @@ class Query<T> {
         this.error = false;
 
         $.ajax({
-            url: url,
+            url: api.resolveUrl(url),
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",

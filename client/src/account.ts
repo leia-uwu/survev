@@ -133,7 +133,8 @@ export class Account {
         }
         this.requestsInFlight++;
         this.emit("request", this);
-        ajaxRequest(url, data, (err, res) => {
+
+        ajaxRequest(api.resolveUrl(url), data, (err, res) => {
             cb!(err, res);
             this.requestsInFlight--;
             this.emit("request", this);

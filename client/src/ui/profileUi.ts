@@ -1,7 +1,6 @@
 import $ from "jquery";
 import loadout from "../../../shared/utils/loadout";
 import type { Account } from "../account";
-import { api } from "../api";
 import { device } from "../device";
 import { helpers } from "../helpers";
 import { proxy } from "../proxy";
