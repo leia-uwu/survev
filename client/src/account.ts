@@ -38,6 +38,9 @@ function ajaxRequest(
         url: api.resolveUrl(url),
         type: "POST",
         timeout: 10 * 1000,
+        xhrFields: {
+            withCredentials: true,
+        },
         headers: {
             // Set a header to guard against CSRF attacks.
             //

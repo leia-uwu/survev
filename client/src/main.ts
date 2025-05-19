@@ -693,6 +693,9 @@ class Application {
                 data: JSON.stringify(matchArgs),
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
+                xhrFields: {
+                    withCredentials: true,
+                },
                 success: (data: FindGameResponse) => {
                     if (data.error === "invalid_captcha") {
                         // captch may have failed because the enabled state has changed since site info was loaded
