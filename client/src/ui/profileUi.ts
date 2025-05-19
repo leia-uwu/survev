@@ -249,7 +249,7 @@ export class ProfileUi {
 
         // Leaderboard
         $(".account-leaderboard-link").click((_e) => {
-            window.open(api.resolveUrl("/stats"), "_blank");
+            window.open("/stats", "_blank");
             return false;
         });
         $(".account-stats-link").click(() => {
