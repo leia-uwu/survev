@@ -257,7 +257,7 @@ export class ProfileUi {
                 if (this.account.loggedIn) {
                     if (this.account.profile.usernameSet) {
                         const slug = this.account.profile.slug || "";
-                        window.open(`/stats/${slug}`, "_blank");
+                        window.open(`/stats/?slug=${slug}`, "_blank");
                     } else {
                         this.setNameModal!.show(true);
                     }

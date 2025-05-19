@@ -221,9 +221,7 @@ export class PlayerView {
     );
     constructor(readonly app: App) {}
     getUrlParams() {
-        const location = window.location.href;
-        const params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
-        const slug = params[1] || "";
+        const slug = helpers.getParameterByName("slug") || "";
         const interval = helpers.getParameterByName("t") || "all";
         const mapId = helpers.getParameterByName("mapId") || "-1";
         return {

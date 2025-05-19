@@ -69,7 +69,7 @@
                   <td class='data-player-names'>
                       <span class='player-name'>
                       <% if (d.slug) { %>
-                          <a class='player-slug' href="/stats/<%= d.slug %>"><%= d.username %></a>
+                          <a class='player-slug' href="/stats/?slug=<%= d.slug %>"><%= d.username %></a>
                       <% } else { %>
                           <%= d.username %>
                       <% } %>

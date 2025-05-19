@@ -107,9 +107,8 @@ export default defineConfig(({ mode }) => {
         port: Config.vite.port,
         host: Config.vite.host,
         proxy: {
-            // regex that matches /stats, /stats/slug but doesn't match /stats/
-            // since if it matches /stats/ it will infinite loop :p
-            // also why does vite not work without trailing slashes at the end of paths 😭
+            // this redirects /stats to /stats/
+            // because vite is cringe and does not work without trailing slashes at the end of paths 😭
             "^/stats(?!/$).*": {
                 target: `http://${Config.vite.host}:${Config.vite.port}`,
                 rewrite: (path) => path.replace(/^\/stats(?!\/$).*/, "/stats/"),
