@@ -2124,6 +2124,10 @@ export class Player extends BaseGameObject {
             // spectating someone currently who is still alive
             player = this.spectating;
         }
+        // temporary guard while the spectating code is not fixed
+        if (!player) {
+            player = this;
+        }
 
         const radius = player.cullingZoom + 4;
         const rect = coldet.circleToAabb(player.pos, radius);
