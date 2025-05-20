@@ -358,7 +358,8 @@ export class PlayerView {
     onChangedParams() {
         const time = $("#player-time").val();
         const mapId = $("#player-map-id").val();
-        window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
+        const slug = this.getUrlParams().slug;
+        window.history.pushState("", "", `?slug=${slug}&t=${time}&mapId=${mapId}`);
 
         const params = this.getUrlParams();
         this.loadUserStats(
