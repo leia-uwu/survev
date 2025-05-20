@@ -92,6 +92,8 @@ class SDKManager {
         if (this.isAnySDK) {
             $("#btn-start-fullscreen").hide();
 
+            $("#left-column").hide();
+            $("#btn-discord-top-right").show();
             $(".surviv-shirts")
                 .css("background-image", "url(./img/discord-promo.png)")
                 .html(`<a href="https://discord.gg/6uRdCdkTPt" target="_blank"></a>`);
