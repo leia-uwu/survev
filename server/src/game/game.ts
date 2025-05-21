@@ -334,11 +334,12 @@ export class Game {
     }
 
     get canJoin(): boolean {
-        return (
+        const canJoin =
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
-            this.startedTime < 60
-        );
+            this.startedTime < 60;
+
+        return this.pluginManager.trigger("gameCheckCanJoin", { game: this }, canJoin);
     }
 
     deserializeMsg(buff: ArrayBuffer): {

@@ -122,6 +122,36 @@ export const GameEvents = {
     mapCreated: makeEvent<{ map: GameMap }>(),
 };
 
+class HookPoint<T, R> {
+    data: T;
+    readonly original: R;
+
+    constructor(data: T, original: R) {
+        this.data = data;
+        this.original = original;
+    }
+}
+
+function makeHookPoint<T, R>() {
+    return HookPoint<T, R>;
+}
+
+const GameHookPoints = {
+    gameCheckCanJoin: makeHookPoint<{ game: Game }, boolean>(),
+};
+
+export type HookName = keyof typeof GameHookPoints;
+export type GameHookPoint<T extends HookName> = InstanceType<(typeof GameHookPoints)[T]>;
+export type HookPointData<T extends HookName> = GameHookPoint<T>["data"];
+export type HookReturnType<T> = T extends HookPoint<any, infer R> ? R : never;
+export type GameHookReturn<T extends HookName> = HookReturnType<GameHookPoint<T>>;
+export type HookHandler<T extends HookName> = (
+    hookPoint: GameHookPoint<T>,
+) => GameHookReturn<T>;
+export type HookHandlersMap = Partial<{
+    [H in HookName]: HookHandler<H>[];
+}>;
+
 export type EventName = keyof typeof GameEvents;
 
 export type GameEvent<T extends EventName> = InstanceType<(typeof GameEvents)[T]>;
@@ -184,11 +214,19 @@ export abstract class GamePlugin {
                 []) as EventHandler<E>[]
         ).push(handler);
     }
+
+    hook<H extends HookName>(hookName: H, handler: HookHandler<H>): void {
+        (
+            (this.game.pluginManager.hookNameToHandlers[hookName] ??=
+                []) as HookHandler<H>[]
+        ).push(handler);
+    }
 }
 
 export class PluginManager {
     private readonly _plugins = new Set<GamePlugin>();
     eventToHandlers: EventHandlersMap = {};
+    hookNameToHandlers: HookHandlersMap = {};
 
     constructor(readonly game: Game) {}
 
@@ -211,6 +249,26 @@ export class PluginManager {
         }
 
         return event instanceof CancelableEvent ? event.canceled : false;
+    }
+
+    trigger<H extends HookName>(
+        hookName: H,
+        data: HookPointData<H>,
+        original: GameHookReturn<H>,
+    ): GameHookReturn<H> {
+        const handlers = this.hookNameToHandlers[hookName];
+        if (!handlers || handlers.length == 0) return original;
+        const hookPointConstructor = GameHookPoints[hookName] as any;
+        const hookPoint = new hookPointConstructor(data, original) as GameHookPoint<H>;
+
+        let hookReturn: GameHookReturn<H> = original; //original fallback just in case
+
+        for (let i = 0; i < handlers.length; i++) {
+            const handler = handlers[i];
+            hookReturn = handler(hookPoint);
+        }
+
+        return hookReturn;
     }
 
     private loadPlugin(PluginConstructor: new (game: Game) => GamePlugin): void {
