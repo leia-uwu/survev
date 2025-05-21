@@ -56,9 +56,9 @@ export default defineConfig(({ mode }) => {
 
         const isCrazyGames = urlParams.has("crazygames");
 
-        const isPOKI = window != window.parent && new URL(document.referrer).origin.includes("poki");
+        const isPOKI = window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("poki"); } catch(e) { return false; } })();
 
-        const isWithinGameMonetize = window != window.parent && new URL(document.referrer).origin.includes("gamemonetize") || window.location.href.includes("gamemonetize");
+        const isWithinGameMonetize = window.location.href.includes("gamemonetize") || (window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("gamemonetize"); } catch(e) { return false; } })());
 
         if (!isCrazyGames && !isPOKI && !isWithinGameMonetize) {
             const script = document.createElement("script");
