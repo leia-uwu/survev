@@ -411,6 +411,7 @@ export class PlayerView {
                 moreGamesAvailable: this.moreGamesAvailable,
                 loading: this.matchHistory.inProgress,
                 error: this.matchHistory.error,
+                formatTime,
             });
         }
 
@@ -466,6 +467,7 @@ export class PlayerView {
                     error: expandedGame.dataError,
                     loading: this.matchData.inProgress,
                     localId: localId,
+                    formatTime,
                 });
             }
 

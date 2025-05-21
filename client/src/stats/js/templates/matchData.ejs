@@ -78,18 +78,8 @@
                   <td><%= d.kills %></td>
                   <td class='hide-xs'><%= d.damage_dealt %></td>
                   <td>
-                      <%
-                          var timeAlive = d.time_alive;
-                          var minutes = Math.floor(timeAlive / 60) % 60;
-                          var seconds = Math.floor(timeAlive) % 60;
-                          if (seconds < 10) {seconds = "0" + seconds};
-                          var timeSurv = '';
-                          timeSurv += minutes + ':';
-                          timeSurv += seconds;
-                      %>
-                      <%= timeSurv %>
+                      <%= env.formatTime(d.time_alive) %>
                   </td>
-
               </tr>
           <% } %>
         </tbody>

@@ -83,16 +83,7 @@
                     <div class='match-link-stat'>
                         <div class='match-link-stat-name match-link-stat-name-md'>Survived</div>
                         <div class='match-link-stat-value match-link-stat-value-md'>
-                            <%
-                                var timeAlive = env.games[i].summary.time_alive;
-                                var minutes = Math.floor(timeAlive / 60) % 60;
-                                var seconds = Math.floor(timeAlive) % 60;
-                                if (seconds < 10) {seconds = "0" + seconds};
-                                var timeSurv = '';
-                                timeSurv += minutes + ':';
-                                timeSurv += seconds;
-                            %>
-                            <%= timeSurv %>
+                            <%= env.formatTime(env.games[i].summary.time_alive) %>
                         </div>
                     </div>
                 </div>
