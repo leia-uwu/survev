@@ -15,9 +15,6 @@
     "allowJs": true,
     "strict": true,
     "skipLibCheck": true,
-    "jsx": "react",
-    "jsxFactory": "h",
-    "jsxFragmentFactory": "Fragment",
     "types": ["vite/client", "turnstile-types"]
   },
   "include": [
