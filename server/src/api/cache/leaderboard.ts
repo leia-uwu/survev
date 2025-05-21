@@ -1,4 +1,6 @@
 import { getRedisClient } from ".";
+import { type MapDef, MapDefs } from "../../../../shared/defs/mapDefs";
+import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type {
     LeaderboardRequest,
     LeaderboardResponse,
@@ -42,7 +44,11 @@ class LeaderBoardCache {
 
     getCacheKey(prefix: Prefix, params: LeaderboardRequest) {
         const { teamMode, mapId, type, interval } = params;
-        return `${prefix}:${teamMode}:${mapId}:${type}:${interval}`;
+        const mapInfo: MapDef = Object.values(MapDefs).find(
+            (map: MapDef) => map.mapId === mapId,
+        );
+        const mapName = mapInfo.desc.name.toLowerCase();
+        return `${prefix}:${TeamModeToString[teamMode]}:${mapName}:${type}:${interval}`;
     }
 
     async invalidateCache(matchData: MatchDataTable[]) {

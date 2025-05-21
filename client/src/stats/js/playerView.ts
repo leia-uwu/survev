@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
+import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import type {
     LeaderboardRequest,
@@ -31,11 +32,6 @@ const templates = {
     playerCards,
 };
 
-const TeamModeToString = {
-    1: "solo",
-    2: "duo",
-    4: "squad",
-};
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
