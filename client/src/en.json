@@ -71,6 +71,7 @@
   "index-high-resolution": "High resolution (check to increase visual quality)",
   "index-client-side-interp": "Client side interpolation",
   "index-screen-shake": "Screen shake",
+  "index-local-rotation": "Local Rotation",
   "index-anon-player-names": "Anonymize player names",
   "index-master-volume": "Master Volume",
   "index-sfx-volume": "SFX Volume",
