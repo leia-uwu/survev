@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import type { LootDef } from "../../../shared/defs/gameObjectDefs";
 import type * as net from "../../../shared/net/net";
 import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
@@ -79,6 +80,18 @@ export const GameEvents = {
     }>(true),
     playerDidSwitchIdx: makeEvent<{ player: Player; nextWeapon: Weapon }>(true),
 
+    //emitted before type specific guards are checked (dropping 1x, trying to drop ammo player doesn't have)
+    playerWillDropItem: makeEvent<{
+        player: Player;
+        dropMsg: net.DropItemMsg;
+        itemDef: LootDef;
+    }>(true),
+    playerDidDropItem: makeEvent<{
+        player: Player;
+        dropMsg: net.DropItemMsg;
+        itemDef: LootDef;
+    }>(),
+
     //role promotions
     playerWillBePromoted: makeEvent<{ player: Player; role: string }>(true),
     playerDidGetPromoted: makeEvent<{ player: Player; role: string }>(),
@@ -101,6 +114,9 @@ export const GameEvents = {
         hideFromMap?: boolean;
     }>(true),
     obstacleDidGenerate: makeEvent<{ obstacle: Obstacle }>(),
+
+    obstacleWillTakeDamage: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(true),
+    obstacleDidTakeDamage: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(),
 
     /** obstacle already dead, but before side effects such as explosions and loot dropping */
     obstacleDeathBeforeEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(
