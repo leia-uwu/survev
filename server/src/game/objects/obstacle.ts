@@ -315,6 +315,16 @@ export class Obstacle extends BaseGameObject {
 
         this.updateCollider();
 
+        const objs = this.game.grid.intersectGameObject(this);
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.__type != ObjectType.Loot) continue;
+            const collision = collider.intersectCircle(this.collider, obj.pos, obj.rad);
+            if (collision) {
+                obj.push(collision.dir, collision.pen);
+            }
+        }
+
         this.setDirty();
     }
 
