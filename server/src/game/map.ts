@@ -1746,8 +1746,8 @@ export class GameMap {
         );
         this.game.objectRegister.register(obstacle);
         this.obstacles.push(obstacle);
-        if (def.regrow || obstacle.isDoor || obstacle.isButton) {
-            obstacle.makeDynamic();
+        if (obstacle.isDynamic) {
+            this.dynamicObstacles.push(obstacle);
         }
 
         if (def.map?.display && layer === 0 && !hideFromMap)
