@@ -115,6 +115,13 @@ export const GameEvents = {
     }>(true),
     obstacleDidGenerate: makeEvent<{ obstacle: Obstacle }>(),
 
+    obstacleWillInteract: makeEvent<{
+        obstacle: Obstacle;
+        player?: Player;
+        auto: boolean;
+    }>(true),
+    obstacleDidInteract: makeEvent<{ obstacle: Obstacle; player?: Player }>(),
+
     obstacleWillTakeDamage: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(true),
     obstacleDidTakeDamage: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(),
 
