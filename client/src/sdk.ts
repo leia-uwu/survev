@@ -58,9 +58,8 @@ function isWithinGameMonetize(): boolean {
         if (window !== window.parent && document.referrer) {
             const parentOrigin = new URL(document.referrer).origin;
             return parentOrigin.includes("gamemonetize");
-        } else {
-            return window.location.href.includes("gamemonetize");
         }
+        return window.location.href.includes("gamemonetize");
     } catch (error) {
         console.error("Error in isWithinGameMonetize:", error);
         return window.location.href.includes("gamemonetize");
