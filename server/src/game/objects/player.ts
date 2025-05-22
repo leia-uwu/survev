@@ -2648,6 +2648,10 @@ export class Player extends BaseGameObject {
             gameOverMsg.teamId = this.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;
+            this.game.pluginManager.emit("playerWillSendGameOverMsg", {
+                player: this,
+                gameOverMsg,
+            });
             this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
 
             for (const spectator of this.spectators) {

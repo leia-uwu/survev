@@ -92,6 +92,11 @@ export const GameEvents = {
         itemDef: LootDef;
     }>(),
 
+    playerWillSendGameOverMsg: makeEvent<{
+        player: Player;
+        gameOverMsg: net.GameOverMsg;
+    }>(),
+
     //role promotions
     playerWillBePromoted: makeEvent<{ player: Player; role: string }>(true),
     playerDidGetPromoted: makeEvent<{ player: Player; role: string }>(),
