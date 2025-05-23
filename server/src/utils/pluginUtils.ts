@@ -1,5 +1,4 @@
 import type { KillFeedSegment, KillFeedStyleObj } from "../../../shared/net/killFeedMsg";
-import type { Game } from "../game/game";
 import type { GameObject } from "../game/objects/gameObject";
 import type { EventName, GamePlugin } from "../game/pluginManager";
 import { IDAllocator } from "./IDAllocator";
@@ -39,17 +38,15 @@ interface Timer {
     remaining: number;
     repeat: number;
     destroyed: boolean;
+    paused: boolean;
 }
 
 export class TimerManager {
     idAllocator = new IDAllocator(8);
     idToTimer: Map<number, Timer> = new Map();
-
-    constructor(public readonly game: Game) {}
-
     update(dt: number) {
         for (const [id, timer] of this.idToTimer) {
-            if (timer.destroyed) continue;
+            if (timer.destroyed || timer.paused) continue;
             timer.remaining -= dt;
             if (timer.remaining <= 0) {
                 timer.callback();
@@ -70,6 +67,7 @@ export class TimerManager {
             remaining: delay,
             repeat: -1,
             destroyed: false,
+            paused: false,
         });
         return id;
     }
@@ -82,6 +80,7 @@ export class TimerManager {
             remaining: delay,
             repeat: delay,
             destroyed: false,
+            paused: false,
         });
         return id;
     }
@@ -93,6 +92,7 @@ export class TimerManager {
             remaining: 0,
             repeat: delay,
             destroyed: false,
+            paused: false,
         });
         return id;
     }
@@ -100,6 +100,18 @@ export class TimerManager {
     clearTimer(id: number) {
         this.idToTimer.delete(id);
         this.idAllocator.give(id);
+    }
+
+    pauseTimer(id: number) {
+        const timer = this.idToTimer.get(id);
+        if (!timer) return;
+        timer.paused = true;
+    }
+
+    resumeTimer(id: number) {
+        const timer = this.idToTimer.get(id);
+        if (!timer) return;
+        timer.paused = false;
     }
 
     /**
