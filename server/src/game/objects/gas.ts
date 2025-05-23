@@ -197,7 +197,7 @@ export class Gas {
     /**
      * Current duration ticker
      */
-    private _gasTicker = 0;
+    _gasTicker = 0;
 
     /**
      * If the gas full state needs to be sent to clients
