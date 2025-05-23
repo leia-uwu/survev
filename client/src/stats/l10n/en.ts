@@ -9,7 +9,7 @@ export default {
     "index-leaderboards": "Leaderboards",
     "index-my-stats": "My Stats",
     "index-search-players": "Search Players",
-    "index-play-survevio": "Play survev.io!",
+    "index-play-survevio": "Play TESTsurviv.io!",
     "stats-rank": "Rank",
     "stats-most-kills": "Most kills",
     "stats-total-kills": "Total kills",

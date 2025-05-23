@@ -9,7 +9,7 @@ export default {
     "index-leaderboards": "Marcadores",
     "index-my-stats": "Mis Estadísticas",
     "index-search-players": "Buscar jugador",
-    "index-play-survivio": "Jugar survev.io!",
+    "index-play-survivio": "Jugar TESTsurviv.io!",
     "stats-rank": "Posición",
     "stats-most-kills": "Mas muertes",
     "stats-total-kills": "Total de muertes",
