@@ -10,28 +10,32 @@ import stripBlockPlugin from "vite-plugin-strip-block";
 
 export const SplashThemes = {
     main: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash.png",
     },
     easter: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_easter.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_easter.png",
     },
     halloween: {
-        MENU_MUSIC: "audio/ambient/menu_music_02.mp3",
-        SPLASH_BG: "/img/main_splash_halloween.png",
+        menuMusic: "audio/ambient/menu_music_02.mp3",
+        splashBg: "/img/main_splash_halloween.png",
     },
     faction: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_0_7_0.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_0_7_0.png",
+    },
+    cobalt: {
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_cobalt.png",
     },
     snow: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_0_6_10.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_0_6_10.png",
     },
     spring: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_7_3.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_7_3.png",
     },
 };
 
@@ -52,9 +56,9 @@ export default defineConfig(({ mode }) => {
 
         const isCrazyGames = urlParams.has("crazygames");
 
-        const isPOKI = window != window.parent && new URL(document.referrer).origin.includes("poki");
+        const isPOKI = window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("poki"); } catch(e) { return false; } })();
 
-        const isWithinGameMonetize = window != window.parent && new URL(document.referrer).origin.includes("gamemonetize") || window.location.href.includes("gamemonetize");
+        const isWithinGameMonetize = window.location.href.includes("gamemonetize") || (window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("gamemonetize"); } catch(e) { return false; } })());
 
         if (!isCrazyGames && !isPOKI && !isWithinGameMonetize) {
             const script = document.createElement("script");
@@ -88,7 +92,7 @@ export default defineConfig(({ mode }) => {
     }
 
     process.env.VITE_GAME_VERSION = version;
-    process.env.VITE_BACKGROUND_IMG = selectedTheme.SPLASH_BG;
+    process.env.VITE_BACKGROUND_IMG = selectedTheme.splashBg;
 
     const plugins: Plugin[] = [ejsPlugin()];
 
@@ -166,7 +170,7 @@ export default defineConfig(({ mode }) => {
                     https: data.https,
                 };
             }),
-            MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
+            MENU_MUSIC: JSON.stringify(selectedTheme.menuMusic),
             AIP_PLACEMENT_ID: JSON.stringify(Config.secrets.AIP_PLACEMENT_ID),
             VITE_GAMEMONETIZE_ID: JSON.stringify(Config.secrets.GAMEMONETIZE_ID),
             IS_DEV: isDev,
