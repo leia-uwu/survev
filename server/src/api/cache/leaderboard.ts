@@ -1,6 +1,5 @@
 import { getRedisClient } from ".";
-import { type MapDef, MapDefs } from "../../../../shared/defs/mapDefs";
-import { TeamModeToString } from "../../../../shared/defs/types/misc";
+import { MapId, TeamModeToString } from "../../../../shared/defs/types/misc";
 import type {
     LeaderboardRequest,
     LeaderboardResponse,
@@ -44,10 +43,7 @@ class LeaderBoardCache {
 
     getCacheKey(prefix: Prefix, params: LeaderboardRequest) {
         const { teamMode, mapId, type, interval } = params;
-        const mapInfo: MapDef = Object.values(MapDefs).find(
-            (map: MapDef) => map.mapId === mapId,
-        );
-        const mapName = mapInfo.desc.name.toLowerCase();
+        const mapName = MapId[mapId].toLowerCase();
         return `${prefix}:${TeamModeToString[teamMode]}:${mapName}:${type}:${interval}`;
     }
 
