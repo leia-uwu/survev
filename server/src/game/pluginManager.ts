@@ -243,11 +243,9 @@ if (fs.existsSync(pluginDir)) {
 }
 
 export abstract class GamePlugin {
-    constructor(public readonly game: Game) {
-        this.initListeners();
-    }
+    constructor(public readonly game: Game) {}
 
-    protected abstract initListeners(): void;
+    abstract initListeners(): void;
 
     on<E extends EventName>(eventName: E, handler: EventHandler<E>): void {
         (
@@ -314,6 +312,7 @@ export class PluginManager {
 
     private loadPlugin(PluginConstructor: new (game: Game) => GamePlugin): void {
         const plugin = new PluginConstructor(this.game);
+        plugin.initListeners();
         this._plugins.add(plugin);
     }
 
