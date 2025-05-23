@@ -212,7 +212,7 @@ export const BaseDefs: Record<string, BulletDef> = {
     },
     bullet_garand: {
         type: "bullet",
-        damage: 35,
+        damage: 44,
         obstacleDamage: 1,
         falloff: 0.9,
         distance: 400,
