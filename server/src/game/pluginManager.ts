@@ -5,6 +5,7 @@ import type * as net from "../../../shared/net/net";
 import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
 import type { GameMap } from "./map";
+import type { Building } from "./objects/building";
 import type { DamageParams } from "./objects/gameObject";
 import type { Gas } from "./objects/gas";
 import type { Loot } from "./objects/loot";
@@ -136,6 +137,18 @@ export const GameEvents = {
     ),
     /** obstacle already dead and after all side effects */
     obstacleDeathAfterEffects: makeEvent<{ obstacle: Obstacle; params: DamageParams }>(),
+
+    //TODO: add cancel support
+    buildingWillGenerate: makeEvent<{
+        type: string;
+        pos: Vec2;
+        layer: number;
+        ori?: number;
+        parentId?: number;
+        hideFromMap?: boolean;
+        dontSpawnLoot?: boolean;
+    }>(true),
+    buildingDidGenerate: makeEvent<{ building: Building }>(),
 
     gameCreated: makeEvent<{ game: Game }>(),
     gameStarted: makeEvent<{ game: Game }>(),

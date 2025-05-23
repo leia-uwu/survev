@@ -1794,6 +1794,16 @@ export class GameMap {
         hideFromMap?: boolean,
         dontSpawnLoot?: boolean,
     ): Building {
+        this.game.pluginManager.emit("buildingWillGenerate", {
+            type,
+            pos,
+            layer,
+            ori,
+            parentId,
+            hideFromMap,
+            dontSpawnLoot,
+        });
+
         const def = MapObjectDefs[type] as BuildingDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -1865,6 +1875,9 @@ export class GameMap {
         this.addBounds(building, !!parentId);
 
         this.incrementCount(type);
+
+        this.game.pluginManager.emit("buildingDidGenerate", { building });
+
         return building;
     }
 
