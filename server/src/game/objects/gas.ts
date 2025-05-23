@@ -209,7 +209,7 @@ export class Gas {
     timeDirty = true;
 
     private _damageTicker = 0;
-    private _running = false;
+    _running = false;
 
     doDamage = false;
 
@@ -303,6 +303,8 @@ export class Gas {
     }
 
     advanceGasStage() {
+        if (this.game.pluginManager.emit("gasWillAdvance", { gas: this })) return;
+
         this.stage++;
         this._running = true;
 
@@ -312,8 +314,6 @@ export class Gas {
             this._running = false;
             return;
         }
-
-        this.game.pluginManager.emit("gasWillAdvance", { gas: this });
 
         this.mode = stage.mode;
         this.radOld = this.currentRad;
