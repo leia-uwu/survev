@@ -156,6 +156,20 @@ export const helpers = {
             $temp.remove();
         } catch (_e) {}
     },
+    formatTime(time: number) {
+        const minutes = Math.floor(time / 60) % 60;
+        let seconds: string | number = Math.floor(time) % 60;
+        if (seconds < 10) {
+            seconds = `0${seconds}`;
+        }
+        let timeSurv = "";
+        timeSurv += `${minutes}:`;
+        timeSurv += seconds;
+        return timeSurv;
+    },
+    emoteImgToSvg(img: string) {
+        return img && img.length > 4 ? `../img/emotes/${img.slice(0, -4)}.svg` : "";
+    },
     getSvgFromGameType: function (gameType: string) {
         const def = GameObjectDefs[gameType] as any;
         const defType = def ? def.type : "";

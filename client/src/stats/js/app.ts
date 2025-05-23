@@ -4,7 +4,6 @@ import "bootstrap";
 import slugify from "slugify";
 import { ConfigManager } from "../../config";
 import { device } from "../../device";
-import { type AcceptedLocales, Localization } from "./localization";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
 import language from "./templates/langauge.ejs";
@@ -12,10 +11,14 @@ import language from "./templates/langauge.ejs";
 import "bootstrap/dist/css/bootstrap.css";
 import "../../../css/stats/app.css";
 import { helpers } from "../../helpers";
+import { Localization } from "../../ui/localization";
+import EnJs from "../en.json";
 
 const templates = {
     language,
 };
+
+type AcceptedLocales = "en" | "es";
 
 type Routes = "player" | "main";
 
@@ -69,7 +72,14 @@ export class App {
         this.config = new ConfigManager();
         this.config.load(() => {});
 
-        this.localization = new Localization();
+        this.localization = new Localization(
+            "en",
+            ["en", "es"],
+            {
+                en: EnJs as unknown as Record<string, string>,
+            },
+            true,
+        );
         this.localization.setLocale(this.config.get("language") as AcceptedLocales);
         this.localization.localizeIndex();
 

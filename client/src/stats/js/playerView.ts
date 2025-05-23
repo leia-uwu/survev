@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
+import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import type {
     LeaderboardRequest,
@@ -16,7 +17,6 @@ import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { emoteImgToSvg, formatTime, getCensoredBattletag } from "./helper";
 import loading from "./templates/loading.ejs";
 import matchData from "./templates/matchData.ejs";
 import matchHistory from "./templates/matchHistory.ejs";
@@ -31,11 +31,6 @@ const templates = {
     playerCards,
 };
 
-const TeamModeToString = {
-    1: "solo",
-    2: "duo",
-    4: "squad",
-};
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
@@ -61,19 +56,17 @@ function getPlayerCardData(
 
     const emoteDef = EmotesDefs[userData.player_icon];
     const texture = emoteDef
-        ? emoteImgToSvg(emoteDef.texture)
+        ? helpers.emoteImgToSvg(emoteDef.texture)
         : "/img/gui/player-gui.svg";
 
     let tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
     const tmpslugToShow =
-        tmpSlug != ""
-            ? getCensoredBattletag(`${userData.username}#${tmpSlug}`)
-            : getCensoredBattletag(userData.username);
+        tmpSlug != "" ? `${userData.username}#${tmpSlug}` : userData.username;
 
     const profile = {
-        username: getCensoredBattletag(userData.username),
+        username: userData.username,
         slugToShow: tmpslugToShow,
         banned: userData.banned,
         avatarTexture: texture,
@@ -107,7 +100,7 @@ function getPlayerCardData(
         addStat(bot, "Wins", mode.wins);
         addStat(bot, "Win %", mode.winPct);
         addStat(bot, "Kills", mode.kills);
-        addStat(bot, "Avg Survived", formatTime(mode.avgTimeAlive));
+        addStat(bot, "Avg Survived", helpers.formatTime(mode.avgTimeAlive));
         addStat(bot, "Most kills", mode.mostKills);
         addStat(bot, "K/G", mode.kpg);
         addStat(bot, "Most damage", mode.mostDamage);
@@ -415,6 +408,7 @@ export class PlayerView {
                 moreGamesAvailable: this.moreGamesAvailable,
                 loading: this.matchHistory.inProgress,
                 error: this.matchHistory.error,
+                formatTime: helpers.formatTime,
             });
         }
 
@@ -470,6 +464,7 @@ export class PlayerView {
                     error: expandedGame.dataError,
                     loading: this.matchData.inProgress,
                     localId: localId,
+                    formatTime: helpers.formatTime,
                 });
             }
 

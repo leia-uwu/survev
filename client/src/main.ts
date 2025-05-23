@@ -140,9 +140,10 @@ class Application {
             if (device.mobile) {
                 Menu.applyMobileBrowserStyling(device.tablet);
             }
-            const t = this.config.get("language") || this.localization.detectLocale();
-            this.config.set("language", t);
-            this.localization.setLocale(t);
+            const language =
+                this.config.get("language") || this.localization.detectLocale();
+            this.config.set("language", language);
+            this.localization.setLocale(language);
             this.localization.populateLanguageSelect();
             this.startPingTest();
             this.siteInfo.load();

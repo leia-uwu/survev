@@ -1,6 +1,6 @@
 import $ from "jquery";
 import { MapDefs } from "../../shared/defs/mapDefs";
-import { TeamMode } from "../../shared/gameConfig";
+import { TeamModeToString } from "../../shared/defs/types/misc";
 import type { Info } from "../../shared/types/api";
 import { api } from "./api";
 import type { ConfigManager } from "./config";
@@ -42,12 +42,6 @@ export class SiteInfo {
     }
 
     getGameModeStyles() {
-        const modeTypes = {
-            [TeamMode.Solo]: "solo",
-            [TeamMode.Duo]: "duo",
-            [TeamMode.Squad]: "squad",
-        };
-
         const availableModes = [];
         const modes = this.info.modes || [];
         for (let i = 0; i < modes.length; i++) {
@@ -56,7 +50,7 @@ export class SiteInfo {
                 .desc;
             const buttonText = mapDef.buttonText
                 ? mapDef.buttonText
-                : modeTypes[mode.teamMode];
+                : TeamModeToString[mode.teamMode];
             availableModes.push({
                 icon: mapDef.icon,
                 buttonCss: mapDef.buttonCss,
