@@ -24,4 +24,12 @@ export const proxy = {
         const proxyDef = proxy.getProxyDef();
         return proxyDef ? !!(proxyDef.def[loginType] || proxyDef.def.all) : false;
     },
+
+    anyLoginSupported() {
+        return (
+            proxy.loginSupported("google") ||
+            proxy.loginSupported("discord") ||
+            proxy.loginSupported("mock")
+        );
+    },
 };

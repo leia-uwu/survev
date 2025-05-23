@@ -21,6 +21,7 @@ import { helpers } from "./helpers";
 import { InputHandler } from "./input";
 import { InputBindUi, InputBinds } from "./inputBinds";
 import { PingTest } from "./pingTest";
+import { proxy } from "./proxy";
 import { ResourceManager } from "./resources";
 import { SDK } from "./sdk";
 import { SiteInfo } from "./siteInfo";
@@ -694,7 +695,7 @@ class Application {
                 contentType: "application/json; charset=utf-8",
                 timeout: 10 * 1000,
                 xhrFields: {
-                    withCredentials: true,
+                    withCredentials: proxy.anyLoginSupported(),
                 },
                 success: (data: FindGameResponse) => {
                     if (data.error === "invalid_captcha") {

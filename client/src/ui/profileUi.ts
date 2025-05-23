@@ -338,11 +338,7 @@ export class ProfileUi {
             return false;
         });
 
-        const loginSupported =
-            !SDK.isAnySDK &&
-            (proxy.loginSupported("google") ||
-                proxy.loginSupported("discord") ||
-                proxy.loginSupported("mock"));
+        const loginSupported = !SDK.isAnySDK && proxy.anyLoginSupported();
 
         $(".account-block").toggle(loginSupported);
     }
