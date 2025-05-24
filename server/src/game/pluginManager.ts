@@ -4,6 +4,7 @@ import type { LootDef } from "../../../shared/defs/gameObjectDefs";
 import type * as net from "../../../shared/net/net";
 import type { Vec2 } from "../../../shared/utils/v2";
 import type { Game } from "./game";
+import type { GameModeManager } from "./gameModeManager";
 import type { GameMap } from "./map";
 import type { Building } from "./objects/building";
 import type { DamageParams } from "./objects/gameObject";
@@ -178,7 +179,8 @@ function makeHookPoint<T, R>() {
 }
 
 const GameHookPoints = {
-    gameCheckCanJoin: makeHookPoint<{ game: Game }, boolean>(),
+    "game:canJoin": makeHookPoint<{ game: Game }, boolean>(),
+    "gmm:isGameStarted": makeHookPoint<{ gmm: GameModeManager }, boolean>(),
 };
 
 export type HookName = keyof typeof GameHookPoints;

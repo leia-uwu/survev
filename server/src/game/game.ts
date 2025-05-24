@@ -339,7 +339,7 @@ export class Game {
             !this.over &&
             this.startedTime < 60;
 
-        return this.pluginManager.trigger("gameCheckCanJoin", { game: this }, canJoin);
+        return this.pluginManager.trigger("game:canJoin", { game: this }, canJoin);
     }
 
     deserializeMsg(buff: ArrayBuffer): {

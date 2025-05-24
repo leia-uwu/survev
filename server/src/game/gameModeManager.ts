@@ -149,7 +149,12 @@ export class GameModeManager {
     }
 
     isGameStarted(): boolean {
-        return this.cantDespawnAliveCount() > 1;
+        const isGameStarted = this.cantDespawnAliveCount() > 1;
+        return this.game.pluginManager.trigger(
+            "gmm:isGameStarted",
+            { gmm: this },
+            isGameStarted,
+        );
     }
 
     updateAliveCounts(aliveCounts: number[]): void {
