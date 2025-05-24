@@ -20,8 +20,11 @@ class LeaderBoardCache {
         const client = await getRedisClient();
         const cacheKey = this.getCacheKey("leaderboard", params);
         const cacheTTL = this._getCacheTTL(params.type);
-
         await client.setEx(cacheKey, cacheTTL, JSON.stringify(data));
+
+        if (params.type !== "most_damage_dealt" && params.type !== "most_kills") return;
+        const lowestValue = data[data.length - 1].val;
+        await client.set(this.getCacheKey("lowestscore", params), lowestValue);
     }
 
     async get(params: LeaderboardRequest): Promise<LeaderboardResponse[] | null> {
@@ -38,6 +41,10 @@ class LeaderBoardCache {
         const client = await getRedisClient();
         const cacheKey = this.getCacheKey("leaderboard", params);
         await client.del(cacheKey);
+
+        if (params.type === "most_damage_dealt" || params.type === "most_kills")
+            await client.del(this.getCacheKey("lowestscore", params));
+
         return true;
     }
 
@@ -65,30 +72,30 @@ class LeaderBoardCache {
             for (const interval of intervals) {
                 if (type !== "most_damage_dealt" && type !== "most_kills") continue;
 
-                const gameData: LeaderboardRequest = {
+                const params: LeaderboardRequest = {
                     type,
                     teamMode: matchData[0].teamMode,
                     mapId: matchData[0].mapId,
                     interval,
                 };
 
-                const lowestScoreCacheKey = this.getCacheKey("lowestscore", gameData);
-                const lowestLeaderboardValue = await client.get(lowestScoreCacheKey);
+                const lowestLeaderboardValue = await client.get(
+                    this.getCacheKey("lowestscore", params),
+                );
 
                 if (
-                    lowestLeaderboardValue != null &&
-                    maxGameValue <= parseInt(lowestLeaderboardValue)
+                    lowestLeaderboardValue == null ||
+                    maxGameValue < parseInt(lowestLeaderboardValue)
                 )
                     continue;
 
                 const leaderboardCacheKey = leaderboardCache.getCacheKey(
                     "leaderboard",
-                    gameData,
+                    params,
                 );
                 server.logger.info(`[INVALIDATING CACHE] -> ${leaderboardCacheKey}`);
 
-                await client.set(lowestScoreCacheKey, maxGameValue);
-                await client.del(leaderboardCacheKey);
+                await leaderboardCache.del(params);
             }
         }
     }
