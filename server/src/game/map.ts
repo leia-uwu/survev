@@ -409,6 +409,8 @@ export class GameMap {
         this.generateObjects();
         this.timerEnd("Generating all objects");
 
+        this.game.pluginManager.emit("mapCreated", { map: this });
+
         this.mapStream.stream.index = 0;
         this.mapStream.serializeMsg(MsgType.Map, this.msg);
     }
@@ -1706,6 +1708,16 @@ export class GameMap {
         puzzlePiece?: string,
         hideFromMap?: boolean,
     ): Obstacle {
+        this.game.pluginManager.emit("obstacleWillGenerate", {
+            type,
+            pos,
+            layer,
+            ori,
+            scale,
+            buildingId,
+            puzzlePiece,
+            hideFromMap,
+        });
         const def = MapObjectDefs[type] as ObstacleDef;
 
         scale = scale ?? util.random(def.scale.createMin, def.scale.createMax);
@@ -1732,6 +1744,7 @@ export class GameMap {
 
         this.addBounds(obstacle, !!buildingId);
 
+        this.game.pluginManager.emit("obstacleDidGenerate", { obstacle: obstacle });
         return obstacle;
     }
 
@@ -1769,6 +1782,16 @@ export class GameMap {
         hideFromMap?: boolean,
         dontSpawnLoot?: boolean,
     ): Building {
+        this.game.pluginManager.emit("buildingWillGenerate", {
+            type,
+            pos,
+            layer,
+            ori,
+            parentId,
+            hideFromMap,
+            dontSpawnLoot,
+        });
+
         const def = MapObjectDefs[type] as BuildingDef;
 
         ori = ori ?? def.ori ?? util.randomInt(0, 3);
@@ -1840,6 +1863,9 @@ export class GameMap {
         this.addBounds(building, !!parentId);
 
         this.incrementCount(type);
+
+        this.game.pluginManager.emit("buildingDidGenerate", { building });
+
         return building;
     }
 
@@ -1966,14 +1992,19 @@ export class GameMap {
         let getPos: () => Vec2;
 
         if (!group?.spawnLeader) {
-            const spawnMin = v2.create(this.shoreInset, this.shoreInset);
-            const spawnMax = v2.create(
+            const gas = this.game.gas;
+            const gasAabb = collider.toAabb(
+                collider.createCircle(gas.currentPos, gas.currentRad),
+            );
+
+            const mapInsetMin = v2.create(this.shoreInset, this.shoreInset);
+            const mapInsetMax = v2.create(
                 this.width - this.shoreInset,
                 this.height - this.shoreInset,
             );
             let spawnAabb: { min: Vec2; max: Vec2 } = collider.createAabb(
-                spawnMin,
-                spawnMax,
+                v2.maxElems(mapInsetMin, gasAabb.min),
+                v2.minElems(mapInsetMax, gasAabb.max),
             );
 
             if (this.factionMode && team) {
@@ -2012,6 +2043,11 @@ export class GameMap {
             v2.set(circle.pos, getPos());
 
             if (this.isOnWater(circle.pos, 0)) {
+                collided = true;
+                continue;
+            }
+
+            if (this.game.gas.isInGas(circle.pos)) {
                 collided = true;
                 continue;
             }

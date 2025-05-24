@@ -36,6 +36,13 @@ throwableList.sort((a, b) => {
     return aDef.inventoryOrder - bDef.inventoryOrder;
 });
 
+export interface Weapon {
+    type: string;
+    ammo: number;
+    cooldown: number;
+    recoilTime: number;
+}
+
 export class WeaponManager {
     player: Player;
 
@@ -86,6 +93,18 @@ export class WeaponManager {
             curWeaponDef.fireMode === "burst" &&
             this.bursts.length &&
             !forceSwitch
+        )
+            return;
+
+        if (
+            this.player.game.pluginManager.emit("playerWillSwitchIdx", {
+                player: this.player,
+                idx,
+                cancelAction,
+                cancelSlowdown,
+                forceSwitch,
+                changeCooldown,
+            })
         )
             return;
 
@@ -158,6 +177,11 @@ export class WeaponManager {
 
         this.player.setDirty();
         this.player.weapsDirty = true;
+
+        this.player.game.pluginManager.emit("playerDidSwitchIdx", {
+            player: this.player,
+            nextWeapon: nextWeapon,
+        });
     }
 
     setWeapon(idx: number, type: string, ammo: number) {
@@ -204,12 +228,7 @@ export class WeaponManager {
         this.player.weapsDirty = true;
     }
 
-    weapons: Array<{
-        type: string;
-        ammo: number;
-        cooldown: number;
-        recoilTime: number;
-    }> = [];
+    weapons: Array<Weapon> = [];
 
     get activeWeapon(): string {
         return this.weapons[this.curWeapIdx].type;

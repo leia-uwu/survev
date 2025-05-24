@@ -242,6 +242,12 @@ export class Obstacle extends BaseGameObject {
         }
     }
 
+    makeDynamic() {
+        if (this.isDynamic) return;
+        this.isDynamic = true;
+        this.game.map.dynamicObstacles.push(this);
+    }
+
     delayedToggle(delay: number, player?: Player, dir?: Vec2) {
         this.toggleTicker = delay;
         this.togglePlayer = player;
@@ -308,6 +314,16 @@ export class Obstacle extends BaseGameObject {
 
         this.updateCollider();
 
+        const objs = this.game.grid.intersectGameObject(this);
+        for (let i = 0; i < objs.length; i++) {
+            const obj = objs[i];
+            if (obj.__type != ObjectType.Loot) continue;
+            const collision = collider.intersectCircle(this.collider, obj.pos, obj.rad);
+            if (collision) {
+                obj.push(collision.dir, collision.pen);
+            }
+        }
+
         this.setDirty();
     }
 
@@ -341,6 +357,14 @@ export class Obstacle extends BaseGameObject {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         if (this.health === 0 || !this.destructible) return;
 
+        if (
+            this.game.pluginManager.emit("obstacleWillTakeDamage", {
+                obstacle: this,
+                params,
+            })
+        )
+            return;
+
         if (params.damageType === DamageType.Player) {
             let armorPiercing = false;
             let stonePiercing = false;
@@ -370,6 +394,8 @@ export class Obstacle extends BaseGameObject {
             this.updateCollider();
         }
 
+        this.game.pluginManager.emit("obstacleDidTakeDamage", { obstacle: this, params });
+
         // need to send full object for obstacles with explosions
         // so smoke particles work on the client
         // since they depend on healthT
@@ -389,6 +415,14 @@ export class Obstacle extends BaseGameObject {
 
         this.scale = this.minScale;
         this.updateCollider();
+
+        if (
+            this.game.pluginManager.emit("obstacleDeathBeforeEffects", {
+                obstacle: this,
+                params,
+            })
+        )
+            return;
 
         if (def.destroyType) {
             let destroyType: string;
@@ -517,12 +551,25 @@ export class Obstacle extends BaseGameObject {
                 }
             }
         }
+        this.game.pluginManager.emit("obstacleDeathAfterEffects", {
+            obstacle: this,
+            params,
+        });
     }
 
     interact(player?: Player, auto = false): void {
         if (this.dead) return;
 
         this.interactedBy = player;
+
+        if (
+            this.game.pluginManager.emit("obstacleWillInteract", {
+                obstacle: this,
+                player,
+                auto,
+            })
+        )
+            return;
 
         if (this.isDoor && this.door) {
             if (!this.door.canUse) return;
@@ -546,6 +593,8 @@ export class Obstacle extends BaseGameObject {
         if (this.isButton && this.button.canUse) {
             this.useButton();
         }
+
+        this.game.pluginManager.emit("obstacleDidInteract", { obstacle: this, player });
     }
 
     unlock(): void {
