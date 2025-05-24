@@ -2004,14 +2004,19 @@ export class GameMap {
         let getPos: () => Vec2;
 
         if (!group?.spawnPosition) {
-            const spawnMin = v2.create(this.shoreInset, this.shoreInset);
-            const spawnMax = v2.create(
+            const gas = this.game.gas;
+            const gasAabb = collider.toAabb(
+                collider.createCircle(gas.currentPos, gas.currentRad),
+            );
+
+            const mapInsetMin = v2.create(this.shoreInset, this.shoreInset);
+            const mapInsetMax = v2.create(
                 this.width - this.shoreInset,
                 this.height - this.shoreInset,
             );
             let spawnAabb: { min: Vec2; max: Vec2 } = collider.createAabb(
-                spawnMin,
-                spawnMax,
+                v2.maxElems(mapInsetMin, gasAabb.min),
+                v2.minElems(mapInsetMax, gasAabb.max),
             );
 
             if (this.factionMode && team) {
@@ -2095,6 +2100,10 @@ export class GameMap {
         const circle = collider.createCircle(pos, GameConfig.player.radius);
 
         if (this.isOnWater(pos, 0)) {
+            return false;
+        }
+
+        if (this.game.gas.isInGas(pos)) {
             return false;
         }
 
