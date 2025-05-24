@@ -54,11 +54,16 @@ if (window.self !== window.top) {
 }
 
 function isWithinGameMonetize(): boolean {
-    if (window !== window.parent) {
-        const parentOrigin = new URL(document.referrer).origin;
-        return parentOrigin.includes("gamemonetize");
+    try {
+        if (window !== window.parent && document.referrer) {
+            const parentOrigin = new URL(document.referrer).origin;
+            return parentOrigin.includes("gamemonetize");
+        }
+        return window.location.href.includes("gamemonetize");
+    } catch (error) {
+        console.error("Error in isWithinGameMonetize:", error);
+        return window.location.href.includes("gamemonetize");
     }
-    return window.location.href.includes("gamemonetize");
 }
 
 function isWithinCrazyGames(): boolean {
@@ -67,11 +72,16 @@ function isWithinCrazyGames(): boolean {
 }
 
 function isWithinPoki(): boolean {
-    if (window !== window.parent) {
-        const parentOrigin = new URL(document.referrer).origin;
-        return parentOrigin.includes("poki");
+    try {
+        if (window !== window.parent && document.referrer) {
+            const parentOrigin = new URL(document.referrer).origin;
+            return parentOrigin.includes("poki");
+        }
+        return false;
+    } catch (error) {
+        console.error("Error in isWithinPoki:", error);
+        return false;
     }
-    return false;
 }
 
 class SDKManager {

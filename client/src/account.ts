@@ -18,6 +18,7 @@ import { api } from "./api";
 import type { ConfigManager } from "./config";
 import { errorLogManager } from "./errorLogs";
 import { helpers } from "./helpers";
+import { proxy } from "./proxy";
 import type { Item } from "./ui/loadoutMenu";
 
 type DataOrCallback =
@@ -39,7 +40,7 @@ function ajaxRequest(
         type: "POST",
         timeout: 10 * 1000,
         xhrFields: {
-            withCredentials: true,
+            withCredentials: proxy.anyLoginSupported(),
         },
         headers: {
             // Set a header to guard against CSRF attacks.
