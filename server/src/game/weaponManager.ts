@@ -54,6 +54,11 @@ export class WeaponManager {
         return this._curWeapIdx;
     }
 
+    set curWeapIdx(curWeapIdx: number) {
+        if (!this.weapons[curWeapIdx]?.type) return;
+        this._curWeapIdx = curWeapIdx;
+    }
+
     /**
      *
      * @param idx index being swapped to
