@@ -1,5 +1,6 @@
 import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
+import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type { TeamMode } from "../../../../shared/gameConfig";
 import type {
     LeaderboardRequest,
@@ -12,10 +13,10 @@ import type {
     UserStatsRequest,
     UserStatsResponse,
 } from "../../../../shared/types/stats";
+import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { emoteImgToSvg, formatTime, getCensoredBattletag } from "./helper";
 import loading from "./templates/loading.ejs";
 import matchData from "./templates/matchData.ejs";
 import matchHistory from "./templates/matchHistory.ejs";
@@ -30,11 +31,6 @@ const templates = {
     playerCards,
 };
 
-const TeamModeToString = {
-    1: "solo",
-    2: "duo",
-    4: "squad",
-};
 export interface TeamModes {
     teamMode: TeamMode;
     games: number;
@@ -60,19 +56,17 @@ function getPlayerCardData(
 
     const emoteDef = EmotesDefs[userData.player_icon];
     const texture = emoteDef
-        ? emoteImgToSvg(emoteDef.texture)
+        ? helpers.emoteImgToSvg(emoteDef.texture)
         : "/img/gui/player-gui.svg";
 
     let tmpSlug = userData.slug.toLowerCase();
     tmpSlug = tmpSlug.replace(userData.username.toLowerCase(), "");
 
     const tmpslugToShow =
-        tmpSlug != ""
-            ? getCensoredBattletag(`${userData.username}#${tmpSlug}`)
-            : getCensoredBattletag(userData.username);
+        tmpSlug != "" ? `${userData.username}#${tmpSlug}` : userData.username;
 
     const profile = {
-        username: getCensoredBattletag(userData.username),
+        username: userData.username,
         slugToShow: tmpslugToShow,
         banned: userData.banned,
         avatarTexture: texture,
@@ -106,7 +100,7 @@ function getPlayerCardData(
         addStat(bot, "Wins", mode.wins);
         addStat(bot, "Win %", mode.winPct);
         addStat(bot, "Kills", mode.kills);
-        addStat(bot, "Avg Survived", formatTime(mode.avgTimeAlive));
+        addStat(bot, "Avg Survived", helpers.formatTime(mode.avgTimeAlive));
         addStat(bot, "Most kills", mode.mostKills);
         addStat(bot, "K/G", mode.kpg);
         addStat(bot, "Most damage", mode.mostDamage);
@@ -174,7 +168,7 @@ class Query<T> {
         this.error = false;
 
         $.ajax({
-            url: url,
+            url: api.resolveUrl(url),
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
@@ -221,9 +215,7 @@ export class PlayerView {
     );
     constructor(readonly app: App) {}
     getUrlParams() {
-        const location = window.location.href;
-        const params = new RegExp("stats/([^/?#]+).*$").exec(location) || [];
-        const slug = params[1] || "";
+        const slug = helpers.getParameterByName("slug") || "";
         const interval = helpers.getParameterByName("t") || "all";
         const mapId = helpers.getParameterByName("mapId") || "-1";
         return {
@@ -359,7 +351,8 @@ export class PlayerView {
     onChangedParams() {
         const time = $("#player-time").val();
         const mapId = $("#player-map-id").val();
-        window.history.pushState("", "", `?t=${time}&mapId=${mapId}`);
+        const slug = this.getUrlParams().slug;
+        window.history.pushState("", "", `?slug=${slug}&t=${time}&mapId=${mapId}`);
 
         const params = this.getUrlParams();
         this.loadUserStats(
@@ -415,6 +408,7 @@ export class PlayerView {
                 moreGamesAvailable: this.moreGamesAvailable,
                 loading: this.matchHistory.inProgress,
                 error: this.matchHistory.error,
+                formatTime: helpers.formatTime,
             });
         }
 
@@ -470,6 +464,7 @@ export class PlayerView {
                     error: expandedGame.dataError,
                     loading: this.matchData.inProgress,
                     localId: localId,
+                    formatTime: helpers.formatTime,
                 });
             }
 

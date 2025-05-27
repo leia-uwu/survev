@@ -1,10 +1,10 @@
 import $ from "jquery";
 import { MinGames } from "../../../../shared/constants";
 import type { LeaderboardRequest } from "../../../../shared/types/stats";
+import { api } from "../../api";
 import { device } from "../../device";
 import { helpers } from "../../helpers";
 import type { App } from "./app";
-import { getCensoredBattletag } from "./helper";
 import leaderboard from "./templates/leaderboard.ejs";
 import leaderboardError from "./templates/leaderboardError.ejs";
 import loading from "./templates/loading.ejs";
@@ -76,7 +76,7 @@ export class MainView {
         };
 
         $.ajax({
-            url: "/api/leaderboard",
+            url: api.resolveUrl("/api/leaderboard"),
             type: "POST",
             data: JSON.stringify(args),
             contentType: "application/json; charset=utf-8",
@@ -129,24 +129,6 @@ export class MainView {
         } else if (this.error || !this.data.data) {
             content = templates.leaderboardError({});
         } else {
-            for (let i = 0; i < this.data.data.length; i++) {
-                if (this.data.data[i].username) {
-                    this.data.data[i].username = getCensoredBattletag(
-                        this.data.data[i].username,
-                    );
-                } else if (this.data.data[i].usernames) {
-                    this.data.data[i].usernames =
-                        this.data.data[i].usernames.map(getCensoredBattletag);
-                }
-
-                if (this.data.data[i].slug) {
-                    this.data.data[i].slug = getCensoredBattletag(this.data.data[i].slug);
-                } else if (this.data.data[i].slugs) {
-                    this.data.data[i].slugs =
-                        this.data.data[i].slugs.map(getCensoredBattletag);
-                }
-            }
-
             const statName =
                 TypeToString[this.data.type as keyof typeof TypeToString] || "";
             let minGames = MinGames[this.data.type as keyof typeof MinGames]

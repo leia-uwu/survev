@@ -2,7 +2,7 @@ import { Discord, generateCodeVerifier, generateState } from "arctic";
 import { Hono } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import { Config } from "../../../../config";
-import { getRedirectUri, handleAuthUser } from "./authUtils";
+import { cookieDomain, getRedirectUri, handleAuthUser } from "./authUtils";
 
 export const discord = new Discord(
     Config.secrets.DISCORD_CLIENT_ID!,
@@ -37,6 +37,7 @@ DiscordRouter.get("/", (c) => {
         httpOnly: true,
         maxAge: 60 * 10,
         sameSite: "Lax",
+        domain: cookieDomain,
     });
 
     setCookie(c, codeVerifierCookieName, codeVerifier, {
@@ -45,10 +46,11 @@ DiscordRouter.get("/", (c) => {
         httpOnly: false,
         maxAge: 60 * 10,
         sameSite: "Lax",
+        domain: cookieDomain,
     });
 
     url.searchParams.append("prompt", "none");
-    return c.redirect(url.toString());
+    return c.redirect(url);
 });
 
 DiscordRouter.get("/callback", async (c) => {
@@ -80,5 +82,5 @@ DiscordRouter.get("/callback", async (c) => {
 
     await handleAuthUser(c, "discord", resData.id);
 
-    return c.redirect("/");
+    return c.redirect(Config.oauthBasePath);
 });

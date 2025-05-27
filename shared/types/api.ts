@@ -81,3 +81,11 @@ export interface Info {
         img: string;
     }>;
 }
+
+export interface ProxyDef {
+    apiUrl?: string;
+    google?: boolean;
+    discord?: boolean;
+    mock?: boolean;
+    all?: boolean;
+}

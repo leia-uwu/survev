@@ -58,6 +58,7 @@ app.use(
     "/api/*",
     cors({
         origin: "*",
+        credentials: true,
         allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         allowHeaders: ["Origin", "Content-Type", "Accept", "X-Requested-With"],
         maxAge: 3600,
@@ -110,22 +111,6 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         server.logger.error("/api/find_game: Failed to check if IP is banned", err);
     }
 
-    const body = c.req.valid("json");
-    if (server.captchaEnabled) {
-        if (!body.turnstileToken) {
-            return c.json<FindGameResponse>({ error: "invalid_captcha" });
-        }
-
-        try {
-            if (!(await verifyTurnsStile(body.turnstileToken, ip))) {
-                return c.json<FindGameResponse>({ error: "invalid_captcha" });
-            }
-        } catch (err) {
-            server.logger.error("/api/find_game: Failed verifying turnstile: ", err);
-            return c.json<FindGameResponse>({ error: "invalid_captcha" }, 500);
-        }
-    }
-
     const token = randomUUID();
     let userId: string | null = null;
 
@@ -142,6 +127,22 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         } catch (err) {
             server.logger.error("/api/find_game: Failed to validate session", err);
             userId = null;
+        }
+    }
+
+    const body = c.req.valid("json");
+    if (server.captchaEnabled && !userId) {
+        if (!body.turnstileToken) {
+            return c.json<FindGameResponse>({ error: "invalid_captcha" });
+        }
+
+        try {
+            if (!(await verifyTurnsStile(body.turnstileToken, ip))) {
+                return c.json<FindGameResponse>({ error: "invalid_captcha" });
+            }
+        } catch (err) {
+            server.logger.error("/api/find_game: Failed verifying turnstile: ", err);
+            return c.json<FindGameResponse>({ error: "invalid_captcha" }, 500);
         }
     }
 

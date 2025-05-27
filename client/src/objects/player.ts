@@ -162,7 +162,7 @@ class Gun {
     }
 }
 
-interface AnimCtx {
+export interface AnimCtx {
     playerBarn: PlayerBarn;
     map: Map;
     audioManager: AudioManager;
@@ -2119,10 +2119,10 @@ export class Player implements AbstractObject {
             for (let i = 0; i < anim.effects.length; i++) {
                 const effect = anim.effects[i];
                 if (effect.time >= ticker && effect.time < f) {
-                    (this[effect.fn as keyof this] as any).apply(this, [
+                    (this[effect.fn] as (ctx: AnimCtx, args: unknown) => void)(
                         AnimCtx,
                         effect.args,
-                    ]);
+                    );
                 }
             }
             if (w) {
@@ -2186,7 +2186,7 @@ export class Player implements AbstractObject {
         }
     }
 
-    animMeleeCollision(animCtx: Partial<AnimCtx>, args: { playerHit: string }) {
+    animMeleeCollision(animCtx: Partial<AnimCtx>, args: { playerHit?: string }) {
         const meleeDef = GameObjectDefs[this.m_netData.m_activeWeapon] as MeleeDef;
         if (meleeDef && meleeDef.type == "melee") {
             const meleeCol = this.getMeleeCollider();
@@ -2298,7 +2298,7 @@ export class Player implements AbstractObject {
                             ((Math.random() - 0.5) * Math.PI) / 3,
                         );
                         const hitSound =
-                            meleeDef.sound[args.playerHit] || meleeDef.sound.playerHit;
+                            meleeDef.sound[args.playerHit!] || meleeDef.sound.playerHit;
                         hits.push({
                             pen: col.pen,
                             prio: teamId == ourTeamId ? 2 : 0,

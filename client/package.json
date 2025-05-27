@@ -23,7 +23,7 @@
     "@types/jquery": "^3.5.32",
     "codefend": "^3.2.0",
     "turnstile-types": "^1.2.3",
-    "vite": "^6.3.3",
+    "vite": "^6.3.5",
     "vite-plugin-strip-block": "^1.0.1"
   }
 }

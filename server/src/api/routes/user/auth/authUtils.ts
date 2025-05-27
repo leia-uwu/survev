@@ -10,6 +10,12 @@ import { createSession, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
 import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
 
+let oauthBaseURL: URL | undefined = undefined;
+if (URL.canParse(Config.oauthBasePath)) {
+    oauthBaseURL = new URL(Config.oauthBasePath);
+}
+export const cookieDomain = oauthBaseURL?.hostname;
+
 const random = {
     read(bytes: Uint8Array) {
         crypto.getRandomValues(bytes);
@@ -49,6 +55,7 @@ export async function setSessionTokenCookie(userId: string, c: Context) {
         sameSite: "lax",
         path: "/",
         expires: session.expiresAt,
+        domain: cookieDomain,
     });
     return session;
 }
@@ -66,6 +73,7 @@ export function deleteSessionTokenCookie(c: Context) {
         sameSite: "lax",
         path: "/",
         maxAge: 0,
+        domain: cookieDomain,
     });
 }
 
@@ -81,6 +89,7 @@ export async function handleAuthUser(c: Context, provider: Provider, authId: str
 
     setCookie(c, "app-data", "1", {
         expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
+        domain: cookieDomain,
     });
 
     if (existingUser) {

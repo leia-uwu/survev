@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { setCookie } from "hono/cookie";
+import { Config } from "../../../../config";
 import { db } from "../../../db";
 import { usersTable } from "../../../db/schema";
 import { createNewUser, generateId, setSessionTokenCookie } from "./authUtils";
@@ -23,7 +24,7 @@ MockRouter.get("/", async (c) => {
 
     if (existingUser) {
         await setSessionTokenCookie(existingUser.id, c);
-        return c.redirect("/");
+        return c.redirect(Config.oauthBasePath);
     }
 
     const userId = generateId(15);
@@ -36,5 +37,5 @@ MockRouter.get("/", async (c) => {
     });
 
     await setSessionTokenCookie(userId, c);
-    return c.redirect("/");
+    return c.redirect(Config.oauthBasePath);
 });

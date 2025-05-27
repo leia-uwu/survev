@@ -139,7 +139,7 @@ export class PlayerBarn {
         this.game.joinTokens.delete(joinMsg.matchPriv);
 
         if (Config.rateLimitsEnabled) {
-            const count = this.players.filter(
+            const count = this.livingPlayers.filter(
                 (p) =>
                     p.ip === ip ||
                     p.findGameIp == joinData.findGameIp ||
@@ -2123,6 +2123,10 @@ export class Player extends BaseGameObject {
         } else {
             // spectating someone currently who is still alive
             player = this.spectating;
+        }
+        // temporary guard while the spectating code is not fixed
+        if (!player) {
+            player = this;
         }
 
         const radius = player.cullingZoom + 4;

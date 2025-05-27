@@ -10,28 +10,32 @@ import stripBlockPlugin from "vite-plugin-strip-block";
 
 export const SplashThemes = {
     main: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash.png",
     },
     easter: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_easter.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_easter.png",
     },
     halloween: {
-        MENU_MUSIC: "audio/ambient/menu_music_02.mp3",
-        SPLASH_BG: "/img/main_splash_halloween.png",
+        menuMusic: "audio/ambient/menu_music_02.mp3",
+        splashBg: "/img/main_splash_halloween.png",
     },
     faction: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_0_7_0.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_0_7_0.png",
+    },
+    cobalt: {
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_cobalt.png",
     },
     snow: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_0_6_10.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_0_6_10.png",
     },
     spring: {
-        MENU_MUSIC: "audio/ambient/menu_music_01.mp3",
-        SPLASH_BG: "/img/main_splash_7_3.png",
+        menuMusic: "audio/ambient/menu_music_01.mp3",
+        splashBg: "/img/main_splash_7_3.png",
     },
 };
 
@@ -47,21 +51,39 @@ export default defineConfig(({ mode }) => {
     process.env.VITE_TURNSTILE_SCRIPT = "";
 
     if (Config.secrets.AIP_ID) {
-        process.env.VITE_ADIN_PLAY_SCRIPT = `
-    <script async src="//api.adinplay.com/libs/aiptag/pub/SNP/${Config.secrets.AIP_PLACEMENT_ID}/tag.min.js"></script>
-    <script>
-        window.aiptag = window.aiptag || { cmd: [] };
-        aiptag.cmd.display = aiptag.cmd.display || [];
-        // CMP tool settings
-        aiptag.cmp = {
-            show: true,
-            position: "centered", // centered, bottom
-            button: false,
-            buttonText: "Privacy settings",
-            buttonPosition: "bottom-left", // bottom-left, bottom-right, top-left, top-right
-        };
-    </script>
-    `;
+        process.env.VITE_ADIN_PLAY_SCRIPT = `<script>
+        const urlParams = new URLSearchParams(self.location.search);
+
+        const isCrazyGames = urlParams.has("crazygames");
+
+        const isPOKI = window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("poki"); } catch(e) { return false; } })();
+
+        const isWithinGameMonetize = window.location.href.includes("gamemonetize") || (window != window.parent && document.referrer && (() => { try { return new URL(document.referrer).origin.includes("gamemonetize"); } catch(e) { return false; } })());
+
+        if (!isCrazyGames && !isPOKI && !isWithinGameMonetize) {
+            const script = document.createElement("script");
+            script.src = "//api.adinplay.com/libs/aiptag/pub/SNP/${Config.secrets.AIP_ID}/tag.min.js";
+            document.head.appendChild(script);
+
+            window.aiptag = window.aiptag || { cmd: [] };
+            aiptag.cmd.display = aiptag.cmd.display || [];
+
+            // CMP tool settings
+            aiptag.cmp = {
+                show: true,
+                position: "centered", // centered, bottom
+                button: false,
+                buttonText: "Privacy settings",
+                buttonPosition: "bottom-left", // bottom-left, bottom-right, top-left, top-right
+            };
+
+            script.addEventListener("load", () => {
+                window.aiptag.cmd.display.push(() => {
+                    window.aipDisplayTag.display("${Config.secrets.AIP_PLACEMENT_ID}_728x90");
+                });
+            });
+        }
+    </script>`;
         process.env.VITE_AIP_PLACEMENT_ID = Config.secrets.AIP_PLACEMENT_ID;
     }
 
@@ -69,11 +91,8 @@ export default defineConfig(({ mode }) => {
         process.env.VITE_TURNSTILE_SCRIPT = `<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>`;
     }
 
-    process.env = {
-        ...process.env,
-        VITE_GAME_VERSION: version,
-        VITE_BACKGROUND_IMG: selectedTheme.SPLASH_BG,
-    };
+    process.env.VITE_GAME_VERSION = version;
+    process.env.VITE_BACKGROUND_IMG = selectedTheme.splashBg;
 
     const plugins: Plugin[] = [ejsPlugin()];
 
@@ -92,9 +111,8 @@ export default defineConfig(({ mode }) => {
         port: Config.vite.port,
         host: Config.vite.host,
         proxy: {
-            // regex that matches /stats, /stats/slug but doesn't match /stats/
-            // since if it matches /stats/ it will infinite loop :p
-            // also why does vite not work without trailing slashes at the end of paths 😭
+            // this redirects /stats to /stats/
+            // because vite is cringe and does not work without trailing slashes at the end of paths 😭
             "^/stats(?!/$).*": {
                 target: `http://${Config.vite.host}:${Config.vite.port}`,
                 rewrite: (path) => path.replace(/^\/stats(?!\/$).*/, "/stats/"),
@@ -152,16 +170,11 @@ export default defineConfig(({ mode }) => {
                     https: data.https,
                 };
             }),
-            MENU_MUSIC: JSON.stringify(selectedTheme.MENU_MUSIC),
+            MENU_MUSIC: JSON.stringify(selectedTheme.menuMusic),
             AIP_PLACEMENT_ID: JSON.stringify(Config.secrets.AIP_PLACEMENT_ID),
+            VITE_GAMEMONETIZE_ID: JSON.stringify(Config.secrets.GAMEMONETIZE_ID),
             IS_DEV: isDev,
-            GOOGLE_LOGIN_SUPPORTED: JSON.stringify(
-                Config.secrets.GOOGLE_CLIENT_ID && Config.secrets.GOOGLE_SECRET_ID,
-            ),
-            DISCORD_LOGIN_SUPPORTED: JSON.stringify(
-                Config.secrets.DISCORD_CLIENT_ID && Config.secrets.DISCORD_SECRET_ID,
-            ),
-            MOCK_LOGIN_SUPPORTED: JSON.stringify(Config.debug.allowMockAccount),
+            PROXY_DEFS: JSON.stringify(Config.proxies),
             TURNSTILE_SITE_KEY: JSON.stringify(Config.secrets.TURNSTILE_SITE_KEY),
         },
         plugins,

@@ -1,5 +1,6 @@
 import type { MapDefs } from "./shared/defs/mapDefs";
 import type { TeamMode } from "./shared/gameConfig";
+import type { ProxyDef } from "./shared/types/api";
 import type { Vec2 } from "./shared/utils/v2";
 
 /**
@@ -100,6 +101,8 @@ export interface ConfigType {
         }
     >;
 
+    proxies: Record<string, ProxyDef>;
+
     /**
      * Enabled game modes. this will update on the UI without requiring a client rebuild, since they are fetched from the server every time the page is loaded.
      *
@@ -127,7 +130,14 @@ export interface ConfigType {
      *
      * NOTE: Required at build time, unlike modes it wont update by fetching from the server!
      */
-    clientTheme: "main" | "easter" | "halloween" | "faction" | "snow" | "spring";
+    clientTheme:
+        | "main"
+        | "easter"
+        | "halloween"
+        | "faction"
+        | "cobalt"
+        | "snow"
+        | "spring";
 
     /**
      * Game tick rate.
@@ -217,6 +227,13 @@ export interface ConfigType {
     oauthRedirectURI: string;
 
     /**
+     * Base path of the client
+     * Used if the API is on a subdomain instead of the main one
+     * So the auth code can redirect to it instead of `/`
+     */
+    oauthBasePath: string;
+
+    /**
      * API keys for accounts and other features.
      */
     secrets: {
@@ -291,6 +308,7 @@ export interface ConfigType {
          * NOTE: This is only used by the client so must be present at the build time!
          */
         AIP_PLACEMENT_ID?: string;
+        GAMEMONETIZE_ID?: string;
     };
 
     /**

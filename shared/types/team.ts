@@ -28,6 +28,7 @@ export interface RoomData {
     enabledGameModeIdxs: number[];
     gameModeIdx: number;
     maxPlayers: number;
+    captchaEnabled: boolean;
 }
 
 //

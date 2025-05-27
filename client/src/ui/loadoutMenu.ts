@@ -300,7 +300,7 @@ export class LoadoutMenu {
                 const elements = document.getElementsByClassName(
                     "customize-list-item-selected",
                 );
-                if (elements.length > 0) {
+                if (elements.length > 0 && window.self === window.top) {
                     elements[0].scrollIntoView({
                         behavior: "smooth",
                         block: "start",
@@ -1046,7 +1046,9 @@ export class LoadoutMenu {
         }
         this.modalCustomizeList.html("");
         this.modalCustomizeList.append(listItems);
-        this.modalCustomizeList.scrollTop(0);
+        if (window.self === window.top) {
+            this.modalCustomizeList.scrollTop(0);
+        }
 
         // Set itemInfo for equipped emotes
         if (category.loadoutType == "emote") {

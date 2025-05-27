@@ -194,8 +194,7 @@ function logQueryPerformance(startTime: number, params: LeaderboardRequest) {
         executionTime > 1000
             ? `${(executionTime / 1000).toFixed(2)}s`
             : `${executionTime.toFixed(2)}ms`;
-
     server.logger[executionTime > 1000 ? "warn" : "debug"](
-        `leaderboard | Execution time: ${timeString} | Params: ${JSON.stringify(params)}`,
+        `leaderboard | Execution time: ${timeString} | ${leaderboardCache.getCacheKey("debug" as any, params)}`,
     );
 }

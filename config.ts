@@ -28,6 +28,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             port: 3000,
         },
         regions: {},
+        proxies: {},
         modes: [
             { mapName: "main", teamMode: TeamMode.Solo, enabled: true },
             { mapName: "main", teamMode: TeamMode.Duo, enabled: true },
@@ -53,6 +54,7 @@ export function getConfig(isProduction: boolean, dir: string) {
             port: 5432,
         },
         oauthRedirectURI: "",
+        oauthBasePath: "/",
         secrets: {
             SURVEV_API_KEY: "",
             SURVEV_LOADOUT_SECRET: "",
@@ -61,7 +63,7 @@ export function getConfig(isProduction: boolean, dir: string) {
         captchaEnabled: false,
         cachingEnabled: false,
         rateLimitsEnabled: isProduction,
-        uniqueInGameNames: true,
+        uniqueInGameNames: false,
         debug: {
             spawnMode: "default",
             allowBots: isDev,
@@ -70,14 +72,6 @@ export function getConfig(isProduction: boolean, dir: string) {
         },
         defaultItems: {},
     };
-
-    if (isDev) {
-        config.regions.local = {
-            https: false,
-            address: `127.0.0.1:${config.gameServer.port}`,
-            l10n: "index-local",
-        };
-    }
 
     const dirname = import.meta?.dirname || __dirname;
 
@@ -137,6 +131,29 @@ export function getConfig(isProduction: boolean, dir: string) {
         // apply this default after merging the local config
         // so if the local config changes the vite host and port it will still be right
         config.oauthRedirectURI = `http://${config.vite.host}:${config.vite.port}`;
+    }
+    const baseUrl = new URL(config.oauthRedirectURI);
+
+    const googleLogin = !!(
+        config.secrets.GOOGLE_CLIENT_ID && config.secrets.GOOGLE_SECRET_ID
+    );
+    const discordLogin = !!(
+        config.secrets.DISCORD_CLIENT_ID && config.secrets.DISCORD_CLIENT_ID
+    );
+
+    config.proxies[baseUrl.hostname] = {
+        google: googleLogin,
+        discord: discordLogin,
+        mock: config.debug.allowMockAccount,
+        ...(config.proxies[baseUrl.hostname] ?? {}),
+    };
+
+    if (isDev) {
+        config.regions.local ??= {
+            https: false,
+            address: `127.0.0.1:${config.gameServer.port}`,
+            l10n: "index-local",
+        };
     }
 
     return config;

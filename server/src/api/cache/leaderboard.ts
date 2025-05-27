@@ -1,4 +1,5 @@
 import { getRedisClient } from ".";
+import { MapId, TeamModeToString } from "../../../../shared/defs/types/misc";
 import type {
     LeaderboardRequest,
     LeaderboardResponse,
@@ -42,7 +43,8 @@ class LeaderBoardCache {
 
     getCacheKey(prefix: Prefix, params: LeaderboardRequest) {
         const { teamMode, mapId, type, interval } = params;
-        return `${prefix}:${teamMode}:${mapId}:${type}:${interval}`;
+        const mapName = MapId[mapId].toLowerCase();
+        return `${prefix}:${TeamModeToString[teamMode]}:${mapName}:${type}:${interval}`;
     }
 
     async invalidateCache(matchData: MatchDataTable[]) {
