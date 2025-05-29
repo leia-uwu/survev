@@ -43,6 +43,7 @@ const defaultConfig = {
     highResTex: true,
     interpolation: true,
     screenShake: true,
+    localRotation: true,
     anonPlayerNames: false,
     touchMoveStyle: "anywhere" as "locked" | "anywhere",
     touchAimStyle: "anywhere" as "locked" | "anywhere",

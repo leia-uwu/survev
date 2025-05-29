@@ -11,6 +11,9 @@ export default class Camera {
     m_shakeEnabled = true;
     m_shakeInt = 0;
 
+    m_localrotationEnabled = true;
+    m_localrotationInt = 0;
+
     m_interpEnabled = true;
     m_interpInterval = 0;
 
@@ -42,6 +45,10 @@ export default class Camera {
 
     m_setShakeEnabled(en: boolean) {
         this.m_shakeEnabled = en;
+    }
+
+    m_setLocalrotationEnabled(en: boolean) {
+        this.m_localrotationEnabled = en;
     }
 
     m_setInterpEnabled(en: boolean) {
