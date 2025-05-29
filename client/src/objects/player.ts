@@ -1813,7 +1813,7 @@ export class Player implements AbstractObject {
         this.handLContainer.position.x -= this.gunRecoilL * 1.125;
         this.handRContainer.position.x -= this.gunRecoilR * 1.125;
 
-		const mouseY = inputManager.mousePos.y;
+        const mouseY = inputManager.mousePos.y;
         const mouseX = inputManager.mousePos.x;
         //local rotation
         if (this.activeId == this.__id && !this.isSpectating && device.mobile == false && camera.m_localrotationEnabled) {
