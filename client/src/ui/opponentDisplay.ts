@@ -15,6 +15,7 @@ import type { ConfigManager, DebugOptions } from "../config";
 import { debugLines } from "../debugLines";
 import { device } from "../device";
 import type { Game } from "../game";
+import type { InputHandler } from "../input";
 import type { InputBinds } from "../inputBinds";
 import { Map } from "../map";
 import { DecalBarn } from "../objects/decal";
@@ -366,7 +367,7 @@ export class LoadoutDisplay {
         }
     }
 
-    update(dt: number, hasFocus: boolean) {
+    update(dt: number, hasFocus: boolean, inputManager: InputHandler) {
         const debug = {
             render: {},
         } as DebugOptions;
@@ -433,21 +434,27 @@ export class LoadoutDisplay {
                 });
             }
         }
+
+        const ui2Manager = undefined;
+        const preventInput = false;
+        const displayingStats = false;
+        const isSpectating = false;
+
         this.playerBarn.m_update(
             dt,
             this.activeId,
-            // @ts-expect-error not defined locally.
-            this.teamMode,
             this.renderer,
             this.particleBarn,
             this.camera,
             this.map,
             this.inputBinds,
             this.audioManager,
-            // @ts-expect-error big mismatch between params passed and expected, need to debug later;
-            false,
-            false,
-            false,
+            // @ts-expect-error there was a big mismatch between params passed and expected;
+            ui2Manager,
+            preventInput,
+            displayingStats,
+            inputManager,
+            isSpectating,
         );
         this.smokeBarn.m_update(
             dt,
