@@ -5,6 +5,7 @@ import { Cron } from "croner";
 import { Hono } from "hono";
 import { getCookie } from "hono/cookie";
 import { cors } from "hono/cors";
+import { HTTPException } from "hono/http-exception";
 import { z } from "zod";
 import { version } from "../../../package.json";
 import {
@@ -49,9 +50,12 @@ process.on("uncaughtException", async (err) => {
 const app = new Hono();
 const { injectWebSocket, upgradeWebSocket } = createNodeWebSocket({ app });
 
-app.onError((err, c) => {
+app.onError((err: unknown, c) => {
     server.logger.error(`${c.req.path} Error:`, err);
-    return c.json({ error: "Internal Server Error" }, 500);
+    if (err instanceof HTTPException) {
+        return err.getResponse();
+    }
+    return c.text("Internal Server Error", 500);
 });
 
 app.use(
