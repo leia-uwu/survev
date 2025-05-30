@@ -3,7 +3,6 @@ import $ from "jquery";
 import "bootstrap";
 import slugify from "slugify";
 import { ConfigManager } from "../../config";
-import { device } from "../../device";
 import { MainView } from "./mainView";
 import { PlayerView } from "./playerView";
 import language from "./templates/langauge.ejs";
@@ -94,13 +93,16 @@ export class App {
         });
     }
     setView(name?: Routes) {
+        /*
         const phoneDetected = device.mobile && !device.tablet;
         const elAdsLeaderboardTop = $("#adsLeaderBoardTop");
         const elAdsLeaderboardBottom = $("#adsLeaderBoardBottom");
         const elAdsPlayerTop = $("#adsPlayerTop");
         const elAdsPlayerBottom = $("#adsPlayerBottom");
+        */
 
         if (name == "player") {
+            /*
             elAdsLeaderboardTop.css("display", "none");
             elAdsLeaderboardBottom.css("display", "none");
             if (phoneDetected) {
@@ -110,8 +112,10 @@ export class App {
                 elAdsPlayerTop.css("display", "block");
                 elAdsPlayerBottom.css("display", "none");
             }
+            */
             this.view = this.playerView;
         } else {
+            /*
             elAdsPlayerTop.css("display", "none");
             elAdsPlayerBottom.css("display", "none");
 
@@ -122,9 +126,11 @@ export class App {
                 elAdsLeaderboardTop.css("display", "block");
                 elAdsLeaderboardBottom.css("display", "none");
             }
+            */
             this.view = this.mainView;
         }
 
+        /*
         // show ads
         const slotIds = [];
         if (elAdsLeaderboardTop && elAdsLeaderboardTop.css("display") != "none") {
@@ -142,6 +148,7 @@ export class App {
             slotIds.push("survevio_300x250_playerprofile_bottom");
         }
         this.adManager.showFreestarAds(slotIds);
+        */
 
         this.view.load();
         // @ts-expect-error go away
