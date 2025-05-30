@@ -230,6 +230,7 @@ export class Obstacle extends BaseGameObject {
                     dir: v2.create(0, 0),
                     // obstacles that can kill themselves are airdrops being opened ig
                     damageType: GameConfig.DamageType.Airdrop,
+                    source: this.interactedBy,
                 });
             }
         }
