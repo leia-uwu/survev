@@ -129,6 +129,11 @@ export class WeaponManager {
                 curWeapon.cooldown > 0
             ) {
                 effectiveSwitchDelay = nextWeaponDef.switchDelay;
+            } else if (nextWeaponDef.type === "melee") {
+                effectiveSwitchDelay = math.max(
+                    nextWeapon.cooldown,
+                    nextWeaponDef.switchDelay,
+                );
             }
 
             nextWeapon.cooldown = effectiveSwitchDelay;
@@ -190,6 +195,9 @@ export class WeaponManager {
         this.weapons[idx].ammo = ammo;
         if (weaponDef?.type === "gun") {
             this.weapons[idx].recoilTime = weaponDef.recoilTime;
+        }
+        if (weaponDef && "switchDelay" in weaponDef) {
+            this.weapons[idx].cooldown = weaponDef.switchDelay;
         }
 
         if (idx === this.curWeapIdx) {
@@ -340,14 +348,17 @@ export class WeaponManager {
         const itemDef = GameObjectDefs[this.activeWeapon] as MeleeDef;
         const player = this.player;
         const attack = itemDef.attack;
+        const weapon = this.weapons[this.curWeapIdx];
 
         if (
             player.animType !== GameConfig.Anim.Melee &&
-            (player.shootStart || (player.shootHold && itemDef.autoAttack))
+            (player.shootStart || (player.shootHold && itemDef.autoAttack)) &&
+            weapon.cooldown < 0
         ) {
             this.player.cancelAction();
 
             this.player.playAnim(GameConfig.Anim.Melee, attack.cooldownTime);
+            weapon.cooldown = attack.cooldownTime;
             this.meleeAttacks = [...attack.damageTimes];
         }
 
