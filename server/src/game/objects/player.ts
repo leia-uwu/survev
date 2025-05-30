@@ -3994,6 +3994,9 @@ export class Player extends BaseGameObject {
                 this.inventory[chosenWeaponDef.ammo] = ammo;
                 this.inventoryDirty = true;
             }
+            if (index === this.curWeapIdx) {
+                this.shotSlowdownTimer = 0;
+            }
         } else if (chosenWeaponDef.type == "throwable") {
             const backpackLevel = this.getGearLevel(this.backpack);
             const bagSpace = this.bagSizes[chosenWeaponType]
