@@ -110,7 +110,8 @@ async function userStatsSqlQuery(
                     'mostDamage', ms.most_damage,
                     'kpg', ms.kpg,
                     'winPct', ms.winPct,
-                    'mostKills', ms.most_kills
+                    'mostKills', ms.most_kills,
+                    'games', ms.games
                 )
             END
         ), '[]') AS modes
