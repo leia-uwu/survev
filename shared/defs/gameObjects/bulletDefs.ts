@@ -18,6 +18,8 @@ export interface BulletDef {
     maxFlareScale?: number;
     skipCollision?: boolean;
     onHit?: string;
+    noDistAdj?: boolean;
+    useExplosiveRoundsAlt?: boolean;
 }
 
 function defineBulletSkin(baseType: string, params: Partial<BulletDef>) {
@@ -235,6 +237,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.8,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_flechette: {
         type: "bullet",
@@ -248,6 +252,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.075,
         tracerLength: 0.5,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_frag: {
         type: "bullet",
@@ -262,6 +268,7 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerWidth: 0.1,
         tracerLength: 0.5,
         onHit: "explosion_usas",
+        noDistAdj: true,
     },
     bullet_slug: {
         type: "bullet",
@@ -288,6 +295,8 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "12gauge",
         tracerWidth: 0.1,
         tracerLength: 0.1,
+        useExplosiveRoundsAlt: true,
+        noDistAdj: true,
     },
     bullet_m9: {
         type: "bullet",

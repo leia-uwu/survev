@@ -172,6 +172,7 @@ export class Bullet {
     isShrapnel!: boolean;
     skipCollision!: boolean;
     reflected!: boolean;
+    canReflect!: boolean;
 
     constructor(public bulletManager: BulletBarn) {}
 
@@ -199,6 +200,8 @@ export class Bullet {
         this.lastShot = params.lastShot ?? false;
         this.speed = bulletDef.speed * variance;
         this.onHitFx = bulletDef.onHit ?? params.onHitFx;
+        this.canReflect = this.onHitFx !== "explosion_rounds";
+
         this.hasOnHitFx = !!this.onHitFx;
 
         const player = this.bulletManager.game.objectRegister.getById(this.playerId);
@@ -214,10 +217,9 @@ export class Bullet {
         // Don't apply the jitter on shotguns as they have inherent jitter
         // due to how the player computes the shot start position.
         const distAdjIdxMax = 16;
-        const distAdjIdx =
-            params.bulletType !== "bullet_shotgun" && params.bulletType !== "bullet_frag"
-                ? util.randomInt(0, distAdjIdxMax)
-                : distAdjIdxMax / 2;
+        const distAdjIdx = !bulletDef.noDistAdj
+            ? util.randomInt(0, distAdjIdxMax)
+            : distAdjIdxMax / 2;
         const distAdj = math.remap(distAdjIdx, 0, distAdjIdxMax, -1.0, 1.0);
 
         let distance =
@@ -354,6 +356,12 @@ export class Bullet {
         }
 
         if (!this.alive && !this.reflected && this.onHitFx) {
+            const def = GameObjectDefs[this.bulletType] as BulletDef;
+            // explosion_rounds_sg has lower volume and is used for shotguns
+            // since they spawn a bunch of explosions at once
+            if (this.onHitFx === "explosion_rounds" && def.useExplosiveRoundsAlt) {
+                this.onHitFx = "explosion_rounds_sg";
+            }
             this.bulletManager.game.explosionBarn.addExplosion(
                 this.onHitFx,
                 // spawn the explosion a bit behind the bullet so it won't spawn inside obstacles
@@ -571,7 +579,7 @@ export class Bullet {
                     dir: this.dir,
                 });
 
-                if (mapDef.reflectBullets && this.onHitFx !== "explosion_rounds") {
+                if (mapDef.reflectBullets) {
                     this.reflect(col.point, col.normal, col.obj!.__id);
                 }
 
@@ -613,6 +621,7 @@ export class Bullet {
     }
 
     reflect(pos: Vec2, normal: Vec2, objId: number) {
+        if (!this.canReflect) return;
         if (this.reflectCount >= GameConfig.bullet.maxReflect) return;
         if (this.reflected) return;
         this.reflected = true;

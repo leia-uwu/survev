@@ -2655,6 +2655,7 @@ export class Player extends BaseGameObject {
         this.hasteSeq++;
         this.animType = GameConfig.Anim.None;
         this.animSeq++;
+        this.healEffect = false;
         this.setDirty();
 
         this.shootHold = false;
