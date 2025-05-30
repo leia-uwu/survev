@@ -1,5 +1,6 @@
 import { GameConfig } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
+import type { Vec2 } from "../../../shared/utils/v2";
 import type { Player } from "./objects/player";
 
 export class Group {
@@ -10,18 +11,17 @@ export class Group {
     livingPlayers: Player[] = [];
     autoFill: boolean;
 
-    /**
-     * for normal modes, the first player in the group to spawn, all groupmate spawn positions will be relative to the spawn leader
-     *
-     * for cobalt mode, since everyone technically spawns in the intermediary bunker while stuck on the perk select menu, this represents
-     * the first player in the group to get a **real** spawn after selecting a perk
-     */
-    spawnLeader?: Player;
-
     maxPlayers: number;
     reservedSlots = 0;
 
     totalCount = 0;
+
+    /**
+     * We update the group spawn position (where new teammates will spawn) to the leader position
+     * Every 1 second if the leader is on a valid spawn position (e.g not inside a building etc)
+     */
+    spawnPositionTicker = 0;
+    spawnPosition?: Vec2;
 
     canJoin(players: number) {
         return (
