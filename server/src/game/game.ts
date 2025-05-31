@@ -159,7 +159,7 @@ export class Game {
     async init() {
         await this.pluginManager.loadPlugins();
         this.map.init();
-        this.pluginManager.emit("gameCreated", this);
+        this.pluginManager.emit("gameCreated", { game: this });
 
         this.allowJoin = true;
         this.logger.info(`Created in ${Date.now() - this.start} ms`);
@@ -188,6 +188,7 @@ export class Game {
         if (!this.started) {
             this.started = this.modeManager.isGameStarted();
             if (this.started) {
+                this.pluginManager.emit("gameStarted", { game: this });
                 this.gas.advanceGasStage();
             }
         }
@@ -284,6 +285,8 @@ export class Game {
                 this.tickTimes = [];
             }
         }
+
+        this.pluginManager.emit("gameUpdate", { game: this, dt: dt });
     }
 
     netSync() {
@@ -331,11 +334,12 @@ export class Game {
     }
 
     get canJoin(): boolean {
-        return (
+        const canJoin =
             this.aliveCount < this.map.mapDef.gameMode.maxPlayers &&
             !this.over &&
-            this.startedTime < 60
-        );
+            this.startedTime < 60;
+
+        return this.pluginManager.trigger("game:canJoin", { game: this }, canJoin);
     }
 
     deserializeMsg(buff: ArrayBuffer): {
@@ -466,6 +470,7 @@ export class Game {
         if (player.canDespawn()) {
             player.game.playerBarn.removePlayer(player);
         }
+        this.pluginManager.emit("playerDisconnect", { player });
     }
 
     broadcastMsg(type: net.MsgType, msg: net.Msg) {
@@ -474,9 +479,12 @@ export class Game {
 
     checkGameOver(): void {
         if (this.over) return;
-        const didGameEnd: boolean = this.modeManager.handleGameEnd();
+        const shouldGameEnd = this.modeManager.shouldGameEnd();
+        if (this.pluginManager.emit("gameCheckGameOver", { game: this, shouldGameEnd }))
+            return;
 
-        if (didGameEnd) {
+        if (shouldGameEnd) {
+            this.modeManager.handleGameEnd();
             this.over = true;
 
             // send win emoji after 1 second
