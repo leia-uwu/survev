@@ -23,5 +23,11 @@ Dual M1911:
 SCAR-SSR:
 + damage 60 -> 81
 
+M1 Garand:
++ damage 35 -> 44
+
+VSS:
++ made more common
+
 Loot Caches:
 Added more mode specific variations of mosin tree and ak rock
