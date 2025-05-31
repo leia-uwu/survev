@@ -1,4 +1,4 @@
-import { and, desc, eq, gt } from "drizzle-orm";
+import { aliasedTable, and, desc, eq, gt, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
 import type { TeamMode } from "../../../../../shared/gameConfig";
@@ -13,6 +13,8 @@ import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 
 export const matchHistoryRouter = new Hono<Context>();
+
+const aliased = aliasedTable(matchDataTable, "aliased");
 
 matchHistoryRouter.post(
     "/",
@@ -46,12 +48,34 @@ matchHistoryRouter.post(
                 time_alive: matchDataTable.timeAlive,
                 rank: matchDataTable.rank,
                 kills: matchDataTable.kills,
-                team_kills: matchDataTable.kills,
+                team_kills: sum(aliased.kills).mapWith(Number),
                 damage_dealt: matchDataTable.damageDealt,
                 damage_taken: matchDataTable.damageTaken,
                 slug: usersTable.slug,
             })
             .from(matchDataTable)
+            .groupBy(
+                matchDataTable.gameId,
+                matchDataTable.region,
+                matchDataTable.mapId,
+                matchDataTable.teamMode,
+                matchDataTable.teamCount,
+                matchDataTable.teamTotal,
+                matchDataTable.createdAt,
+                matchDataTable.timeAlive,
+                matchDataTable.rank,
+                matchDataTable.kills,
+                matchDataTable.damageDealt,
+                matchDataTable.damageTaken,
+                usersTable.slug,
+            )
+            .leftJoin(
+                aliased,
+                and(
+                    eq(aliased.gameId, matchDataTable.gameId),
+                    eq(aliased.teamId, matchDataTable.teamId),
+                ),
+            )
             .innerJoin(usersTable, eq(usersTable.id, matchDataTable.userId))
             .where(
                 and(
