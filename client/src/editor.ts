@@ -118,50 +118,76 @@ export class Editor {
         );
 
         const createLootUi = $("<div/>", {
-            css: { display: "flex" },
-        });
-        const lootTypeInput = $<HTMLSelectElement>("<select/>", {
             css: {
-                height: "30px",
-                width: "180px",
-                "line-height": "28px",
-                "margin-top": "5px",
-                "margin-bottom": "5px",
+                display: "flex",
+                "align-items": "center",
             },
         });
 
-        const lootOptGroups: Record<string, JQuery<HTMLOptGroupElement>> = {};
+        const label = $("<label/>", {
+            text: "Loot:",
+        });
+        createLootUi.append(label);
+
+        const form = $("<form/>", {
+            css: {
+                display: "flex",
+                height: "30px",
+                "margin-left": "10px",
+                "align-items": "center",
+            },
+        });
+        createLootUi.append(form);
+
+        const input = $("<input/>", {
+            type: "text",
+            list: "editor-loot-list",
+            placeholder: "Type a loot ID here...",
+            css: {
+                height: "20px",
+                border: "none",
+            },
+        });
+        input.on("keydown", (e) => {
+            e.stopImmediatePropagation();
+        });
+        form.append(input);
+
+        const dataList = $("<datalist/>", {
+            id: "editor-loot-list",
+        });
+
         for (const [type, def] of Object.entries(GameObjectDefs)) {
             if (!("lootImg" in def)) continue;
 
-            let name = type;
-            if ("name" in def && def.name !== name) {
-                name = `${def.name} (${type})`;
-            }
-
-            const opt = $<HTMLOptionElement>("<option/>", {
+            const option = $("<option/>", {
                 value: type,
-                html: name,
             });
-
-            let optGroup = lootOptGroups[def.type];
-            if (!optGroup) {
-                optGroup = $("<optgroup/>", {
-                    label: def.type,
-                });
-                lootTypeInput.append(optGroup);
-                lootOptGroups[def.type] = optGroup;
-            }
-            optGroup.append(opt);
+            dataList.append(option);
         }
-        createLootUi.append(lootTypeInput);
-        createLootUi.append($("<span/>", { css: { width: "12px" } }));
-        createLootUi.append(
-            createButton("Spawn Loot", () => {
-                this.spawnLootType = lootTypeInput.val() as string;
+
+        form.append(dataList);
+
+        const spawnButton = $("<input/>", {
+            type: "submit",
+            value: "Spawn",
+            class: "btn-game-menu btn-darken",
+            css: {
+                height: "30px",
+                "line-height": "28px",
+                "margin-left": "10px",
+            },
+        });
+        form.append(spawnButton);
+
+        form.on("submit", (e) => {
+            e.preventDefault();
+            const type = input.val() as string;
+            if (GameObjectDefs[type]) {
+                this.spawnLootType = type as string;
                 this.sendMsg = true;
-            }),
-        );
+            }
+        });
 
         const createRoleUi = $("<div/>", {
             css: { display: "flex" },
@@ -218,7 +244,7 @@ export class Editor {
             this.sendMsg = true;
         };
 
-        speedSlider.on("change", (e) => {
+        speedSlider.on("input", (e) => {
             e.stopPropagation();
             const target = $(e.target) as JQuery<HTMLInputElement>;
             setSpeed(Number(target.val()));
