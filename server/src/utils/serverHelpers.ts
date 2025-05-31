@@ -156,7 +156,8 @@ export function validateUserName(name: string): {
         .trim()
         .substring(0, Constants.PlayerNameMaxLen)
         // remove extended ascii etc
-        .replace(allowedCharsRegex, "");
+        .replace(allowedCharsRegex, "")
+        .trim();
 
     if (!name.length || checkForBadWords(name))
         return {
