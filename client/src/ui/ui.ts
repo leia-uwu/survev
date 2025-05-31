@@ -360,11 +360,7 @@ export class UiManager {
         });
 
         // Display full screen
-        let showFullScreen = device.os == "ios" ? "none" : "block";
-        if (device.touch || SDK.isAnySDK) {
-            showFullScreen = "none";
-        }
-        $("#btn-game-fullscreen").css("display", showFullScreen);
+        $("#btn-game-fullscreen").css("display", SDK.isAnySDK ? "none" : "block");
 
         this.resumeButton.on("mousedown", (e) => {
             e.stopPropagation();
