@@ -1123,8 +1123,14 @@ export class GameMap {
                         1,
                     ) as AABB;
 
-                    // check all 4 corners of the AABB
+                    // check all 4 corners + center of the AABB
                     const points = collider.getPoints(bound);
+                    points.push(
+                        v2.create(
+                            bound.min.x + (bound.max.x - bound.min.x) / 2,
+                            bound.min.y + (bound.max.y - bound.min.y) / 2,
+                        ),
+                    );
 
                     for (let j = 0; j < points.length; j++) {
                         if (this.isOnWater(points[j], 0)) {
@@ -1144,8 +1150,14 @@ export class GameMap {
                         1,
                     ) as AABB;
 
-                    // check all 4 corners of the AABB
+                    // check all 4 corners + center of the AABB
                     const points = collider.getPoints(bound);
+                    points.push(
+                        v2.create(
+                            bound.min.x + (bound.max.x - bound.min.x) / 2,
+                            bound.min.y + (bound.max.y - bound.min.y) / 2,
+                        ),
+                    );
 
                     for (let j = 0; j < points.length; j++) {
                         if (!this.isOnWater(points[j], 0)) return false;
