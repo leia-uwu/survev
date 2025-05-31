@@ -32,7 +32,7 @@
     "server",
     "shared"
   ],
-  "packageManager": "pnpm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "dependencies": {
     "enquirer": "^2.4.1",
     "hjson": "^3.2.2",
