@@ -23,7 +23,7 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/hjson": "^2.4.6",
-    "@types/node": "^22.15.18",
+    "@types/node": "^22.15.29",
     "concurrently": "^9.1.2",
     "typescript": "^5.8.3"
   },
