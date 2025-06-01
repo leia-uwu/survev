@@ -96,13 +96,13 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.14.3
-        version: 1.14.3(hono@4.7.10)
+        version: 1.14.3(hono@4.7.11)
       '@hono/node-ws':
-        specifier: ^1.1.4
-        version: 1.1.4(@hono/node-server@1.14.3(hono@4.7.10))(hono@4.7.10)
+        specifier: ^1.1.5
+        version: 1.1.5(@hono/node-server@1.14.3(hono@4.7.11))(hono@4.7.11)
       '@hono/zod-validator':
         specifier: ^0.5.0
-        version: 0.5.0(hono@4.7.10)(zod@3.25.42)
+        version: 0.5.0(hono@4.7.11)(zod@3.25.45)
       '@oslojs/crypto':
         specifier: ^1.0.1
         version: 1.0.1
@@ -122,8 +122,8 @@ importers:
         specifier: ^0.43.1
         version: 0.43.1(@types/better-sqlite3@7.6.13)(@types/pg@8.15.2)(better-sqlite3@11.10.0)(gel@2.0.2)(pg@8.16.0)
       hono:
-        specifier: ^4.7.10
-        version: 4.7.10
+        specifier: ^4.7.11
+        version: 4.7.11
       nanotimer:
         specifier: ^0.3.15
         version: 0.3.15
@@ -149,8 +149,8 @@ importers:
         specifier: github:uNetworking/uWebSockets.js#v20.52.0
         version: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/cfc9a40d8132a34881813cec3d5f8e3a185b3ce3
       zod:
-        specifier: ^3.25.42
-        version: 3.25.42
+        specifier: ^3.25.45
+        version: 3.25.45
     devDependencies:
       '@types/better-sqlite3':
         specifier: ^7.6.13
@@ -183,8 +183,8 @@ importers:
   shared:
     dependencies:
       zod:
-        specifier: ^3.25.42
-        version: 3.25.42
+        specifier: ^3.25.45
+        version: 3.25.45
 
 packages:
 
@@ -547,8 +547,8 @@ packages:
     peerDependencies:
       hono: ^4
 
-  '@hono/node-ws@1.1.4':
-    resolution: {integrity: sha512-eS/L5+xIgz5/FJOv1fiSIf5rCBO4rnVqEEqNKGN7CiA52tsdTSETDOQD6BuTDr+r5sbhdp0OuJXvMpEWOsAtXA==}
+  '@hono/node-ws@1.1.5':
+    resolution: {integrity: sha512-PXEioArWbwRECpZpi2tRqlgRlZp5MjszJhYGQ3uq3tmzpDwy5+57WwCFTWjolVWb5Rct3+X0wZUqXOest2ozVA==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       '@hono/node-server': ^1.11.1
@@ -1523,8 +1523,8 @@ packages:
     resolution: {integrity: sha512-MkUeB0cTIlppeSsndgESkfFD21T2nXPRaBStLtf3cAYA2bVEFdXlodZB0TukwZiobPD1Ksax5DK4RTZeaXCI3Q==}
     hasBin: true
 
-  hono@4.7.10:
-    resolution: {integrity: sha512-QkACju9MiN59CKSY5JsGZCYmPZkA6sIW6OFCUp7qDjZu6S6KHtJHhAc9Uy9mV9F8PJ1/HQ3ybZF2yjCa/73fvQ==}
+  hono@4.7.11:
+    resolution: {integrity: sha512-rv0JMwC0KALbbmwJDEnxvQCeJh+xbS3KEWW5PC9cMJ08Ur9xgatI0HmtgYZfOdOSOeYsp5LO2cOhdI8cLEbDEQ==}
     engines: {node: '>=16.9.0'}
 
   ieee754@1.2.1:
@@ -2010,8 +2010,8 @@ packages:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
 
-  zod@3.25.42:
-    resolution: {integrity: sha512-PcALTLskaucbeHc41tU/xfjfhcz8z0GdhhDcSgrCTmSazUuqnYqiXO63M0QUBVwpBlsLsNVn5qHSC5Dw3KZvaQ==}
+  zod@3.25.45:
+    resolution: {integrity: sha512-kv1swJBZqv98NQibL0oVvkQE8rXT+6qGNM1FpZkFcJG2jnz4vbtu48bgaitp85CaBPLSKXibrEsU7MzJoVoZAA==}
 
 snapshots:
 
@@ -2211,23 +2211,23 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@hono/node-server@1.14.3(hono@4.7.10)':
+  '@hono/node-server@1.14.3(hono@4.7.11)':
     dependencies:
-      hono: 4.7.10
+      hono: 4.7.11
 
-  '@hono/node-ws@1.1.4(@hono/node-server@1.14.3(hono@4.7.10))(hono@4.7.10)':
+  '@hono/node-ws@1.1.5(@hono/node-server@1.14.3(hono@4.7.11))(hono@4.7.11)':
     dependencies:
-      '@hono/node-server': 1.14.3(hono@4.7.10)
-      hono: 4.7.10
+      '@hono/node-server': 1.14.3(hono@4.7.11)
+      hono: 4.7.11
       ws: 8.18.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@hono/zod-validator@0.5.0(hono@4.7.10)(zod@3.25.42)':
+  '@hono/zod-validator@0.5.0(hono@4.7.11)(zod@3.25.45)':
     dependencies:
-      hono: 4.7.10
-      zod: 3.25.42
+      hono: 4.7.11
+      zod: 3.25.45
 
   '@img/sharp-darwin-arm64@0.33.5':
     optionalDependencies:
@@ -3066,7 +3066,7 @@ snapshots:
 
   hjson@3.2.2: {}
 
-  hono@4.7.10: {}
+  hono@4.7.11: {}
 
   ieee754@1.2.1: {}
 
@@ -3597,4 +3597,4 @@ snapshots:
       y18n: 5.0.8
       yargs-parser: 21.1.1
 
-  zod@3.25.42: {}
+  zod@3.25.45: {}

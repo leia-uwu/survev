@@ -3,6 +3,6 @@
     "private": true,
     "type": "module",
     "dependencies": {
-        "zod": "^3.25.42"
+        "zod": "^3.25.45"
     }
 }
