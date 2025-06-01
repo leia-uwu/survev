@@ -94,14 +94,6 @@ export class WeaponManager {
             | ThrowableDef;
 
         if (
-            curWeaponDef?.type === "gun" &&
-            curWeaponDef.fireMode === "burst" &&
-            this.bursts.length &&
-            !forceSwitch
-        )
-            return;
-
-        if (
             this.player.game.pluginManager.emit("playerWillSwitchIdx", {
                 player: this.player,
                 idx,
@@ -110,6 +102,14 @@ export class WeaponManager {
                 forceSwitch,
                 changeCooldown,
             })
+        )
+            return;
+
+        if (
+            curWeaponDef?.type === "gun" &&
+            curWeaponDef.fireMode === "burst" &&
+            this.bursts.length &&
+            !forceSwitch
         )
             return;
 
