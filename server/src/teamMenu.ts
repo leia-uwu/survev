@@ -136,6 +136,7 @@ class Room {
     onMsg(player: Player, msg: ClientToServerTeamMsg) {
         if (player.room !== this) return;
 
+        player.lastMsgTime = Date.now();
         switch (msg.type) {
             case "changeName": {
                 player.setName(msg.data.name);
@@ -143,7 +144,6 @@ class Room {
                 break;
             }
             case "keepAlive": {
-                player.lastMsgTime = Date.now();
                 player.send("keepAlive", {});
                 break;
             }
@@ -377,7 +377,8 @@ export class TeamMenu {
                 // kick players that haven't sent a keep alive msg in over a minute
                 // client sends it every 45 seconds
                 for (const player of room.players) {
-                    if (player.lastMsgTime < Date.now() - 60 * 1000) {
+                    if (player.lastMsgTime < Date.now() - 5 * 60 * 1000) {
+                        player.send("error", { type: "lost_conn" });
                         room.removePlayer(player);
                     }
                 }
@@ -551,6 +552,7 @@ export class TeamMenu {
                         player.send("error", { type: "join_full" });
                         break;
                     }
+                    player.setName(msg.data.playerData.name);
 
                     room.addPlayer(player);
                 }
