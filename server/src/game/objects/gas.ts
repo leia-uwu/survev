@@ -208,7 +208,7 @@ export class Gas {
      */
     timeDirty = true;
 
-    private _damageTicker = 0;
+    _damageTicker = 0;
     _running = false;
 
     doDamage = false;
