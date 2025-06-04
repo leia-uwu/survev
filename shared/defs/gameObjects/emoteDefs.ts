@@ -1555,7 +1555,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
     },
     emote_palestinian: {
         type: "emote",
-        name: "Palestinian",
+        name: "Flag Palestine",
         rarity: 1,
         texture: "flag-palestinian.img",
         sound: "emote_01",
