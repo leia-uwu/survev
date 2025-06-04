@@ -1553,6 +1553,16 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         teamOnly: false,
         category: EmoteCategory.Flags,
     },
+    emote_palestinian: {
+        type: "emote",
+        name: "Palestinian",
+        rarity: 1,
+        texture: "flag-palestinian.img",
+        sound: "emote_01",
+        channel: "ui",
+        teamOnly: false,
+        category: EmoteCategory.Flags,
+    },
     emote_logocloud: {
         type: "emote",
         name: "The Cloud",
