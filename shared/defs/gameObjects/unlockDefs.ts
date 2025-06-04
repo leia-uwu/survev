@@ -149,7 +149,7 @@ const _allowedEmotes = [
     "emote_flagsingapore",
     "emote_flagtrinidad",
     "emote_flaguruguay",
-    "emote_palestinian",
+    "emote_flagpalestine",
     "emote_logoconch",
     "emote_pineapple",
     "emote_coconut",
@@ -356,7 +356,7 @@ export const UnlockDefs: Record<string, UnlockDef> = {
             "emote_flaglatvia",
             "emote_flaguae",
             "emote_flagdominicanrepublic",
-            "emote_palestinian",
+            "emote_flagpalestine",
             "emote_logocloud",
             "emote_logotwins",
 
