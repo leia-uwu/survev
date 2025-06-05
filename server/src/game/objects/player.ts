@@ -922,6 +922,12 @@ export class Player extends BaseGameObject {
             // for non faction modes where teamId > 2, just cycles between blue and red teamId
             const clampedTeamId = ((this.teamId - 1) % 2) + 1;
 
+            if (roleDef.defaultItems.backpack) {
+                this.backpack = roleDef.defaultItems.backpack;
+            }
+
+            const backpackLevel = this.getGearLevel(this.backpack);
+
             // inventory and scope
             for (const [key, value] of Object.entries(roleDef.defaultItems.inventory)) {
                 if (value == 0) continue; // prevents overwriting existing inventory
@@ -935,7 +941,8 @@ export class Player extends BaseGameObject {
                     this.scope = key;
                 }
 
-                this.inventory[key] = value;
+                const spaceLeft = this.bagSizes[key][backpackLevel] - this.inventory[key];
+                this.inventory[key] += math.clamp(value, 0, spaceLeft);
             }
 
             // outfit
@@ -967,9 +974,6 @@ export class Player extends BaseGameObject {
                     this.dropArmor(this.chest);
                 }
                 this.chest = roleDef.defaultItems.chest;
-            }
-            if (roleDef.defaultItems.backpack) {
-                this.backpack = roleDef.defaultItems.backpack;
             }
 
             // weapons
