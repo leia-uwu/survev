@@ -27,6 +27,7 @@ import {
     GameConfig,
     type HasteType,
 } from "../../../../shared/gameConfig";
+import type { KillFeedSegment } from "../../../../shared/net/killFeedMsg";
 import * as net from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
 import type { GroupStatus } from "../../../../shared/net/updateMsg";
@@ -57,7 +58,7 @@ type GodMode = {
     selectPos?: Vec2;
 };
 
-interface Emote {
+export interface Emote {
     playerId: number;
     pos: Vec2;
     type: string;
@@ -67,6 +68,17 @@ interface Emote {
      * "m870", "mosin", "1xscope", "762mm", etc
      */
     itemType: string;
+}
+
+export interface Ping extends Emote {
+    isPing: true;
+    itemType: "";
+}
+
+export interface KillFeedLine {
+    segments: KillFeedSegment[];
+    /** who can see the killfeed line, -1 is everyone */
+    canSeeId: number;
 }
 
 export class PlayerBarn {
@@ -81,6 +93,8 @@ export class PlayerBarn {
     socketIdToPlayer = new Map<string, Player>();
 
     emotes: Emote[] = [];
+    /** currently just used by plugins */
+    killFeedLines: KillFeedLine[] = [];
 
     killLeaderDirty = false;
     killLeader?: Player;
@@ -129,7 +143,15 @@ export class PlayerBarn {
     addPlayer(socketId: string, joinMsg: net.JoinMsg, ip: string) {
         const joinData = this.game.joinTokens.get(joinMsg.matchPriv);
 
-        if (!joinData || joinData.expiresAt < Date.now()) {
+        if (
+            !joinData ||
+            joinData.expiresAt < Date.now() ||
+            this.game.pluginManager.emit("playerWillJoin", {
+                joinMsg,
+                ip,
+                userId: joinData.userId,
+            })
+        ) {
             this.game.closeSocket(socketId);
             if (joinData) {
                 this.game.joinTokens.delete(joinMsg.matchPriv);
@@ -245,7 +267,8 @@ export class PlayerBarn {
             this.livingPlayers.sort((a, b) => a.teamId - b.teamId);
         }
         this.aliveCountDirty = true;
-        this.game.pluginManager.emit("playerJoin", player);
+
+        this.game.pluginManager.emit("playerDidJoin", { player: player });
 
         this.game.updateData();
 
@@ -345,6 +368,7 @@ export class PlayerBarn {
         this.newPlayers.length = 0;
         this.deletedPlayers.length = 0;
         this.emotes.length = 0;
+        this.killFeedLines.length = 0;
         this.aliveCountDirty = false;
         this.killLeaderDirty = false;
 
@@ -502,23 +526,35 @@ export class PlayerBarn {
     }
 
     addEmote(type: string, playerId: number, itemType = "") {
-        this.emotes.push({
+        if (this.game.pluginManager.emit("emoteWillOccur", { type, playerId, itemType }))
+            return;
+        const emote: Emote = {
             isPing: false,
             playerId,
             pos: v2.create(0, 0),
             type,
             itemType,
-        });
+        };
+        this.emotes.push(emote);
+        this.game.pluginManager.emit("emoteDidOccur", { emote });
     }
 
     addMapPing(type: string, pos: Vec2, playerId = 0) {
-        this.emotes.push({
+        if (this.game.pluginManager.emit("pingWillOccur", { type, pos, playerId }))
+            return;
+        const ping: Ping = {
             isPing: true,
             type,
             pos,
             playerId,
             itemType: "",
-        });
+        };
+        this.emotes.push(ping);
+        this.game.pluginManager.emit("pingDidOccur", { ping });
+    }
+
+    addKillFeedLine(canSeeId = -1, segments: KillFeedSegment[]) {
+        this.killFeedLines.push({ canSeeId, segments });
     }
 }
 
@@ -830,11 +866,15 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        if (this.role === role) return;
+
+        if (this.game.pluginManager.emit("playerWillBePromoted", { player: this, role }))
+            return;
+
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
         }
-        if (this.role === role) return;
 
         //switching from one role to another
         //need to delete any non-droppables so they can be overwritten
@@ -882,6 +922,12 @@ export class Player extends BaseGameObject {
             // for non faction modes where teamId > 2, just cycles between blue and red teamId
             const clampedTeamId = ((this.teamId - 1) % 2) + 1;
 
+            if (roleDef.defaultItems.backpack) {
+                this.backpack = roleDef.defaultItems.backpack;
+            }
+
+            const backpackLevel = this.getGearLevel(this.backpack);
+
             // inventory and scope
             for (const [key, value] of Object.entries(roleDef.defaultItems.inventory)) {
                 if (value == 0) continue; // prevents overwriting existing inventory
@@ -895,7 +941,8 @@ export class Player extends BaseGameObject {
                     this.scope = key;
                 }
 
-                this.inventory[key] = value;
+                const spaceLeft = this.bagSizes[key][backpackLevel] - this.inventory[key];
+                this.inventory[key] += math.clamp(value, 0, spaceLeft);
             }
 
             // outfit
@@ -927,9 +974,6 @@ export class Player extends BaseGameObject {
                     this.dropArmor(this.chest);
                 }
                 this.chest = roleDef.defaultItems.chest;
-            }
-            if (roleDef.defaultItems.backpack) {
-                this.backpack = roleDef.defaultItems.backpack;
             }
 
             // weapons
@@ -989,6 +1033,8 @@ export class Player extends BaseGameObject {
                 this.addPerk(perkType, false, undefined, true);
             }
         }
+
+        this.game.pluginManager.emit("playerDidGetPromoted", { player: this, role });
     }
 
     roleSelect(role: string): void {
@@ -1483,7 +1529,9 @@ export class Player extends BaseGameObject {
                         if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
-                        this.game.pluginManager.emit("playerRevived", target);
+                        this.game.pluginManager.emit("playerWasRevived", {
+                            player: target,
+                        });
                     });
                 }
 
@@ -2109,20 +2157,6 @@ export class Player extends BaseGameObject {
             msgStream.serializeMsg(net.MsgType.AliveCounts, aliveMsg);
         }
 
-        const updateMsg = new net.UpdateMsg();
-
-        updateMsg.ack = this.ack;
-
-        if (game.gas.dirty || this._firstUpdate) {
-            updateMsg.gasDirty = true;
-            updateMsg.gasData = game.gas;
-        }
-
-        if (game.gas.timeDirty || this._firstUpdate) {
-            updateMsg.gasTDirty = true;
-            updateMsg.gasT = game.gas.gasT;
-        }
-
         let player: Player;
         if (this.spectating == undefined) {
             // not spectating anyone
@@ -2144,6 +2178,35 @@ export class Player extends BaseGameObject {
         // temporary guard while the spectating code is not fixed
         if (!player) {
             player = this;
+        }
+
+        for (let i = 0; i < playerBarn.killFeedLines.length; i++) {
+            const killFeedLine = playerBarn.killFeedLines[i];
+            const canSeeId = killFeedLine.canSeeId;
+            if (
+                -1 == canSeeId ||
+                player.__id == canSeeId ||
+                player.groupId == canSeeId ||
+                player.teamId == canSeeId
+            ) {
+                const killFeedMsg = new net.KillFeedMsg();
+                killFeedMsg.segments = killFeedLine.segments;
+                msgStream.serializeMsg(net.MsgType.KillFeedMsg, killFeedMsg);
+            }
+        }
+
+        const updateMsg = new net.UpdateMsg();
+
+        updateMsg.ack = this.ack;
+
+        if (game.gas.dirty || this._firstUpdate) {
+            updateMsg.gasDirty = true;
+            updateMsg.gasData = game.gas;
+        }
+
+        if (game.gas.timeDirty || this._firstUpdate) {
+            updateMsg.gasTDirty = true;
+            updateMsg.gasT = game.gas.gasT;
         }
 
         const radius = player.cullingZoom + 4;
@@ -2485,6 +2548,14 @@ export class Player extends BaseGameObject {
             }
         }
 
+        if (
+            this.game.pluginManager.emit("playerWillTakeDamage", {
+                player: this,
+                params: params,
+            })
+        )
+            return;
+
         let finalDamage = params.amount!;
 
         // ignore armor for gas and bleeding damage
@@ -2533,8 +2604,6 @@ export class Player extends BaseGameObject {
 
         if (this._health - finalDamage < 0) finalDamage = this.health;
 
-        this.game.pluginManager.emit("playerDamage", { ...params, player: this });
-
         this.damageTaken += finalDamage;
         if (sourceIsPlayer && params.source !== this) {
             if ((params.source as Player).groupId !== this.groupId) {
@@ -2544,6 +2613,11 @@ export class Player extends BaseGameObject {
         }
 
         this.health -= finalDamage;
+
+        this.game.pluginManager.emit("playerDidTakeDamage", {
+            player: this,
+            params: params,
+        });
 
         if (this.game.isTeamMode) {
             this.setGroupStatuses();
@@ -2578,6 +2652,10 @@ export class Player extends BaseGameObject {
             gameOverMsg.teamId = this.teamId;
             gameOverMsg.winningTeamId = winningTeamId;
             gameOverMsg.gameOver = !!winningTeamId;
+            this.game.pluginManager.emit("playerWillSendGameOverMsg", {
+                player: this,
+                gameOverMsg,
+            });
             this.msgsToSend.push({ type: net.MsgType.GameOver, msg: gameOverMsg });
 
             for (const spectator of this.spectators) {
@@ -2645,6 +2723,13 @@ export class Player extends BaseGameObject {
 
     kill(params: DamageParams): void {
         if (this.dead) return;
+        if (
+            this.game.pluginManager.emit("playerWillDie", {
+                player: this,
+                params: params,
+            })
+        )
+            return;
         if (this.downed) this.downed = false;
         this.dead = true;
         this.killedIndex = this.game.playerBarn.nextKilledNumber++;
@@ -2820,7 +2905,7 @@ export class Player extends BaseGameObject {
             }
         }
 
-        this.game.pluginManager.emit("playerKill", { ...params, player: this });
+        this.game.pluginManager.emit("playerDidDie", { player: this, params: params });
 
         //
         // Give spectators someone new to spectate
@@ -3168,6 +3253,9 @@ export class Player extends BaseGameObject {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
 
+        if (this.game.pluginManager.emit("playerWillInput", { player: this, msg: msg }))
+            return;
+
         if (!v2.eq(this.dir, msg.toMouseDir)) {
             this.setPartDirty();
             this.dirOld = v2.copy(this.dir);
@@ -3395,6 +3483,8 @@ export class Player extends BaseGameObject {
                 }
                 break;
         }
+
+        this.game.pluginManager.emit("playerDidInput", { player: this, msg });
     }
 
     getClosestLoot(): Loot | undefined {
@@ -3519,6 +3609,15 @@ export class Player extends BaseGameObject {
     pickupLoot(obj: Loot) {
         if (obj.destroyed) return;
         if (this.pickupTicker > 0) return;
+
+        if (
+            this.game.pluginManager.emit("playerWillPickupLoot", {
+                player: this,
+                loot: obj,
+            })
+        )
+            return;
+
         this.pickupTicker = 0.1;
         const def = GameObjectDefs[obj.type];
 
@@ -3858,6 +3957,8 @@ export class Player extends BaseGameObject {
             type: net.MsgType.Pickup,
             msg: pickupMsg,
         });
+
+        this.game.pluginManager.emit("playerDidPickupLoot", { player: this, loot: obj });
     }
 
     // in original game, only called on snowball or potato collision
@@ -4069,6 +4170,16 @@ export class Player extends BaseGameObject {
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
+
+        if (
+            this.game.pluginManager.emit("playerWillDropItem", {
+                player: this,
+                dropMsg,
+                itemDef,
+            })
+        )
+            return;
+
         switch (itemDef.type) {
             case "ammo": {
                 const inventoryCount = this.inventory[dropMsg.item];
@@ -4170,6 +4281,12 @@ export class Player extends BaseGameObject {
         if (reloading && this.weapons[this.curWeapIdx].ammo == 0) {
             this.weaponManager.tryReload();
         }
+
+        this.game.pluginManager.emit("playerDidDropItem", {
+            player: this,
+            dropMsg,
+            itemDef,
+        });
     }
 
     emoteFromMsg(msg: net.EmoteMsg) {

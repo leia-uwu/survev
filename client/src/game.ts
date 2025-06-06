@@ -1603,6 +1603,11 @@ export class Game {
                 msg.deserialize(stream);
                 this.m_disconnectMsg = msg.reason;
             }
+            case net.MsgType.KillFeedMsg: {
+                const msg = new net.KillFeedMsg();
+                msg.deserialize(stream);
+                this.m_ui2Manager.addCustomKillFeedMessage(msg.segments);
+            }
         }
     }
 

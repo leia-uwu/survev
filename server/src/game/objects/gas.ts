@@ -197,7 +197,7 @@ export class Gas {
     /**
      * Current duration ticker
      */
-    private _gasTicker = 0;
+    _gasTicker = 0;
 
     /**
      * If the gas full state needs to be sent to clients
@@ -208,8 +208,8 @@ export class Gas {
      */
     timeDirty = true;
 
-    private _damageTicker = 0;
-    private _running = false;
+    _damageTicker = 0;
+    _running = false;
 
     doDamage = false;
 
@@ -303,6 +303,8 @@ export class Gas {
     }
 
     advanceGasStage() {
+        if (this.game.pluginManager.emit("gasWillAdvance", { gas: this })) return;
+
         this.stage++;
         this._running = true;
 
@@ -371,6 +373,8 @@ export class Gas {
         this.gasT = 0;
         this.dirty = true;
         this.timeDirty = true;
+
+        this.game.pluginManager.emit("gasDidAdvance", { gas: this });
 
         this.game.updateData();
     }

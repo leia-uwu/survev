@@ -386,6 +386,13 @@ export class Obstacle implements AbstractObject {
                 door.wasOpen = door.open;
             }
         }
+
+        //regrowable obstacles that are alive again
+        if (this.exploded && !this.dead) {
+            this.exploded = false;
+            util.removeElem(map.deadObstacleIds, this.__id);
+        }
+
         if (
             this.dead &&
             !this.exploded &&
