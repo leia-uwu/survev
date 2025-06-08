@@ -897,6 +897,22 @@ const SkinDefs = {
             rot: 0.5 * Math.PI,
         },
     }),
+    helmet04_captain: defineSkin("helmet04", {
+        name: "Captain Helmet",
+        noDrop: true,
+        skinImg: {
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
+            baseSprite: "img/loot/player-helmet-captain.svg",
+            spriteScale: 0.3,
+        },
+        lootImg: {
+            sprite: "img/loot/player-helmet-captain.svg",
+            scale: 0.3,
+            rot: 0.5 * Math.PI,
+        },
+    }),
 };
 
 // Shared with the client; move them somewhere

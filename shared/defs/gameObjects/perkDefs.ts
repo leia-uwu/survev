@@ -2,6 +2,9 @@ export const PerkProperties = {
     leadership: {
         scale: 0.25,
     },
+    assume_leadership: {
+        scale: 0.15,
+    },
     steelskin: {
         scale: 0.4,
         damageReduction: 0.5,
@@ -80,6 +83,20 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-leadership.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-03.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },
+    assume_leadership: {
+        name: "Assume Leadership",
+        type: "perk",
+        lootImg: {
+            sprite: "img/loot/loot-perk-assume-leadership.svg",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,

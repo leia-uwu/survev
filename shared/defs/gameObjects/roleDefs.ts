@@ -189,6 +189,36 @@ export const RoleDefs: Record<string, RoleDef> = {
             },
         }),
     },
+    captain: {
+        type: "role",
+        announce: true,
+        killFeed: { assign: true },
+        sound: { assign: "captain_assigned_01" },
+        mapIcon: {
+            alive: "img/gui/player-captain.svg",
+            dead: "",
+        },
+        perks: ["assume_leadership", "firepower"],
+        defaultItems: createDefaultItems({
+            weapons: [
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+                { type: "", ammo: 0 },
+            ],
+            backpack: "backpack03",
+            helmet: "helmet04_captain",
+            chest: "chest03",
+            outfit: (teamcolor: TeamColor) =>
+                ({
+                    [TeamColor.Red]: "outfitRedLeader",
+                    [TeamColor.Blue]: "outfitRedLeader",
+                })[teamcolor],
+            inventory: {
+                "8xscope": 1,
+            },
+        }),
+    },
     lieutenant: {
         type: "role",
         announce: true,

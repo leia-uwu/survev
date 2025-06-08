@@ -12,6 +12,7 @@ export class Team {
     /** even if leader becomes lone survivr, this variable remains unchanged since it's used for gameover msgs */
     leader?: Player;
     isLastManApplied = false;
+    isCaptainApplied = false;
 
     constructor(
         public game: Game,
@@ -84,5 +85,22 @@ export class Team {
         if (last1 && last1.role != "last_man") last1.promoteToRole("last_man");
         if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
         this.isLastManApplied = true;
+    }
+
+    checkAndApplyCaptain() {
+        if (this.isCaptainApplied) return;
+
+        const leaderAlive = this.livingPlayers.find(
+            (p) => !p.disconnected && p.role === "leader",
+        );
+        if (leaderAlive) return;
+
+        const lieutenant = this.livingPlayers.find(
+            (p) => !p.downed && !p.disconnected && p.role === "lieutenant",
+        );
+        if (lieutenant) {
+            lieutenant.promoteToRole("captain");
+            this.isCaptainApplied = true;
+        }
     }
 }
