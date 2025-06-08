@@ -212,7 +212,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             outfit: (teamcolor: TeamColor) =>
                 ({
                     [TeamColor.Red]: "outfitRedLeader",
-                    [TeamColor.Blue]: "outfitRedLeader",
+                    [TeamColor.Blue]: "outfitBlueLeader",
                 })[teamcolor],
             inventory: {
                 "8xscope": 1,
