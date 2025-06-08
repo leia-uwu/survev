@@ -4042,6 +4042,9 @@ export class Player extends BaseGameObject {
             useCountForAmmo,
             10,
             v2.neg(this.dir),
+            undefined,
+            undefined,
+            "player"
         );
     }
 
