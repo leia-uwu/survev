@@ -998,6 +998,10 @@ export class GameMap {
                             item.count,
                             undefined,
                             0,
+                            undefined,
+                            undefined,
+                            item.preload === true,
+                            "map"
                         );
                     }
                     this.grid.addCollider({

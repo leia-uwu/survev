@@ -123,6 +123,8 @@ export class LootBarn {
         pushSpeed?: number,
         dir?: Vec2,
         preloadGun?: boolean,
+        preload?: boolean,
+        source?: "player" | "obstacle" | "map"
     ) {
         const def = GameObjectDefs[type];
 
@@ -134,11 +136,18 @@ export class LootBarn {
         const loot = new Loot(this.game, type, pos, layer, count, pushSpeed, dir);
         this._addLoot(loot);
 
-        if (preloadGun) {
-            loot.isPreloadedGun = true;
+        if (def && def.type === "gun") {
+            const preloadMode = this.game.map.mapDef.gameMode?.factionMode
+
+            const doPreload =
+            (preload || preloadGun);
+
+            if ((doPreload || preloadMode) && source !== "player") {
+                loot.isPreloadedGun = true;
+            }
         }
 
-        if (def.type === "gun" && GameObjectDefs[def.ammo] && !preloadGun) {
+        if (def.type === "gun" && GameObjectDefs[def.ammo] && !loot.isPreloadedGun) {
             const ammoCount = useCountForAmmo ? count : def.ammoSpawnCount;
             if (ammoCount <= 0) return;
             const halfAmmo = Math.ceil(ammoCount / 2);
