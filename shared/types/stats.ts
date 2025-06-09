@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MapId } from "../defs/types/misc";
 import { TeamMode } from "../gameConfig";
 
 //
@@ -71,6 +72,10 @@ export type MatchData = {
 // User Stats
 //
 const ALL_MAPS = "-1";
+const VALID_MAP_IDS = Object.values(MapId)
+    .filter((id) => typeof id === "number")
+    .map((id) => id.toString());
+
 export const zUserStatsRequest = z.object({
     // why is the client sending null as the default value
     // and why is there all and alltime???
@@ -81,7 +86,7 @@ export const zUserStatsRequest = z.object({
         .catch("all")
         .transform((v) => v ?? "all"),
     slug: z.string().min(1),
-    mapIdFilter: z.string().catch(ALL_MAPS),
+    mapIdFilter: z.enum(["-1", ...VALID_MAP_IDS]).catch(ALL_MAPS),
 });
 
 export type UserStatsRequest = z.infer<typeof zUserStatsRequest>;

@@ -1,14 +1,15 @@
-import { eq, sql } from "drizzle-orm";
+import { type SQL, and, eq, gte, max, sql, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
 import {
+    type UserStatsRequest,
     type UserStatsResponse,
     zUserStatsRequest,
 } from "../../../../../shared/types/stats";
 import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
 import { validateParams } from "../../auth/middleware";
 import { db } from "../../db";
-import { usersTable } from "../../db/schema";
+import { matchDataTable, usersTable } from "../../db/schema";
 
 export const UserStatsRouter = new Hono<Context>();
 
@@ -49,81 +50,89 @@ UserStatsRouter.post(
     },
 );
 
-export function filterByInterval(interval: string) {
-    if (interval === "weekly") {
-        return `AND created_at >= (NOW() - INTERVAL '7 DAY')`;
-    }
-    if (interval === "daily") {
-        return ` AND created_at >= (NOW() - INTERVAL '1 DAY')`;
-    }
-    return ""; // Default case for "all" or "alltime"
-}
-
-export function filterByMapId(mapIdFilter: string) {
-    return mapIdFilter === "-1" ? "" : `AND map_id = '${mapIdFilter}'`;
-}
+const intervalFilter: Record<string, SQL<unknown>> = {
+    daily: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '1 day'`),
+    weekly: gte(matchDataTable.createdAt, sql`NOW() - INTERVAL '7 days'`),
+};
 
 async function userStatsSqlQuery(
     userId: string,
     mapIdFilter: string,
-    interval: string,
+    interval: UserStatsRequest["interval"],
 ): Promise<UserStatsResponse> {
-    const intervalFilterQuery = filterByInterval(interval);
-    const mapIdFilterQuery = filterByMapId(mapIdFilter);
-
-    const query = sql.raw(`
-            WITH mode_stats AS (
-                SELECT
-                    m.team_mode,
-                    COUNT(*) AS games,
-                    SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) AS wins,
-                    SUM(m.kills) AS kills,
-                    ROUND(SUM(CASE WHEN m.rank = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1) AS winPct,
-                    MAX(m.kills) AS most_kills,
-                    MAX(m.damage_dealt) AS most_damage,
-                    ROUND(SUM(m.kills) * 1.0 / COUNT(*), 1) AS kpg,
-                    ROUND(AVG(m.damage_dealt)) AS avg_damage,
-                    ROUND(AVG(m.time_alive)) AS avg_time_alive
-                FROM match_data m
-                WHERE m.user_id = '${userId}'
-                ${intervalFilterQuery}
-                ${mapIdFilterQuery}
-                GROUP BY m.team_mode
+    const withSelect = db.$with("mode_stats").as(
+        db
+            .select({
+                team_mode: matchDataTable.teamMode,
+                games: sql`COUNT(*)`.as("games"),
+                wins: sql`SUM(CASE WHEN ${matchDataTable.rank} = 1 THEN 1 ELSE 0 END)`.as(
+                    "wins",
+                ),
+                kills: sum(matchDataTable.kills).as("kills"),
+                winPct: sql`ROUND(SUM(CASE WHEN ${matchDataTable.rank} = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 1)`.as(
+                    "winpct",
+                ),
+                most_kills: max(matchDataTable.kills).as("most_kills"),
+                most_damage: max(matchDataTable.damageDealt).as("most_damage"),
+                kpg: sql`ROUND(SUM(${matchDataTable.kills}) * 1.0 / COUNT(*), 1)`.as(
+                    "kpg",
+                ),
+                avg_damage: sql`ROUND(AVG(${matchDataTable.damageDealt}))`.as(
+                    "avg_damage",
+                ),
+                avg_time_alive: sql`ROUND(AVG(${matchDataTable.timeAlive}))`.as(
+                    "avg_time_alive",
+                ),
+            })
+            .from(matchDataTable)
+            .where(
+                and(
+                    eq(matchDataTable.userId, userId),
+                    mapIdFilter !== "-1"
+                        ? eq(matchDataTable.mapId, parseInt(mapIdFilter))
+                        : undefined,
+                    interval in intervalFilter ? intervalFilter[interval] : undefined,
+                ),
             )
-            SELECT
-                u.slug,
-                u.username,
-                u.banned,
-                JSON_EXTRACT_PATH(ANY_VALUE(u.loadout), 'player_icon') AS player_icon,
-                COALESCE(SUM(ms.games), 0) AS games,
-                COALESCE(SUM(ms.wins), 0) AS wins,
-                COALESCE(SUM(ms.kills), 0) AS kills,  
-                COALESCE(ROUND(SUM(ms.kills) * 1.0 / NULLIF(SUM(ms.games), 0), 1), 0) AS kpg,
+            .groupBy(matchDataTable.teamMode),
+    );
+
+    const res = await db
+        .with(withSelect)
+        .select({
+            slug: usersTable.slug,
+            username: usersTable.username,
+            banned: usersTable.banned,
+            player_icon: sql`JSON_EXTRACT_PATH(ANY_VALUE(${usersTable.loadout}), 'player_icon')`,
+            games: sql`COALESCE(SUM("mode_stats".games), 0)`,
+            wins: sql`COALESCE(SUM("mode_stats".wins), 0)`,
+            kills: sql`COALESCE(SUM("mode_stats".kills))`,
+            kpg: sql`COALESCE(ROUND(SUM("mode_stats".kills) * 1.0 / NULLIF(SUM("mode_stats".games), 0), 1), 0)`,
+            modes: sql`
         COALESCE(JSON_AGG(
-            CASE WHEN ms.team_mode IS NOT NULL THEN
+            CASE WHEN "mode_stats".team_mode IS NOT NULL THEN
                 JSON_BUILD_OBJECT(
-                    'wins', ms.wins,
-                    'kills', ms.kills,
-                    'teamMode', ms.team_mode,
-                    'avgDamage', ms.avg_damage,
-                    'avgTimeAlive', ms.avg_time_alive,
-                    'mostDamage', ms.most_damage,
-                    'kpg', ms.kpg,
-                    'winPct', ms.winPct,
-                    'mostKills', ms.most_kills,
-                    'games', ms.games
+                    'wins', "mode_stats".wins,
+                    'kills', "mode_stats".kills,
+                    'teamMode', "mode_stats".team_mode,
+                    'avgDamage', "mode_stats".avg_damage,
+                    'avgTimeAlive', "mode_stats".avg_time_alive,
+                    'mostDamage', "mode_stats".most_damage,
+                    'kpg', "mode_stats".kpg,
+                    'winPct', "mode_stats".winPct,
+                    'mostKills', "mode_stats".most_kills,
+                    'games', "mode_stats".games
                 )
             END
-        ), '[]') AS modes
-            FROM users u
-            LEFT JOIN mode_stats ms ON 1 = 1
-            WHERE u.id = '${userId}'
-            GROUP BY u.slug, u.username, u.banned
-            LIMIT 1;
-    `);
+        ), '[]')`,
+        })
+        .from(usersTable)
+        .leftJoin(withSelect, eq(sql`1`, 1))
+        .where(eq(usersTable.id, userId))
+        .groupBy(usersTable.slug, usersTable.username, usersTable.banned)
+        .limit(1);
 
-    const data = await db.execute<UserStatsResponse>(query);
-    const userStats = data.rows[0];
+    const userStats = res[0] as UserStatsResponse;
 
     if (!userStats || !userStats.slug) return emptyState as unknown as UserStatsResponse;
 
