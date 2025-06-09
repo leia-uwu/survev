@@ -298,6 +298,14 @@ export class PlayerBarn {
                             util.randomInt(0, promotablePlayers.length - 1)
                         ];
                     randomPlayer.promoteToRole(scheduledRole.role);
+
+                    if (scheduledRole.role === "leader" && randomPlayer.team) {
+                        setTimeout(() => {
+                            if (randomPlayer.team && !randomPlayer.hasFiredFlare) {
+                                randomPlayer.team.autoCallAirdrops();
+                            }
+                        }, 15000);
+                    }
                 }
             }
         }
@@ -804,6 +812,7 @@ export class Player extends BaseGameObject {
     hasRoleHelmet = false;
     role = "";
     isKillLeader = false;
+    hasFiredFlare = false;
 
     /** for cobalt mode role menu, will spawn the player by force if timer runs out */
     roleMenuTicker = 0;
@@ -4044,7 +4053,7 @@ export class Player extends BaseGameObject {
             v2.neg(this.dir),
             undefined,
             undefined,
-            "player"
+            "player",
         );
     }
 
