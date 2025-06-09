@@ -1,3 +1,4 @@
+import { GunDefs } from "../../../shared/defs/gameObjects/gunDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import type { Game } from "./game";
@@ -71,6 +72,35 @@ export class Team {
         }
     }
 
+    autoCallAirdrops() {
+        if (!this.leader) return;
+
+        // Spawn the flare bullet
+        this.game.bulletBarn.fireBullet({
+            bulletType: "bullet_flare",
+            pos: this.leader.pos,
+            dir: this.leader.dir,
+            gameSourceType: "game",
+            layer: 0,
+            damageMult: 1,
+            damageType: 0,
+            playerId: this.leader.playerId,
+        });
+
+        // Handle the removal of flare ammo
+        const ammoType = GunDefs["flare_gun"].ammo;
+
+        const flareGun = this.leader.weapons.find((w) => w && w.type === "flare_gun");
+        if (flareGun) {
+            flareGun.ammo = 0;
+            this.leader.weapsDirty = true;
+        }
+
+        if (this.leader.inventory[ammoType]) {
+            this.leader.inventory[ammoType] = 0;
+            this.leader.inventoryDirty = true;
+        }
+    }
     checkAndApplyLastMan() {
         if (this.isLastManApplied) return;
 
@@ -86,7 +116,6 @@ export class Team {
         if (last2 && last2.role != "last_man") last2.promoteToRole("last_man");
         this.isLastManApplied = true;
     }
-
     checkAndApplyCaptain() {
         if (this.isCaptainApplied) return;
 
