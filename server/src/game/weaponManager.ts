@@ -449,6 +449,7 @@ export class WeaponManager {
      * called when reload action completed, actually updates all state variables
      */
     reload(curWeapIdx = this.curWeapIdx): void {
+        if (!this.weapons[curWeapIdx].type) return; // prevent rare bug
         const weapon = this.weapons[curWeapIdx];
         const weaponDef = GameObjectDefs[weapon.type] as GunDef;
         const trueAmmoStats = this.getTrueAmmoStats(weaponDef);
