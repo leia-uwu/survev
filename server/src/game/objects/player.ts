@@ -4091,6 +4091,9 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
+        if (dropMsg.item === "flare" && this.role === "leader") {
+            return;
+        }
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
