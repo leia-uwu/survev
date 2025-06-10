@@ -106,7 +106,7 @@ async function userStatsSqlQuery(
             player_icon: sql`JSON_EXTRACT_PATH(ANY_VALUE(${usersTable.loadout}), 'player_icon')`,
             games: sql`COALESCE(SUM("mode_stats".games), 0)`,
             wins: sql`COALESCE(SUM("mode_stats".wins), 0)`,
-            kills: sql`COALESCE(SUM("mode_stats".kills))`,
+            kills: sql`COALESCE(SUM("mode_stats".kills), 0)`,
             kpg: sql`COALESCE(ROUND(SUM("mode_stats".kills) * 1.0 / NULLIF(SUM("mode_stats".games), 0), 1), 0)`,
             modes: sql`
         COALESCE(JSON_AGG(
