@@ -1001,7 +1001,7 @@ export class GameMap {
                             undefined,
                             undefined,
                             item.preload === true,
-                            "map"
+                            "map",
                         );
                     }
                     this.grid.addCollider({
