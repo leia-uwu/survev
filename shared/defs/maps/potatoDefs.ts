@@ -28,7 +28,7 @@ const mapDef: PartialMapDef = {
             { name: "log_11", channel: "sfx" },
             { name: "log_12", channel: "sfx" },
         ],
-        atlases: ["gradient", "loadout", "shared", "main", "potato"],
+        atlases: ["gradient", "loadout", "shared", "main", "potato", "savannah"],
     },
     biome: {
         colors: {
@@ -190,6 +190,7 @@ const mapDef: PartialMapDef = {
         ],
         fixedSpawns: [
             {
+                savannah_patch_01: 2,
                 shilo_01: 1,
                 warehouse_01: 2,
                 house_red_01: { small: 3, large: 4 },
@@ -224,6 +225,11 @@ const mapDef: PartialMapDef = {
             {
                 spawns: ["mansion_structure_01", "police_01", "bank_01"],
                 choose: 2,
+            },
+        ],
+        spawnReplacements: [
+            {
+                crate_21: "crate_21p",
             },
         ],
         importantSpawns: ["club_complex_01"],
