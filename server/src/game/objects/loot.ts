@@ -124,7 +124,7 @@ export class LootBarn {
         dir?: Vec2,
         preloadGun?: boolean,
         preload?: boolean,
-        source?: "player" | "obstacle" | "map"
+        source?: "player" | "obstacle" | "map",
     ) {
         const def = GameObjectDefs[type];
 
@@ -137,10 +137,9 @@ export class LootBarn {
         this._addLoot(loot);
 
         if (def && def.type === "gun") {
-            const preloadMode = this.game.map.mapDef.gameMode?.factionMode
+            const preloadMode = this.game.map.mapDef.gameMode?.factionMode;
 
-            const doPreload =
-            (preload || preloadGun);
+            const doPreload = preload || preloadGun;
 
             if ((doPreload || preloadMode) && source !== "player") {
                 loot.isPreloadedGun = true;

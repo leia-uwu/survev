@@ -466,7 +466,7 @@ export class Obstacle extends BaseGameObject {
                             params.dir,
                             lootTierOrItem.props?.preloadGuns,
                             item.preload,
-                            "obstacle"
+                            "obstacle",
                         );
                     }
                 }
