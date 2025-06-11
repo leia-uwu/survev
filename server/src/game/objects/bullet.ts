@@ -607,12 +607,13 @@ export class Bullet {
                         multiplier *= 1.25;
                     }
                     // AP Rounds Vest Multipliers (increases by 5% per vest from 1.15 for "")
-                    // Subject to balance changes 
+                    // Subject to balance changes
                     if (this.player?.hasPerk("ap_rounds")) {
                         const armorLevel = col.player?.chest;
                         let apBonus = 1.15;
                         if (armorLevel && armorLevel.startsWith("chest")) {
-                            const vestLevel = parseInt(armorLevel.replace("chest", ""), 10) || 0;
+                            const vestLevel =
+                                parseInt(armorLevel.replace("chest", ""), 10) || 0;
                             apBonus += 0.05 * vestLevel;
                         }
                         multiplier *= apBonus;
