@@ -298,14 +298,6 @@ export class PlayerBarn {
                             util.randomInt(0, promotablePlayers.length - 1)
                         ];
                     randomPlayer.promoteToRole(scheduledRole.role);
-
-                    if (scheduledRole.role === "leader" && randomPlayer.team) {
-                        setTimeout(() => {
-                            if (randomPlayer.team && !randomPlayer.hasFiredFlare) {
-                                randomPlayer.team.autoCallAirdrops();
-                            }
-                        }, 15000);
-                    }
                 }
             }
         }
@@ -572,6 +564,8 @@ export class Player extends BaseGameObject {
     weapsDirty = true;
     spectatorCountDirty = false;
     activeIdDirty = true;
+    hasFiredFlare = false;
+    flareTimer = 0;
 
     team: Team | undefined = undefined;
     group: Group | undefined = undefined;
@@ -812,7 +806,6 @@ export class Player extends BaseGameObject {
     hasRoleHelmet = false;
     role = "";
     isKillLeader = false;
-    hasFiredFlare = false;
 
     /** for cobalt mode role menu, will spawn the player by force if timer runs out */
     roleMenuTicker = 0;
@@ -837,6 +830,11 @@ export class Player extends BaseGameObject {
         if (!roleDef || roleDef.type !== "role") {
             this.game.logger.warn(`Invalid role type: ${role}`);
             return;
+        }
+
+        if (role === "leader") {
+            this.hasFiredFlare = false;
+            this.flareTimer = 15;
         }
 
         if (this.role == "medic") {
@@ -1323,6 +1321,23 @@ export class Player extends BaseGameObject {
             this.timeUntilHidden -= dt;
         }
 
+        if (
+            this.role === "leader" &&
+            !this.hasFiredFlare &&
+            this.flareTimer > 0
+        ) {
+            this.flareTimer -= dt;
+            if (this.flareTimer <= 0) {
+                const flareGunIndex = this.weapons.findIndex(w => w.type === "flare_gun");
+                if (flareGunIndex !== -1) {
+                this.weaponManager.setCurWeapIndex(flareGunIndex);
+                this.weaponManager.fireWeapon(false, true);
+                this.hasFiredFlare = true;
+                this.flareTimer = 0;
+            }
+        }
+    }
+
         if (this.roleMenuTicker > 0) {
             this.roleMenuTicker -= dt;
             if (this.roleMenuTicker <= 0) {
@@ -1495,10 +1510,6 @@ export class Player extends BaseGameObject {
                         }
 
                         if (target.hasPerk("leadership")) target.boost = 100;
-                        target.setDirty();
-                        target.setGroupStatuses();
-                        this.game.pluginManager.emit("playerRevived", target);
-
                         if (target.hasPerk("assume_leadership")) target.boost = 50;
                         target.setDirty();
                         target.setGroupStatuses();
@@ -3797,7 +3808,7 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "outfit":
-                if (this.role == "leader") {
+                if (this.role == "leader" || this.role == "captain") {
                     amountLeft = 1;
                     pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     break;
@@ -4091,7 +4102,10 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
-        if (dropMsg.item === "flare" && this.role === "leader") {
+        if (this.role === "leader" &&
+            (dropMsg.item === "flare_gun") &&
+            !this.hasFiredFlare
+        ) {
             return;
         }
 

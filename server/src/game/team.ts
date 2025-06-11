@@ -1,4 +1,3 @@
-import { GunDefs } from "../../../shared/defs/gameObjects/gunDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import { util } from "../../../shared/utils/util";
 import type { Game } from "./game";
@@ -69,36 +68,6 @@ export class Team {
                 source: p.downedBy,
             });
             i--; //kill() removes the player from the array so we dont want to skip players
-        }
-    }
-
-    autoCallAirdrops() {
-        if (!this.leader) return;
-
-        // Spawn the flare bullet
-        this.game.bulletBarn.fireBullet({
-            bulletType: "bullet_flare",
-            pos: this.leader.pos,
-            dir: this.leader.dir,
-            gameSourceType: "game",
-            layer: 0,
-            damageMult: 1,
-            damageType: 0,
-            playerId: this.leader.playerId,
-        });
-
-        // Handle the removal of flare ammo
-        const ammoType = GunDefs["flare_gun"].ammo;
-
-        const flareGun = this.leader.weapons.find((w) => w && w.type === "flare_gun");
-        if (flareGun) {
-            flareGun.ammo = 0;
-            this.leader.weapsDirty = true;
-        }
-
-        if (this.leader.inventory[ammoType]) {
-            this.leader.inventory[ammoType] = 0;
-            this.leader.inventoryDirty = true;
         }
     }
     checkAndApplyLastMan() {

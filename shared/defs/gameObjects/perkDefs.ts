@@ -204,6 +204,20 @@ export const PerkDefs: Record<string, PerkDef> = {
             pickup: "perk_pickup_01",
         },
     },
+    ap_rounds: {
+        name: "AP Rounds",
+        type: "perk",
+        lootImg: {
+            sprite: "loot-perk-splinter.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-03.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },   
     splinter: {
         name: "Splinter Rounds",
         type: "perk",

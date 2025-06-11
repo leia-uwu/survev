@@ -125,10 +125,8 @@ export class BulletBarn {
         }
 
         if (params.bulletType === "bullet_flare" && params.playerId) {
-            const player = this.game.playerBarn.players.find(
-                (p) => p.playerId === params.playerId,
-            );
-            if (player && player.role === "leader") {
+            const player = this.game.objectRegister.getById(params.playerId);
+            if (player instanceof Player && player.role === "leader") {
                 player.hasFiredFlare = true;
             }
         }
@@ -576,6 +574,11 @@ export class Bullet {
                 const mapDef = MapObjectDefs[col.obstacleType!] as ObstacleDef;
 
                 const def = GameObjectDefs[this.bulletType] as BulletDef;
+                // AP Obstacle Multiplier Buff
+                let apMultiplier = def.obstacleDamage;
+                if (this.player?.hasPerk("ap_rounds")) {
+                    apMultiplier *= 1.5;
+                }
 
                 this.bulletManager.damages.push({
                     obj: col.obj!,
@@ -584,7 +587,7 @@ export class Bullet {
                     mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
                     source: this.player,
-                    amount: finalDamage * def.obstacleDamage,
+                    amount: finalDamage * apMultiplier,
                     dir: this.dir,
                 });
 
@@ -602,6 +605,17 @@ export class Bullet {
                     let multiplier = 1;
                     if (isHighValueTarget) {
                         multiplier *= 1.25;
+                    }
+                    // AP Rounds Vest Multipliers (increases by 5% per vest from 1.15 for "")
+                    // Subject to balance changes 
+                    if (this.player?.hasPerk("ap_rounds")) {
+                        const armorLevel = col.player?.chest;
+                        let apBonus = 1.15;
+                        if (armorLevel && armorLevel.startsWith("chest")) {
+                            const vestLevel = parseInt(armorLevel.replace("chest", ""), 10) || 0;
+                            apBonus += 0.05 * vestLevel;
+                        }
+                        multiplier *= apBonus;
                     }
 
                     this.bulletManager.damages.push({
