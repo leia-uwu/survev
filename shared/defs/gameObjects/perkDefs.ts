@@ -217,7 +217,7 @@ export const PerkDefs: Record<string, PerkDef> = {
         sound: {
             pickup: "perk_pickup_01",
         },
-    },   
+    },
     splinter: {
         name: "Splinter Rounds",
         type: "perk",

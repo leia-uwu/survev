@@ -1321,22 +1321,20 @@ export class Player extends BaseGameObject {
             this.timeUntilHidden -= dt;
         }
 
-        if (
-            this.role === "leader" &&
-            !this.hasFiredFlare &&
-            this.flareTimer > 0
-        ) {
+        if (this.role === "leader" && !this.hasFiredFlare && this.flareTimer > 0) {
             this.flareTimer -= dt;
             if (this.flareTimer <= 0) {
-                const flareGunIndex = this.weapons.findIndex(w => w.type === "flare_gun");
+                const flareGunIndex = this.weapons.findIndex(
+                    (w) => w.type === "flare_gun",
+                );
                 if (flareGunIndex !== -1) {
-                this.weaponManager.setCurWeapIndex(flareGunIndex);
-                this.weaponManager.fireWeapon(false, true);
-                this.hasFiredFlare = true;
-                this.flareTimer = 0;
+                    this.weaponManager.setCurWeapIndex(flareGunIndex);
+                    this.weaponManager.fireWeapon(false, true);
+                    this.hasFiredFlare = true;
+                    this.flareTimer = 0;
+                }
             }
         }
-    }
 
         if (this.roleMenuTicker > 0) {
             this.roleMenuTicker -= dt;
@@ -4102,8 +4100,9 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
-        if (this.role === "leader" &&
-            (dropMsg.item === "flare_gun") &&
+        if (
+            this.role === "leader" &&
+            dropMsg.item === "flare_gun" &&
             !this.hasFiredFlare
         ) {
             return;
