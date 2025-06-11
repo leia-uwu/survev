@@ -590,7 +590,7 @@ export class WeaponManager {
     }
 
     offHand = false;
-    fireWeapon(offHand: boolean) {
+    fireWeapon(offHand: boolean, forceFire?: boolean) {
         const itemDef = GameObjectDefs[this.activeWeapon] as GunDef;
 
         const weapon = this.weapons[this.curWeapIdx];
@@ -607,7 +607,7 @@ export class WeaponManager {
         weapon.recoilTime = itemDef.recoilTime;
 
         // Check firing location
-        if (itemDef.outsideOnly && this.player.indoors) {
+        if (itemDef.outsideOnly && this.player.indoors && !forceFire) {
             const msg = new net.PickupMsg();
             msg.type = net.PickupMsgType.GunCannotFire;
             this.player.msgsToSend.push({ type: net.MsgType.Pickup, msg });
