@@ -11,7 +11,7 @@ export const AtlasesConfig = {
     },
     outDir: "./out/",
     // change filesDir to ../public/img
-    // and loaderFormat to .png
+    // and loaderFormat to .svg
     // if you want to use svgs instead of cached pngs
     filesDir: "./pngs/",
     loaderFormat: ".png",
