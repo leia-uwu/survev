@@ -90,8 +90,13 @@ async function setupGameServer(config: PartialConfig) {
         required: true,
         initial: `http://${config.apiServer?.host ?? "127.0.0.1"}:${config.apiServer?.port ?? 8000}`,
         validate(value) {
-            return URL.parse(value) !== null;
-        },
+            try {
+                new URL(value); // throws if invalid
+                return true;
+            } catch {
+                return 'Please enter a valid URL (e.g. http://127.0.0.1:8000)';
+            }
+        }
     });
     config.gameServer.apiServerUrl = apiAddress.value;
 
@@ -146,10 +151,10 @@ async function setupAccounts(config: PartialConfig) {
             required: true,
         });
 
-        config.secrets.GOOGLE_SECRET_ID = clientId.value;
+        config.secrets.GOOGLE_CLIENT_ID = clientId.value;
 
         const clientSecret = await prompt<{ value: string }>({
-            message: "Enter google secret ID",
+            message: "Enter google client secret",
             name: "value",
             type: "text",
             required: true,
@@ -325,7 +330,7 @@ async function setupProductionConfig(config: PartialConfig) {
     const apiOrGameServer = await prompt<{
         value: "Both" | "API" | "Game server region";
     }>({
-        message: "Are you deploying a an API server, a game server region or both?",
+        message: "Are you deploying an API server, a game server region, or both?",
         name: "value",
         type: "select",
         choices: ["Both", "API", "Game server region"],
