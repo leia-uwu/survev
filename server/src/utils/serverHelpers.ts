@@ -440,6 +440,7 @@ export async function waitForApiServerReady(
     delayMs = 1000,
 ): Promise<boolean> {
     const url = `${Config.gameServer.apiServerUrl}/api/site_info`;
+    await new Promise((r) => setTimeout(r, Math.min(delayMs, 500)));
 
     for (let i = 0; i < retries; i++) {
         try {
@@ -447,14 +448,23 @@ export async function waitForApiServerReady(
                 method: "GET",
                 signal: AbortSignal.timeout(3000),
             });
-
             if (res.ok) {
+                defaultLogger.info(`API ready on attempt ${i + 1}`);
                 return true;
             }
-        } catch (err) {
-            defaultLogger.warn(`Waiting for API server attempt ${i + 1} failed`, err);
+        defaultLogger.warn(`API returned ${res.status} on attempt ${i + 1}`);
+        } catch (err: any) {
+            const code = err.code ?? err.name;
+            defaultLogger.warn(`Attempt ${i + 1} failed (${code})`);
+            if (code === 'ENOTFOUND' || code === 'EADDRINFO') {
+                // unrecoverable – abort early
+                break;
+            }
         }
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
+        // exponential backoff + jitter
+        const backoff = delayMs * 2 ** i;
+        const jitter = Math.random() * 400 - 200;
+        await new Promise((r) => setTimeout(r, backoff + jitter));
     }
 
     return false;
