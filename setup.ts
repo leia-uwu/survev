@@ -146,10 +146,10 @@ async function setupAccounts(config: PartialConfig) {
             required: true,
         });
 
-        config.secrets.GOOGLE_SECRET_ID = clientId.value;
+        config.secrets.GOOGLE_CLIENT_ID = clientId.value;
 
         const clientSecret = await prompt<{ value: string }>({
-            message: "Enter google secret ID",
+            message: "Enter google client secret",
             name: "value",
             type: "text",
             required: true,
