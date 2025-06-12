@@ -325,7 +325,7 @@ async function setupProductionConfig(config: PartialConfig) {
     const apiOrGameServer = await prompt<{
         value: "Both" | "API" | "Game server region";
     }>({
-        message: "Are you deploying a an API server, a game server region or both?",
+        message: "Are you deploying an API server, a game server region, or both?",
         name: "value",
         type: "select",
         choices: ["Both", "API", "Game server region"],
