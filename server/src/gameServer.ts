@@ -19,6 +19,7 @@ import {
     logErrorToWebhook,
     readPostedJSON,
     returnJson,
+    waitForApiServerReady,
 } from "./utils/serverHelpers";
 import {
     type FindGamePrivateBody,
@@ -304,6 +305,7 @@ app.ws<pingSocketData>("/ptc", {
     },
 });
 
+await waitForApiServerReady();
 server.sendData();
 setInterval(() => {
     server.sendData();

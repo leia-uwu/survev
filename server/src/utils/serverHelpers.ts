@@ -427,6 +427,39 @@ export async function fetchApiServer<
     return undefined;
 }
 
+/**
+ * Wait for the API server to respond before making requests.
+ * This pings the `/api/site_info` endpoint a few times until it succeeds.
+ *
+ * @param retries Number of attempts to make before giving up.
+ * @param delayMs Time to wait between attempts in milliseconds.
+ * @returns `true` if the server responded, otherwise `false`.
+ */
+export async function waitForApiServerReady(
+    retries = 5,
+    delayMs = 1000,
+): Promise<boolean> {
+    const url = `${Config.gameServer.apiServerUrl}/api/site_info`;
+
+    for (let i = 0; i < retries; i++) {
+        try {
+            const res = await fetch(url, {
+                method: "GET",
+                signal: AbortSignal.timeout(3000),
+            });
+
+            if (res.ok) {
+                return true;
+            }
+        } catch (err) {
+            defaultLogger.warn(`Waiting for API server attempt ${i + 1} failed`, err);
+        }
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+
+    return false;
+}
+
 export async function logErrorToWebhook(from: "server" | "client", ...messages: any[]) {
     if (!Config.errorLoggingWebhook) return;
 
