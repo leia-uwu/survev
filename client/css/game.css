@@ -1663,6 +1663,27 @@ img {
   }
 }
 
+.ui-killfeed-line-animation {
+  animation-name: generic-pulse;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes generic-pulse {
+  from {
+    background-color: var(--bg-start);
+    -webkit-box-shadow: 0 0 9px var(--shadow-start);
+  }
+  50% {
+    background-color: var(--bg-end);
+    -webkit-box-shadow: 0 0 18px var(--shadow-end);
+  }
+  to {
+    background-color: var(--bg-start);
+    -webkit-box-shadow: 0 0 9px var(--shadow-start);
+  }
+}
+
 #ui-killfeed {
   display: inline-block;
   margin-left: 24px;

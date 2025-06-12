@@ -118,34 +118,43 @@ export class GameModeManager {
         }
     }
 
-    /** true if game needs to end */
-    handleGameEnd(): boolean {
+    shouldGameEnd(): boolean {
         if (!this.game.started || this.aliveCount() > 1) return false;
+        return true;
+    }
+
+    /** true if game needs to end */
+    handleGameEnd() {
         switch (this.mode) {
             case GameMode.Solo: {
                 const winner = this.game.playerBarn.livingPlayers[0];
                 winner.addGameOverMsg(winner.teamId);
-                return true;
+                break;
             }
             case GameMode.Team: {
                 const winner = this.game.playerBarn.getAliveGroups()[0];
                 for (const player of winner.getAlivePlayers()) {
                     player.addGameOverMsg(winner.groupId);
                 }
-                return true;
+                break;
             }
             case GameMode.Faction: {
                 const winner = this.game.playerBarn.getAliveTeams()[0];
                 for (const player of winner.livingPlayers) {
                     player.addGameOverMsg(winner.teamId);
                 }
-                return true;
+                break;
             }
         }
     }
 
     isGameStarted(): boolean {
-        return this.cantDespawnAliveCount() > 1;
+        const isGameStarted = this.cantDespawnAliveCount() > 1;
+        return this.game.pluginManager.trigger(
+            "gmm:isGameStarted",
+            { gmm: this },
+            isGameStarted,
+        );
     }
 
     updateAliveCounts(aliveCounts: number[]): void {

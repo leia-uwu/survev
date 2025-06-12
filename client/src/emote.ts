@@ -869,9 +869,11 @@ export class EmoteBarn {
 
         // Update local emote wheels
         this.activePlayer = player;
-        if ((localId != player.__id || !!player.m_netData.m_dead) && !this.disable) {
-            this.m_free();
-            this.disable = true;
+
+        const shouldDisable = localId !== player.__id || !!player.m_netData.m_dead;
+        if (shouldDisable !== this.disable) {
+            this.disable = shouldDisable;
+            if (shouldDisable) this.m_free();
         }
 
         const perkModeDisable = map.perkMode && !player.m_netData.m_role;
