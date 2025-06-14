@@ -10,7 +10,7 @@ export const PerkProperties = {
         damageReduction: 0.5,
     },
     flak_jacket: {
-        scale: 0.2,
+        scale: 0.1,
         damageReduction: 0.1,
         explosionDamageReduction: 0.9,
     },
