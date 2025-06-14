@@ -244,6 +244,8 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "4xscope": 1,
+                bandage: 10,
+                soda: 3, 
             },
         }),
     },
@@ -308,6 +310,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "8xscope": 1,
+                bandage: 5, 
             },
         }),
     },
@@ -329,6 +332,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "4xscope": 1,
+                bandage: 5, 
                 soda: 6,
             },
         }),
@@ -353,6 +357,7 @@ export const RoleDefs: Record<string, RoleDef> = {
                 mirv: 8,
                 frag: 12,
                 "4xscope": 1,
+                bandage: 5, 
             },
         }),
     },
@@ -366,7 +371,7 @@ export const RoleDefs: Record<string, RoleDef> = {
             weapons: [
                 { type: "", ammo: 0 },
                 { type: "bugle", ammo: 1 },
-                { type: "", ammo: 0 },
+                { type: "pan", ammo: 0 },
                 { type: "", ammo: 0 },
             ],
             backpack: "backpack03",
@@ -374,6 +379,8 @@ export const RoleDefs: Record<string, RoleDef> = {
             chest: "chest03",
             inventory: {
                 "4xscope": 1,
+                bandage: 5, 
+                soda: 2, 
             },
         }),
     },
