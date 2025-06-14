@@ -606,17 +606,20 @@ export class Bullet {
                     if (isHighValueTarget) {
                         multiplier *= 1.25;
                     }
-                    // AP Rounds Vest Multipliers (increases by 5% per vest from 1.15 for "")
-                    // Subject to balance changes
+                    // AP Rounds Vest Multipliers. Subject to balance changes.
                     if (this.player?.hasPerk("ap_rounds")) {
-                        const armorLevel = col.player?.chest;
-                        let apBonus = 1.15;
-                        if (armorLevel && armorLevel.startsWith("chest")) {
-                            const vestLevel =
-                                parseInt(armorLevel.replace("chest", ""), 10) || 0;
-                            apBonus += 0.05 * vestLevel;
+                        const opponentArmor = col.player?.chest ?? "";
+                        if (opponentArmor === "") {
+                            multiplier *= 1.15; 
+                        } else if (opponentArmor === "chest01") {
+                            multiplier *= 1.2;
+                        } else if (opponentArmor === "chest02") {
+                            multiplier *= 1.25;
+                        } else if (opponentArmor === "chest03") {
+                            multiplier *= 1.3;
+                        } else if (opponentArmor === "chest04") {
+                            multiplier *= 1.35;
                         }
-                        multiplier *= apBonus;
                     }
 
                     this.bulletManager.damages.push({
