@@ -2,12 +2,15 @@ export const PerkProperties = {
     leadership: {
         scale: 0.25,
     },
+    assume_leadership: {
+        scale: 0.15,
+    },
     steelskin: {
         scale: 0.4,
         damageReduction: 0.5,
     },
     flak_jacket: {
-        scale: 0.2,
+        scale: 0.1,
         damageReduction: 0.1,
         explosionDamageReduction: 0.9,
     },
@@ -80,6 +83,20 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-leadership.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-03.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },
+    assume_leadership: {
+        name: "Assume Leadership",
+        type: "perk",
+        lootImg: {
+            sprite: "img/loot/loot-perk-assume-leadership.svg",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
@@ -178,6 +195,20 @@ export const PerkDefs: Record<string, PerkDef> = {
         type: "perk",
         lootImg: {
             sprite: "loot-perk-steelskin.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-03.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },
+    ap_rounds: {
+        name: "AP Rounds",
+        type: "perk",
+        lootImg: {
+            sprite: "loot-perk-splinter.img",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,

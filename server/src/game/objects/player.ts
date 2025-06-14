@@ -564,6 +564,8 @@ export class Player extends BaseGameObject {
     weapsDirty = true;
     spectatorCountDirty = false;
     activeIdDirty = true;
+    hasFiredFlare = false;
+    flareTimer = 0;
 
     team: Team | undefined = undefined;
     group: Group | undefined = undefined;
@@ -830,6 +832,11 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        if (role === "leader") {
+            this.hasFiredFlare = false;
+            this.flareTimer = 15;
+        }
+
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
@@ -1092,8 +1099,9 @@ export class Player extends BaseGameObject {
             this.fabricateRefillTicker = PerkProperties.fabricate.refillInterval;
         } else if (type === "leadership") {
             this.boost = 100;
+        } else if (type === "assume_leadership") {
+            this.boost = 50;
         }
-
         this.recalculateScale();
     }
 
@@ -1313,6 +1321,21 @@ export class Player extends BaseGameObject {
             this.timeUntilHidden -= dt;
         }
 
+        if (this.role === "leader" && !this.hasFiredFlare && this.flareTimer > 0) {
+            this.flareTimer -= dt;
+            if (this.flareTimer <= 0) {
+                const flareGunIndex = this.weapons.findIndex(
+                    (w) => w.type === "flare_gun",
+                );
+                if (flareGunIndex !== -1) {
+                    this.weaponManager.setCurWeapIndex(flareGunIndex);
+                    this.weaponManager.fireWeapon(false, true);
+                    this.hasFiredFlare = true;
+                    this.flareTimer = 0;
+                }
+            }
+        }
+
         if (this.roleMenuTicker > 0) {
             this.roleMenuTicker -= dt;
             if (this.roleMenuTicker <= 0) {
@@ -1329,7 +1352,11 @@ export class Player extends BaseGameObject {
         //
         // Boost logic
         //
-        if (this.boost > 0 && !this.hasPerk("leadership")) {
+        if (
+            this.boost > 0 &&
+            !this.hasPerk("leadership") &&
+            !this.hasPerk("assume_leadership")
+        ) {
             this.boost -= 0.375 * dt;
         }
         if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
@@ -1481,6 +1508,7 @@ export class Player extends BaseGameObject {
                         }
 
                         if (target.hasPerk("leadership")) target.boost = 100;
+                        if (target.hasPerk("assume_leadership")) target.boost = 50;
                         target.setDirty();
                         target.setGroupStatuses();
                         this.game.pluginManager.emit("playerRevived", target);
@@ -2282,8 +2310,9 @@ export class Player extends BaseGameObject {
 
                 // faction team leader
                 if (
-                    emotePlayer.role === "leader" &&
-                    emotePlayer.teamId === player.teamId
+                    emotePlayer.role === "leader" ||
+                    (emotePlayer.role === "captain" &&
+                        emotePlayer.teamId === player.teamId)
                 ) {
                     return true;
                 }
@@ -2637,6 +2666,7 @@ export class Player extends BaseGameObject {
         // lone survivr can be given on knock or kill
         if (this.game.map.factionMode) {
             this.team!.checkAndApplyLastMan();
+            this.team!.checkAndApplyCaptain();
         }
     }
 
@@ -2746,6 +2776,7 @@ export class Player extends BaseGameObject {
         if (this.game.map.factionMode) {
             // lone survivr can be given on knock or kill
             this.team!.checkAndApplyLastMan();
+            this.team!.checkAndApplyCaptain();
 
             //golden airdrops depend on alive counts, so we only do this logic on kill
             if (this.game.planeBarn.canDropSpecialAirdrop()) {
@@ -3775,7 +3806,7 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "outfit":
-                if (this.role == "leader") {
+                if (this.role == "leader" || this.role == "captain") {
                     amountLeft = 1;
                     pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     break;
@@ -4029,6 +4060,9 @@ export class Player extends BaseGameObject {
             useCountForAmmo,
             10,
             v2.neg(this.dir),
+            undefined,
+            undefined,
+            "player",
         );
     }
 
@@ -4066,6 +4100,13 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
+        if (
+            this.role === "leader" &&
+            dropMsg.item === "flare_gun" &&
+            !this.hasFiredFlare
+        ) {
+            return;
+        }
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;

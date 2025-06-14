@@ -124,6 +124,13 @@ export class BulletBarn {
             this.game.planeBarn.addAirdrop(params.pos);
         }
 
+        if (params.bulletType === "bullet_flare" && params.playerId) {
+            const player = this.game.objectRegister.getById(params.playerId);
+            if (player instanceof Player && player.role === "leader") {
+                player.hasFiredFlare = true;
+            }
+        }
+
         return bullet;
     }
 }
@@ -567,6 +574,11 @@ export class Bullet {
                 const mapDef = MapObjectDefs[col.obstacleType!] as ObstacleDef;
 
                 const def = GameObjectDefs[this.bulletType] as BulletDef;
+                // AP Obstacle Multiplier Buff
+                let apMultiplier = def.obstacleDamage;
+                if (this.player?.hasPerk("ap_rounds")) {
+                    apMultiplier *= 1.5;
+                }
 
                 this.bulletManager.damages.push({
                     obj: col.obj!,
@@ -575,7 +587,7 @@ export class Bullet {
                     mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
                     source: this.player,
-                    amount: finalDamage * def.obstacleDamage,
+                    amount: finalDamage * apMultiplier,
                     dir: this.dir,
                 });
 
@@ -593,6 +605,21 @@ export class Bullet {
                     let multiplier = 1;
                     if (isHighValueTarget) {
                         multiplier *= 1.25;
+                    }
+                    // AP Rounds Vest Multipliers. Subject to balance changes.
+                    if (this.player?.hasPerk("ap_rounds")) {
+                        const opponentArmor = col.player?.chest ?? "";
+                        if (opponentArmor === "") {
+                            multiplier *= 1.15; 
+                        } else if (opponentArmor === "chest01") {
+                            multiplier *= 1.2;
+                        } else if (opponentArmor === "chest02") {
+                            multiplier *= 1.25;
+                        } else if (opponentArmor === "chest03") {
+                            multiplier *= 1.3;
+                        } else if (opponentArmor === "chest04") {
+                            multiplier *= 1.35;
+                        }
                     }
 
                     this.bulletManager.damages.push({

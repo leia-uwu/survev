@@ -631,7 +631,10 @@ export class EmoteBarn {
                         }
                     }
                     const playerStatus = this.playerBarn.getPlayerStatus(ping.playerId);
-                    if (playerStatus && playerStatus.role == "leader") {
+                    if (
+                        playerStatus &&
+                        (playerStatus.role == "leader" || playerStatus.role == "captain")
+                    ) {
                         pingSound = pingData.soundLeader!;
                     }
                 }
