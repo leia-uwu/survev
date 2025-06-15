@@ -130,7 +130,8 @@ export const zLeaderboardsRequest = z.object({
     mapId: z
         .string()
         .min(1)
-        .transform((v) => Number(v)),
+        .transform((v) => Number(v))
+        .transform((n) => isNaN(n) ? 0 : n),
     type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
     // why tf is this sent as a string
     // TODO: refactor the client to use TeamMode enum
