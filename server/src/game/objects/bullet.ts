@@ -53,6 +53,7 @@ export interface BulletParams {
     shotOffhand?: boolean;
     lastShot?: boolean;
     splinter?: boolean;
+    apRounds?: boolean;
     shotAlt?: boolean;
     trailSaturated?: boolean;
     trailSmall?: boolean;
@@ -165,6 +166,7 @@ export class Bullet {
     hasSpecialFx!: boolean;
     shotAlt!: boolean;
     splinter!: boolean;
+    apRounds!: boolean;
     trailSaturated!: boolean;
     trailSmall!: boolean;
     trailThick!: boolean;
@@ -244,6 +246,7 @@ export class Bullet {
         this.shotOffhand = params.shotOffhand ?? false;
         this.shotAlt = params.shotAlt ?? false;
         this.splinter = params.splinter ?? false;
+        this.apRounds = params.apRounds ?? false;
         this.trailSaturated = params.trailSaturated ?? false;
         this.trailSmall = params.trailSmall ?? false;
         this.trailThick = params.trailThick ?? false;
@@ -261,6 +264,7 @@ export class Bullet {
         this.hasSpecialFx =
             this.shotAlt ||
             this.splinter ||
+            this.apRounds ||
             this.trailSaturated ||
             this.trailSmall ||
             this.trailThick;
@@ -610,7 +614,7 @@ export class Bullet {
                     if (this.player?.hasPerk("ap_rounds")) {
                         const opponentArmor = col.player?.chest ?? "";
                         if (opponentArmor === "") {
-                            multiplier *= 1.15; 
+                            multiplier *= 1.15;
                         } else if (opponentArmor === "chest01") {
                             multiplier *= 1.2;
                         } else if (opponentArmor === "chest02") {
@@ -678,6 +682,7 @@ export class Bullet {
             damageType: this.damageType,
             shotAlt: this.shotAlt,
             splinter: this.splinter,
+            apRounds: this.apRounds,
             trailSaturated: this.trailSaturated,
             trailSmall: this.trailSmall,
             trailThick: this.trailThick,
