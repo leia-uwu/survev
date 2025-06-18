@@ -208,7 +208,7 @@ export const PerkDefs: Record<string, PerkDef> = {
         name: "AP Rounds",
         type: "perk",
         lootImg: {
-            sprite: "loot-perk-splinter.img",
+            sprite: "img/loot/loot-perk-ap-rounds.svg",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
