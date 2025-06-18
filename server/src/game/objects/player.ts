@@ -1355,7 +1355,7 @@ export class Player extends BaseGameObject {
         if (
             this.boost > 0 &&
             !this.hasPerk("leadership") &&
-            !this.hasPerk("assume_leadership")
+            !(this.hasPerk("assume_leadership") && this.boost <= 50)
         ) {
             this.boost -= 0.375 * dt;
         }
