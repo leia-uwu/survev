@@ -186,6 +186,8 @@ export const RoleDefs: Record<string, RoleDef> = {
                 })[teamcolor],
             inventory: {
                 "8xscope": 1,
+                healthkit: 1,
+                bandage: 5,
             },
         }),
     },
@@ -346,7 +348,7 @@ export const RoleDefs: Record<string, RoleDef> = {
         defaultItems: createDefaultItems({
             weapons: [
                 { type: "", ammo: 0 },
-                { type: "mp220", ammo: 2, fillInv: true },
+                { type: "saiga", ammo: 2, fillInv: true },
                 { type: "katana", ammo: 0 },
                 { type: "mirv", ammo: 8 },
             ],
@@ -392,9 +394,9 @@ export const RoleDefs: Record<string, RoleDef> = {
         perks: [
             "steelskin",
             "ap_rounds",
+            "takedown",
             () =>
                 util.weightedRandom([
-                    { type: "takedown", weight: 4.5 },
                     { type: "windwalk", weight: 1 },
                     { type: "field_medic", weight: 1 },
                 ]).type,
