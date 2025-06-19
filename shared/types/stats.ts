@@ -14,13 +14,12 @@ export const zMatchHistoryRequest = z.object({
     slug: z.string(),
     offset: z.number(),
     count: z.number(),
-    teamModeFilter: z
-        .union([
-            z.literal(TeamMode.Solo),
-            z.literal(TeamMode.Duo),
-            z.literal(TeamMode.Squad),
-            z.literal(ALL_TEAM_MODES),
-        ]),
+    teamModeFilter: z.union([
+        z.literal(TeamMode.Solo),
+        z.literal(TeamMode.Duo),
+        z.literal(TeamMode.Squad),
+        z.literal(ALL_TEAM_MODES),
+    ]),
 });
 
 export type MatchHistoryParams = z.infer<typeof zMatchHistoryRequest>;
@@ -127,9 +126,7 @@ export const zLeaderboardsRequest = z.object({
     interval: z.enum(["daily", "weekly", "alltime"]),
     mapId: z.enum(VALID_MAP_IDS).transform((v) => Number(v)),
     type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
-    teamMode: z
-        .enum(["solo", "duo", "squad"])
-        .transform((mode) => teamModeMap[mode]),
+    teamMode: z.enum(["solo", "duo", "squad"]).transform((mode) => teamModeMap[mode]),
 });
 
 export type LeaderboardResponse = {
