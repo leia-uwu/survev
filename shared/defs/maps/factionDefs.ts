@@ -2,6 +2,7 @@ import { GameConfig } from "../../gameConfig";
 import { util } from "../../utils/util";
 import { v2 } from "../../utils/v2";
 import type { MapDef } from "../mapDefs";
+import { MapId } from "../types/misc";
 import { Main, type PartialMapDef } from "./baseDefs";
 
 export enum TeamColor {
@@ -17,7 +18,7 @@ export const SpecialAirdropConfig = {
 };
 
 const mapDef: PartialMapDef = {
-    mapId: 3,
+    mapId: MapId.Faction,
     desc: {
         name: "50v50",
         icon: "img/gui/star.svg",
