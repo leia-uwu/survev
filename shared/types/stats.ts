@@ -71,7 +71,7 @@ export type MatchData = {
 //
 // User Stats
 //
-const ALL_MAPS = "-1";
+export const ALL_MAPS = "-1";
 const VALID_MAP_IDS = Object.values(MapId)
     .filter((id) => typeof id === "number")
     .map((id) => id.toString());
@@ -86,7 +86,7 @@ export const zUserStatsRequest = z.object({
         .catch("all")
         .transform((v) => v ?? "all"),
     slug: z.string().min(1),
-    mapIdFilter: z.enum(["-1", ...VALID_MAP_IDS]).catch(ALL_MAPS),
+    mapIdFilter: z.enum([ALL_MAPS, ...VALID_MAP_IDS]),
 });
 
 export type UserStatsRequest = z.infer<typeof zUserStatsRequest>;

@@ -2,6 +2,7 @@ import { type SQL, and, eq, gte, max, sql, sum } from "drizzle-orm";
 import { Hono } from "hono";
 import type { Context } from "../..";
 import {
+    ALL_MAPS,
     type UserStatsRequest,
     type UserStatsResponse,
     zUserStatsRequest,
@@ -88,7 +89,7 @@ async function userStatsSqlQuery(
             .where(
                 and(
                     eq(matchDataTable.userId, userId),
-                    mapIdFilter !== "-1"
+                    mapIdFilter !== ALL_MAPS
                         ? eq(matchDataTable.mapId, parseInt(mapIdFilter))
                         : undefined,
                     interval in intervalFilter ? intervalFilter[interval] : undefined,
