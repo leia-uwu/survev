@@ -21,7 +21,7 @@
   "author": "Leia",
   "license": "GPL-3.0-or-later",
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@biomejs/biome": "2.0.5",
     "@types/hjson": "^2.4.6",
     "@types/node": "^22.15.29",
     "concurrently": "^9.1.2",
