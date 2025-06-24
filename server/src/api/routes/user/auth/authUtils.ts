@@ -8,7 +8,7 @@ import { Config } from "../../../../config";
 import { checkForBadWords } from "../../../../utils/serverHelpers";
 import { createSession, invalidateSession } from "../../../auth";
 import { db } from "../../../db";
-import { type UsersTableInsert, itemsTable, usersTable } from "../../../db/schema";
+import { itemsTable, type UsersTableInsert, usersTable } from "../../../db/schema";
 
 let oauthBaseURL: URL | undefined = undefined;
 if (URL.canParse(Config.oauthBasePath)) {

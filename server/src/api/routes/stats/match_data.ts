@@ -1,12 +1,15 @@
 import { asc, eq } from "drizzle-orm";
 import { Hono } from "hono";
-import type { Context } from "../..";
 import {
     type MatchDataResponse,
     zMatchDataRequest,
 } from "../../../../../shared/types/stats";
-import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
-import { validateParams } from "../../auth/middleware";
+import type { Context } from "../..";
+import {
+    databaseEnabledMiddleware,
+    rateLimitMiddleware,
+    validateParams,
+} from "../../auth/middleware";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";
 

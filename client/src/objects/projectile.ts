@@ -4,6 +4,7 @@ import type { ThrowableDef } from "../../../shared/defs/gameObjects/throwableDef
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../shared/gameConfig";
+import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import { collider } from "../../../shared/utils/collider";
 import { math } from "../../../shared/utils/math";
 import { util } from "../../../shared/utils/util";
@@ -13,7 +14,6 @@ import type { Camera } from "../camera";
 import type { Ctx } from "../game";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
-import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import { playHitFx } from "./bullet";
 import { Pool } from "./objectPool";
 import type { Obstacle } from "./obstacle";

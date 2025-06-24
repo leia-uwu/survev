@@ -2,11 +2,11 @@ import { zValidator } from "@hono/zod-validator";
 import type { Context, Next } from "hono";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import type { z } from "zod";
-import { validateSessionToken } from ".";
 import { Config } from "../../config";
-import { HTTPRateLimit, getHonoIp } from "../../utils/serverHelpers";
+import { getHonoIp, HTTPRateLimit } from "../../utils/serverHelpers";
 import { server } from "../apiServer";
 import { cookieDomain, deleteSessionTokenCookie } from "../routes/user/auth/authUtils";
+import { validateSessionToken } from ".";
 
 export const authMiddleware = async (c: Context, next: Next) => {
     try {

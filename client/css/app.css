@@ -3,7 +3,10 @@
 }
 
 * {
-  font-family: roboto condensed, arial, sans-serif;
+  font-family:
+    roboto condensed,
+    arial,
+    sans-serif;
   font-size: 16px;
 }
 
@@ -5092,7 +5095,8 @@ input [type="image"]:focus {
   margin-right: 1px;
   /*url(./css/color-picker-sv.png)*/
   background: transparent no-repeat 50% 50%;
-  background-image: linear-gradient(to top, #000, rgba(0, 0, 0, 0)),
+  background-image:
+    linear-gradient(to top, #000, rgba(0, 0, 0, 0)),
     linear-gradient(to right, #fff, rgba(255, 255, 255, 0));
   background-size: 100% 100%;
   cursor: pointer;
@@ -5154,7 +5158,10 @@ input [type="image"]:focus {
   padding: 0 0.5em;
   background: #ffa;
   border: 0;
-  font: normal normal 13px / 2em Helmet, FreeSans, Sans-Serif;
+  font:
+    normal normal 13px / 2em Helmet,
+    FreeSans,
+    Sans-Serif;
   color: #000;
   box-sizing: border-box;
   clear: both;

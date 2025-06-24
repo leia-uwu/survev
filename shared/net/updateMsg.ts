@@ -3,9 +3,9 @@ import { type Vec2, v2 } from "./../utils/v2";
 import { type AbstractMsg, type BitStream, Constants } from "./net";
 import {
     ObjectSerializeFns,
-    type ObjectType,
     type ObjectsFullData,
     type ObjectsPartialData,
+    type ObjectType,
 } from "./objectSerializeFns";
 
 function serializeActivePlayer(s: BitStream, data: LocalDataWithDirty) {

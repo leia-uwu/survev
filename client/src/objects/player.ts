@@ -1,5 +1,12 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs, type LootDef } from "../../../shared/defs/gameObjectDefs";
+import type {
+    BackpackDef,
+    BoostDef,
+    ChestDef,
+    HealDef,
+    HelmetDef,
+} from "./../../../shared/defs/gameObjects/gearDefs";
 import type { GunDef } from "../../../shared/defs/gameObjects/gunDefs";
 import type { MeleeDef } from "../../../shared/defs/gameObjects/meleeDefs";
 import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
@@ -18,10 +25,10 @@ import {
 import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import {
     type GroupStatus,
+    getPlayerStatusUpdateRate,
     type LocalDataWithDirty,
     type PlayerInfo,
     type PlayerStatus,
-    getPlayerStatusUpdateRate,
 } from "../../../shared/net/updateMsg";
 import { coldet } from "../../../shared/utils/coldet";
 import { collider } from "../../../shared/utils/collider";
@@ -39,18 +46,11 @@ import { device } from "../device";
 import { errorLogManager } from "../errorLogs";
 import type { Ctx } from "../game";
 import { helpers } from "../helpers";
+import type { InputBinds } from "./../inputBinds";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
 import type { Renderer } from "../renderer";
 import type { UiManager2 } from "../ui/ui2";
-import type {
-    BackpackDef,
-    BoostDef,
-    ChestDef,
-    HealDef,
-    HelmetDef,
-} from "./../../../shared/defs/gameObjects/gearDefs";
-import type { InputBinds } from "./../inputBinds";
 import { Pool } from "./objectPool";
 import type { Obstacle } from "./obstacle";
 import type { Emitter, ParticleBarn } from "./particles";

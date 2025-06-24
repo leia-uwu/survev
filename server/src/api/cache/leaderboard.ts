@@ -1,4 +1,3 @@
-import { getRedisClient } from ".";
 import { MapId, TeamModeToString } from "../../../../shared/defs/types/misc";
 import type {
     LeaderboardRequest,
@@ -7,6 +6,7 @@ import type {
 import { Config } from "../../config";
 import { server } from "../apiServer";
 import type { MatchDataTable } from "../db/schema";
+import { getRedisClient } from ".";
 
 const SIX_MINUTES_CACHE_TTL = 360;
 const ONE_DAY_CACHE_TTL = 86400;

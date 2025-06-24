@@ -1,10 +1,10 @@
 import { generateUsername } from "unique-username-generator";
-import { db } from ".";
 import { MapId } from "../../../../shared/defs/types/misc";
 import { TeamMode } from "../../../../shared/gameConfig";
 import { util } from "../../../../shared/utils/util";
 import type { MatchDataTable } from "../../api/db/schema";
 import { createNewUser, generateId } from "../routes/user/auth/authUtils";
+import { db } from ".";
 import { matchDataTable } from "./schema";
 
 const playersWithAccounts = Array.from({ length: 3000 }, (_, _idx) => ({

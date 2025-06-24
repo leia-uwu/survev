@@ -5,7 +5,7 @@ import type { Info } from "../../../shared/types/api";
 import { Config } from "../config";
 import { TeamMenu } from "../teamMenu";
 import { GIT_VERSION } from "../utils/gitRevision";
-import { Logger, defaultLogger } from "../utils/logger";
+import { defaultLogger, Logger } from "../utils/logger";
 import type { FindGamePrivateBody, FindGamePrivateRes } from "../utils/types";
 
 class Region {

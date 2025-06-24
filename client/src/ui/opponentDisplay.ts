@@ -4,6 +4,7 @@ import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
 import { GameConfig } from "../../../shared/gameConfig";
 import type { MapMsg } from "../../../shared/net/mapMsg";
 import { type ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
+import type { LocalDataWithDirty } from "./../../../shared/net/updateMsg";
 import { collider } from "../../../shared/utils/collider";
 import { type Loadout, loadout as loadouts } from "../../../shared/utils/loadout";
 import { math } from "../../../shared/utils/math";
@@ -23,7 +24,6 @@ import { ParticleBarn } from "../objects/particles";
 import { type Player, PlayerBarn } from "../objects/player";
 import { SmokeBarn } from "../objects/smoke";
 import { Renderer } from "../renderer";
-import type { LocalDataWithDirty } from "./../../../shared/net/updateMsg";
 
 export class LoadoutDisplay {
     active = false;

@@ -17,7 +17,7 @@ import { EmoteBarn } from "./emote";
 import { Gas } from "./gas";
 import { helpers } from "./helpers";
 import { type InputHandler, Key } from "./input";
-import type { InputBindUi, InputBinds } from "./inputBinds";
+import type { InputBinds, InputBindUi } from "./inputBinds";
 import type { SoundHandle } from "./lib/createJS";
 import { Map } from "./map";
 import { AirdropBarn } from "./objects/airdrop";

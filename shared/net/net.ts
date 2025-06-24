@@ -313,20 +313,20 @@ export class UpdatePassMsg {
     deserialize(_e: BitStream) {}
 }
 
-export { JoinMsg } from "./joinMsg";
+export { AliveCountsMsg } from "./aliveCountsMsg";
 export { DisconnectMsg } from "./disconnectMsg";
-export { InputMsg } from "./inputMsg";
-export { EditMsg } from "./editMsg";
-export { JoinedMsg } from "./joinedMsg";
-export { UpdateMsg, getPlayerStatusUpdateRate } from "./updateMsg";
-export { KillMsg } from "./killMsg";
-export { GameOverMsg } from "./gameOverMsg";
-export { PickupMsg } from "./pickupMsg";
-export { MapMsg } from "./mapMsg";
-export { SpectateMsg } from "./spectateMsg";
 export { DropItemMsg } from "./dropItemMsg";
+export { EditMsg } from "./editMsg";
 export { EmoteMsg } from "./emoteMsg";
+export { GameOverMsg } from "./gameOverMsg";
+export { InputMsg } from "./inputMsg";
+export { JoinedMsg } from "./joinedMsg";
+export { JoinMsg } from "./joinMsg";
+export { KillMsg } from "./killMsg";
+export { MapMsg } from "./mapMsg";
+export { PerkModeRoleSelectMsg } from "./perkModeRoleSelectMsg";
+export { PickupMsg } from "./pickupMsg";
 export { PlayerStatsMsg } from "./playerStatsMsg";
 export { RoleAnnouncementMsg } from "./roleAnnouncementMsg";
-export { AliveCountsMsg } from "./aliveCountsMsg";
-export { PerkModeRoleSelectMsg } from "./perkModeRoleSelectMsg";
+export { SpectateMsg } from "./spectateMsg";
+export { getPlayerStatusUpdateRate, UpdateMsg } from "./updateMsg";

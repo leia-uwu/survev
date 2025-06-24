@@ -1,7 +1,7 @@
-import { randomUUID } from "crypto";
-import { platform } from "os";
-import NanoTimer from "nanotimer";
 import type { WebSocket } from "uWebSockets.js";
+import { randomUUID } from "crypto";
+import NanoTimer from "nanotimer";
+import { platform } from "os";
 import type { MapDefs } from "../../../shared/defs/mapDefs";
 import * as net from "../../../shared/net/net";
 import { Config } from "../config";
