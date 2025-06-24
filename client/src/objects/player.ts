@@ -1260,8 +1260,8 @@ export class Player implements AbstractObject {
         this.visualsDirty = false;
 
         this.updateAura(dt, isActivePlayer, activePlayer);
-
-        this.Zr(camera, isActivePlayer, isSpectating, this.inputHandler);
+        
+        this.Zr(this.inputHandler, camera, isActivePlayer, isSpectating, displayingStats);
 
         // @NOTE: There's an off-by-one frame issue for effects spawned earlier
         // in this frame that reference renderLayer / zOrd / zIdx. This issue is
@@ -1793,10 +1793,11 @@ export class Player implements AbstractObject {
     }
 
     Zr(
-       camera: Camera,
-       isActivePlayer: boolean,
-       isSpectating: boolean,
-       inputManager: InputHandler,
+        inputManager: InputHandler,
+        camera: Camera,
+        isActivePlayer: boolean,
+        isSpectating: boolean,
+        displayingStats: boolean,
     ) {
         const e = function (e: PIXI.Container, t: Pose) {
             e.position.set(t.pos.x, t.pos.y);
@@ -1820,10 +1821,11 @@ export class Player implements AbstractObject {
         const mouseY = inputManager.mousePos.y;
         const mouseX = inputManager.mousePos.x;
         if (
+            !device.mobile &&
             camera.m_localRotationEnabled &&
             isActivePlayer &&
             !isSpectating &&
-            !device.mobile
+            !displayingStats
         ) {
             this.bodyContainer.rotation = Math.atan2(
                 mouseY - window.innerHeight / 2,
