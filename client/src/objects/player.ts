@@ -807,14 +807,15 @@ export class Player implements AbstractObject {
             this.posInterpTicker += dt;
             const posT = math.clamp(this.posInterpTicker / camera.m_interpInterval, 0, 1);
             this.m_visualPos = v2.lerp(posT, this.m_visualPosOld, this.m_pos);
-
-            this.dirInterpolationTicker += dt;
-            const dirT = math.clamp(
-                this.dirInterpolationTicker / camera.m_interpInterval,
-                0,
-                1,
-            );
-            this.m_visualDir = v2.lerp(dirT, this.m_visualDirOld, this.m_dir);
+            if (!camera.m_localRotationEnabled) {
+                this.dirInterpolationTicker += dt;
+                const dirT = math.clamp(
+                    this.dirInterpolationTicker / camera.m_interpInterval,
+                    0,
+                    1,
+                );
+                this.m_visualDir = v2.lerp(dirT, this.m_visualDirOld, this.m_dir);
+            }
         } else {
             this.m_visualPos = v2.copy(this.m_pos);
             this.m_visualDir = v2.copy(this.m_dir);
