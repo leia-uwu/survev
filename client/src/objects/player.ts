@@ -186,8 +186,6 @@ export abstract class AbstractObject {
 }
 
 export class Player implements AbstractObject {
-    inputHandler = new InputHandler(document.body);
-
     __id!: number;
     __type!: ObjectType.Player;
     active!: boolean;
@@ -1261,7 +1259,7 @@ export class Player implements AbstractObject {
 
         this.updateAura(dt, isActivePlayer, activePlayer);
         
-        this.Zr(this.inputHandler, camera, isActivePlayer, isSpectating, displayingStats);
+        this.Zr(inputBinds.input, camera, isActivePlayer, isSpectating, displayingStats);
 
         // @NOTE: There's an off-by-one frame issue for effects spawned earlier
         // in this frame that reference renderLayer / zOrd / zIdx. This issue is
