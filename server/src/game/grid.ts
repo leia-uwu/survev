@@ -164,16 +164,14 @@ export class Grid<T extends GameObject = GameObject> {
         return [...this._grid[pos.x][pos.y]];
     }
 
-    intersectLineSegment(a: Vec2, b: Vec2): T[] {
-        // Bresenham's line algorithm for finding only cells that intersect the line
+    intersectLineSegment(lineStart: Vec2, lineEnd: Vec2): T[] {
+        const start = this._roundToCells(lineStart);
+        const end = this._roundToCells(lineEnd);
 
-        const start = this._roundToCells(a);
-        const end = this._roundToCells(b);
+        const diff = v2.sub(lineEnd, lineStart);
 
-        const diff = v2.sub(b, a);
-
-        const gridDeltaX = end.x > start.x ? 1 : -1;
-        const gridDeltaY = end.y > start.y ? 1 : -1;
+        const gridDeltaX = lineEnd.x >= lineStart.x ? 1 : -1;
+        const gridDeltaY = lineEnd.y >= lineStart.y ? 1 : -1;
 
         const deltaX =
             Math.abs(diff.x) > 0.00001
@@ -184,8 +182,8 @@ export class Grid<T extends GameObject = GameObject> {
                 ? (gridDeltaY * this.cellSize) / diff.y
                 : Number.MAX_VALUE;
 
-        const relativeX = math.mod(a.x / this.cellSize, 1);
-        const relativeY = math.mod(a.y / this.cellSize, 1);
+        const relativeX = math.mod(lineStart.x / this.cellSize, 1);
+        const relativeY = math.mod(lineStart.y / this.cellSize, 1);
 
         let x = deltaX * (gridDeltaX > 0 ? 1 - relativeX : relativeX);
         let y = deltaY * (gridDeltaY > 0 ? 1 - relativeY : relativeY);
@@ -208,13 +206,13 @@ export class Grid<T extends GameObject = GameObject> {
             if (x < y) {
                 x += deltaX;
                 start.x += gridDeltaX;
-                if (start.x < 0 || start.x > this.width) {
+                if (start.x < 0 || start.x >= this.width) {
                     break;
                 }
             } else {
                 y += deltaY;
                 start.y += gridDeltaY;
-                if (start.y < 0 || start.y > this.height) {
+                if (start.y < 0 || start.y >= this.height) {
                     break;
                 }
             }
