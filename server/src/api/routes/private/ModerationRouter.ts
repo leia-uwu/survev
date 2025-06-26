@@ -86,6 +86,10 @@ export const ModerationRouter = new Hono()
                             permanent: ipBanPermanent,
                         },
                     });
+
+                for (const ban of bans) {
+                    server.teamMenu.disconnectPlayers(ban.encodedIp);
+                }
             }
 
             return c.json({ message: "User has been banned." }, 200);
@@ -188,6 +192,9 @@ export const ModerationRouter = new Hono()
                     await banAccount(user.userId, reason);
                 }
             }
+
+            server.teamMenu.disconnectPlayers(encodedIp);
+
             if (permanent) {
                 return c.json(
                     { message: `IP ${encodedIp} has been permanently banned.` },
