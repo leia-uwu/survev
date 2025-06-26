@@ -14,14 +14,12 @@ export const zMatchHistoryRequest = z.object({
     slug: z.string(),
     offset: z.number(),
     count: z.number(),
-    teamModeFilter: z
-        .union([
-            z.literal(TeamMode.Solo),
-            z.literal(TeamMode.Duo),
-            z.literal(TeamMode.Squad),
-            z.literal(ALL_TEAM_MODES),
-        ])
-        .catch(ALL_TEAM_MODES),
+    teamModeFilter: z.union([
+        z.literal(TeamMode.Solo),
+        z.literal(TeamMode.Duo),
+        z.literal(TeamMode.Squad),
+        z.literal(ALL_TEAM_MODES),
+    ]),
 });
 
 export type MatchHistoryParams = z.infer<typeof zMatchHistoryRequest>;
@@ -71,10 +69,10 @@ export type MatchData = {
 //
 // User Stats
 //
-const ALL_MAPS = "-1";
+export const ALL_MAPS = "-1";
 const VALID_MAP_IDS = Object.values(MapId)
     .filter((id) => typeof id === "number")
-    .map((id) => id.toString());
+    .map((id) => id.toString()) as [string, ...string[]];
 
 export const zUserStatsRequest = z.object({
     // why is the client sending null as the default value
@@ -83,10 +81,9 @@ export const zUserStatsRequest = z.object({
     interval: z
         .enum(["all", "daily", "weekly", "alltime"])
         .nullable()
-        .catch("all")
         .transform((v) => v ?? "all"),
     slug: z.string().min(1),
-    mapIdFilter: z.enum(["-1", ...VALID_MAP_IDS]).catch(ALL_MAPS),
+    mapIdFilter: z.enum([ALL_MAPS, ...VALID_MAP_IDS]),
 });
 
 export type UserStatsRequest = z.infer<typeof zUserStatsRequest>;
@@ -126,18 +123,10 @@ const teamModeMap = {
 };
 
 export const zLeaderboardsRequest = z.object({
-    interval: z.enum(["daily", "weekly", "alltime"]).catch("daily"),
-    mapId: z
-        .string()
-        .min(1)
-        .transform((v) => Number(v)),
+    interval: z.enum(["daily", "weekly", "alltime"]),
+    mapId: z.enum(VALID_MAP_IDS).transform((v) => Number(v)),
     type: z.enum(["most_kills", "most_damage_dealt", "kpg", "kills", "wins"]),
-    // why tf is this sent as a string
-    // TODO: refactor the client to use TeamMode enum
-    teamMode: z
-        .enum(["solo", "duo", "squad"])
-        .catch("solo")
-        .transform((mode) => teamModeMap[mode]),
+    teamMode: z.enum(["solo", "duo", "squad"]).transform((mode) => teamModeMap[mode]),
 });
 
 export type LeaderboardResponse = {

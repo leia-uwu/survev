@@ -195,7 +195,7 @@ export const PrivateRouter = new Hono<Context>()
         databaseEnabledMiddleware,
         validateParams(
             z.object({
-                kills: z.number().catch(1),
+                kills: z.number().default(1),
             }),
         ),
         async (c) => {

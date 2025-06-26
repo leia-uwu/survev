@@ -2,16 +2,18 @@ import $ from "jquery";
 import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs";
 import { TeamModeToString } from "../../../../shared/defs/types/misc";
 import type { TeamMode } from "../../../../shared/gameConfig";
-import type {
-    LeaderboardRequest,
-    MatchData,
-    MatchDataRequest,
-    MatchDataResponse,
-    MatchHistory,
-    MatchHistoryParams,
-    MatchHistoryResponse,
-    UserStatsRequest,
-    UserStatsResponse,
+import {
+    ALL_MAPS,
+    ALL_TEAM_MODES,
+    type LeaderboardRequest,
+    type MatchData,
+    type MatchDataRequest,
+    type MatchDataResponse,
+    type MatchHistory,
+    type MatchHistoryParams,
+    type MatchHistoryResponse,
+    type UserStatsRequest,
+    type UserStatsResponse,
 } from "../../../../shared/types/stats";
 import { api } from "../../api";
 import { device } from "../../device";
@@ -202,7 +204,7 @@ export class PlayerView {
         summary: MatchHistory;
     }[] = [];
     moreGamesAvailable = true;
-    teamModeFilter = 7;
+    teamModeFilter = ALL_TEAM_MODES;
     userStats = new Query<UserStatsResponse>();
     userStatsCache = {} as Record<string, { error: boolean; data: UserStatsResponse }>;
     matchHistory = new Query<MatchHistoryResponse>();
@@ -217,7 +219,7 @@ export class PlayerView {
     getUrlParams() {
         const slug = helpers.getParameterByName("slug") || "";
         const interval = helpers.getParameterByName("t") || "all";
-        const mapId = helpers.getParameterByName("mapId") || "-1";
+        const mapId = helpers.getParameterByName("mapId") || ALL_MAPS;
         return {
             slug: slug,
             interval: interval,
