@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { and, desc, eq, lt, ne } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
+import { MapId, TeamModeToString } from "../../../../../shared/defs/types/misc";
 import { Config } from "../../../config";
 import { validateUserName } from "../../../utils/serverHelpers";
 import type { SaveGameBody } from "../../../utils/types";
@@ -11,6 +12,12 @@ import { db } from "../../db";
 import { bannedIpsTable, ipLogsTable, matchDataTable, usersTable } from "../../db/schema";
 import { sanitizeSlug } from "../user/auth/authUtils";
 
+export const zGetPlayerIpParams = z.object({
+    name: z.string(),
+    useAccountSlug: z.boolean().default(false),
+    gameId: z.string().optional(),
+});
+
 export const ModerationRouter = new Hono()
     .use(databaseEnabledMiddleware)
     .post(
@@ -19,14 +26,21 @@ export const ModerationRouter = new Hono()
             z.object({
                 slug: z.string(),
                 banReason: z.string().default("Cheating"),
+                excutorId: z.string().default("admin"),
                 banAssociatedIps: z.boolean().default(true),
                 ipBanDuration: z.number().default(7),
                 ipBanPermanent: z.boolean().default(false),
             }),
         ),
         async (c) => {
-            const { slug, banReason, banAssociatedIps, ipBanDuration, ipBanPermanent } =
-                c.req.valid("json");
+            const {
+                slug,
+                banReason,
+                excutorId,
+                banAssociatedIps,
+                ipBanDuration,
+                ipBanPermanent,
+            } = c.req.valid("json");
 
             const user = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, slug),
@@ -37,14 +51,14 @@ export const ModerationRouter = new Hono()
             });
 
             if (!user) {
-                return c.json({ error: "No user found with that slug." }, 404);
+                return c.json({ message: "No user found with that slug." }, 200);
             }
 
             if (user.banned) {
-                return c.json({ error: "User is already banned." }, 400);
+                return c.json({ message: "User is already banned." }, 200);
             }
 
-            await banAccount(user.id, banReason);
+            await banAccount(user.id, banReason, excutorId);
 
             if (banAssociatedIps) {
                 const ips = await db
@@ -72,20 +86,24 @@ export const ModerationRouter = new Hono()
                         encodedIp,
                         permanent: ipBanPermanent,
                         reason: banReason,
+                        bannedBy: excutorId,
                     };
                 });
 
-                await db
-                    .insert(bannedIpsTable)
-                    .values(bans)
-                    .onConflictDoUpdate({
-                        target: bannedIpsTable.encodedIp,
-                        set: {
-                            expiresIn: expiresIn,
-                            reason: banReason,
-                            permanent: ipBanPermanent,
-                        },
-                    });
+                if (bans.length) {
+                    await db
+                        .insert(bannedIpsTable)
+                        .values(bans)
+                        .onConflictDoUpdate({
+                            target: bannedIpsTable.encodedIp,
+                            set: {
+                                expiresIn: expiresIn,
+                                reason: banReason,
+                                permanent: ipBanPermanent,
+                                bannedBy: excutorId,
+                            },
+                        });
+                }
 
                 for (const ban of bans) {
                     server.teamMenu.disconnectPlayers(ban.encodedIp);
@@ -126,6 +144,7 @@ export const ModerationRouter = new Hono()
                 .set({
                     banned: false,
                     banReason: "",
+                    bannedBy: "",
                 })
                 .where(eq(usersTable.id, user.id));
 
@@ -145,8 +164,9 @@ export const ModerationRouter = new Hono()
                 isEncoded: z.boolean().default(false),
                 permanent: z.boolean().default(false),
                 banAssociatedAccount: z.boolean().default(true),
-                durationInDays: z.number().default(7),
-                reason: z.string().default("Cheating"),
+                ipBanDuration: z.number().default(7),
+                banReason: z.string().default("Cheating"),
+                excutorId: z.string().default("admin"),
             }),
         ),
         async (c) => {
@@ -155,10 +175,11 @@ export const ModerationRouter = new Hono()
                 isEncoded,
                 permanent,
                 banAssociatedAccount,
-                durationInDays,
-                reason,
+                ipBanDuration,
+                banReason,
+                excutorId,
             } = c.req.valid("json");
-            const expiresIn = new Date(Date.now() + durationInDays * 24 * 60 * 60 * 1000);
+            const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
             const encodedIp = isEncoded ? ip : hashIp(ip);
 
             await db
@@ -167,13 +188,14 @@ export const ModerationRouter = new Hono()
                     encodedIp,
                     expiresIn,
                     permanent,
-                    reason,
+                    reason: banReason,
+                    bannedBy: excutorId,
                 })
                 .onConflictDoUpdate({
                     target: bannedIpsTable.encodedIp,
                     set: {
                         expiresIn: expiresIn,
-                        reason: reason,
+                        reason: banReason,
                         permanent: permanent,
                     },
                 });
@@ -189,7 +211,7 @@ export const ModerationRouter = new Hono()
                     },
                 });
                 if (user?.userId) {
-                    await banAccount(user.userId, reason);
+                    await banAccount(user.userId, banReason, excutorId);
                 }
             }
 
@@ -203,7 +225,7 @@ export const ModerationRouter = new Hono()
             }
             return c.json(
                 {
-                    message: `IP ${encodedIp} has been banned for ${durationInDays} days.`,
+                    message: `IP ${encodedIp} has been banned for ${ipBanDuration} days.`,
                 },
                 200,
             );
@@ -227,82 +249,73 @@ export const ModerationRouter = new Hono()
             return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
         },
     )
-    .post(
-        "/get_player_ip",
-        validateParams(
-            z.object({
-                name: z.string(),
-                useAccountSlug: z.boolean().default(false),
-                gameId: z.string().optional(),
-            }),
-        ),
-        async (c) => {
-            const { name, useAccountSlug, gameId } = c.req.valid("json");
+    .post("/get_player_ip", validateParams(zGetPlayerIpParams), async (c) => {
+        const { name, useAccountSlug, gameId } = c.req.valid("json");
 
-            let userId: string | null = null;
+        let userId: string | null = null;
 
-            if (useAccountSlug) {
-                const user = await db.query.usersTable.findFirst({
-                    where: eq(usersTable.slug, name),
-                    columns: {
-                        id: true,
-                    },
-                });
+        if (useAccountSlug) {
+            const user = await db.query.usersTable.findFirst({
+                where: eq(usersTable.slug, name),
+                columns: {
+                    id: true,
+                },
+            });
 
-                if (!user?.id) {
-                    return c.json(
-                        {
-                            message: `User not found`,
-                        },
-                        200,
-                    );
-                }
-                userId = user.id;
-            }
-
-            const result = await db
-                .select({
-                    ip: ipLogsTable.encodedIp,
-                    findGameIp: ipLogsTable.findGameEncodedIp,
-                    username: ipLogsTable.username,
-                    region: ipLogsTable.region,
-                })
-                .from(ipLogsTable)
-                .where(
-                    and(
-                        userId
-                            ? eq(ipLogsTable.userId, userId)
-                            : eq(ipLogsTable.username, name),
-                        gameId ? eq(ipLogsTable.gameId, gameId) : undefined,
-                    ),
-                )
-                .orderBy(desc(ipLogsTable.createdAt))
-                .limit(10);
-
-            if (result.length === 0) {
+            if (!user?.id) {
                 return c.json(
                     {
-                        message: `No IP found for ${name}. Make sure the name matches the one in game.`,
+                        message: `User not found`,
                     },
                     200,
                 );
             }
+            userId = user.id;
+        }
 
+        const result = await db
+            .select({
+                slug: usersTable.slug,
+                authId: usersTable.authId,
+                linkedDiscord: usersTable.linkedDiscord,
+                ip: ipLogsTable.encodedIp,
+                findGameIp: ipLogsTable.findGameEncodedIp,
+                username: ipLogsTable.username,
+                region: ipLogsTable.region,
+                teamMode: ipLogsTable.teamMode,
+                createdAt: ipLogsTable.createdAt,
+                mapId: ipLogsTable.mapId,
+            })
+            .from(ipLogsTable)
+            .where(
+                and(
+                    userId
+                        ? eq(ipLogsTable.userId, userId)
+                        : eq(ipLogsTable.username, name),
+                    gameId ? eq(ipLogsTable.gameId, gameId) : undefined,
+                ),
+            )
+            .leftJoin(usersTable, eq(ipLogsTable.userId, usersTable.id))
+            .orderBy(desc(ipLogsTable.createdAt))
+            .limit(10);
+
+        if (result.length === 0) {
             return c.json(
                 {
-                    ips: result.map((r) => {
-                        return {
-                            ip: r.ip,
-                            region: r.region,
-                            username: r.username,
-                            findGameIp: r.findGameIp !== r.ip ? r.findGameIp : undefined,
-                        };
-                    }),
+                    message: `No IP found for ${name}. Make sure the name matches the one in game.`,
                 },
                 200,
             );
-        },
-    )
+        }
+
+        const prettyResult = result.map((data) => ({
+            ...data,
+            teamMode: TeamModeToString[data.teamMode],
+            mapId: MapId[data.mapId],
+        }));
+
+        return c.json(prettyResult, 200);
+    })
     .post("/clear_all_bans", async (c) => {
         await db.delete(bannedIpsTable).execute();
         return c.json({ message: `All bans have been cleared.` }, 200);
@@ -381,12 +394,13 @@ export const ModerationRouter = new Hono()
         },
     );
 
-async function banAccount(userId: string, banReason: string) {
+async function banAccount(userId: string, banReason: string, excutorId: string) {
     await db
         .update(usersTable)
         .set({
             banned: true,
             banReason,
+            bannedBy: excutorId,
         })
         .where(eq(usersTable.id, userId));
 

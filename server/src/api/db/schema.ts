@@ -10,7 +10,7 @@ import {
     timestamp,
     uuid,
 } from "drizzle-orm/pg-core";
-import type { TeamMode } from "../../../../shared/gameConfig";
+import { TeamMode } from "../../../../shared/gameConfig";
 import { ItemStatus, type Loadout, loadout } from "../../../../shared/utils/loadout";
 
 export const sessionTable = pgTable("session", {
@@ -32,6 +32,7 @@ export const usersTable = pgTable("users", {
     slug: text("slug").notNull().unique(),
     banned: boolean("banned").notNull().default(false),
     banReason: text("ban_reason").notNull().default(""),
+    bannedBy: text("banned_by").notNull().default(""),
     username: text("username").notNull().default(""),
     usernameSet: boolean("username_set").notNull().default(false),
     userCreated: timestamp("user_created", { withTimezone: true }).notNull().defaultNow(),
@@ -125,6 +126,7 @@ export const ipLogsTable = pgTable(
         username: text("username").notNull(),
         userId: text("user_id").default(""),
         encodedIp: text("encoded_ip").notNull(),
+        teamMode: integer("team_mode").$type<TeamMode>().notNull().default(TeamMode.Solo),
         ip: text("ip").notNull(),
         // also store the IP that was used in api/find_game...
         // since one could exploit that to never get banned
@@ -135,10 +137,13 @@ export const ipLogsTable = pgTable(
     (table) => [index("name_created_at_idx").on(table.username, table.createdAt)],
 );
 
+export type IpLogsTable = typeof ipLogsTable.$inferSelect;
+
 export const bannedIpsTable = pgTable("banned_ips", {
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     expiresIn: timestamp("expries_in").notNull(),
     encodedIp: text("encoded_ip").notNull().primaryKey(),
     permanent: boolean("permanent").notNull().default(false),
     reason: text("reason").notNull().default(""),
+    bannedBy: text("banned_by").notNull().default("admin"),
 });
