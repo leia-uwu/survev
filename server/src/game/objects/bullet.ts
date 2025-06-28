@@ -126,13 +126,6 @@ export class BulletBarn {
             this.game.planeBarn.addAirdrop(params.pos);
         }
 
-        if (params.bulletType === "bullet_flare" && params.playerId) {
-            const player = this.game.objectRegister.getById(params.playerId);
-            if (player instanceof Player && player.role === "leader") {
-                player.hasFiredFlare = true;
-            }
-        }
-
         return bullet;
     }
 }

@@ -860,6 +860,11 @@ export class WeaponManager {
         if (this.activeWeapon == "bugle" && this.player.hasPerk("inspiration")) {
             this.player.playBugle();
         }
+
+        if (bulletType === "bullet_flare" && this.player.role === "leader") {
+            this.player.hasFiredFlare = true;
+        }
+
         if (
             this.player.game.map.factionMode &&
             !this.player.game.playerBarn.players.every(
