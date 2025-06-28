@@ -1018,7 +1018,7 @@ export class UiManager {
             }
             if (playerStatus.dead) {
                 texture = "skull-outlined.img";
-                if (customMapIcon) {
+                if (roleDef.mapIcon?.dead) {
                     texture = roleDef.mapIcon!.dead;
                 }
             } else if (playerStatus.downed) {
