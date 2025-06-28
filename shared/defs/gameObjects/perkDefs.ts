@@ -21,6 +21,10 @@ export const PerkProperties = {
         mainDamageMult: 0.6,
         splitsDamageMult: 0.45,
     },
+    ap_rounds: {
+        armorPenetration: 0.85,
+        obstacleMult: 1.5,
+    },
     trick_size: {
         scale: 0.25,
     },
