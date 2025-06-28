@@ -81,7 +81,7 @@ export interface RoleDef {
 
     mapIcon?: {
         alive: string;
-        dead: string;
+        dead?: string;
     };
     defaultItems?: DefaultItems;
     perks?: (string | (() => string))[];
@@ -198,7 +198,6 @@ export const RoleDefs: Record<string, RoleDef> = {
         sound: { assign: "captain_assigned_01" },
         mapIcon: {
             alive: "img/gui/player-captain.svg",
-            dead: "",
         },
         perks: ["assume_leadership", "firepower"],
         defaultItems: createDefaultItems({
