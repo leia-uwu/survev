@@ -195,6 +195,10 @@ export class UiManager {
     visibilityMode = 0;
     hudVisible = true;
 
+    //store fos counter
+    lastTime = performance.now();
+    frameCount = 0;
+
     gasRenderer!: GasRenderer;
     gasSafeZoneRenderer = new GasSafeZoneRenderer();
     sentAdStatus = false;
@@ -468,6 +472,10 @@ export class UiManager {
                 }
             });
         }
+
+        this.updateFpsCounter = this.updateFpsCounter.bind(this);
+        requestAnimationFrame(this.updateFpsCounter);
+
         this.mapIndicatorBarn = new MapIndicatorBarn(this.mapSpriteBarn);
 
         this.container.mask = new PIXI.Graphics();
@@ -2183,6 +2191,21 @@ export class UiManager {
             "ui-team-member-status-downed ui-team-member-status-dead ui-team-member-status-disconnected icon-pulse",
         );
         this.teamSelectors = [];
+    }
+
+    updateFpsCounter(now: number) {
+        const counter = $("#ui-fps-counter");
+        const delta = now - this.lastTime;
+
+        this.frameCount++;
+
+        if (delta >= 1000) {
+            const fps = Math.round((this.frameCount * 1000) / delta);
+            counter.text(`fps: ${fps}`);
+            this.frameCount = 0;
+            this.lastTime = now;
+        }
+        requestAnimationFrame(this.updateFpsCounter);
     }
 
     resize(map: Map, camera: Camera) {

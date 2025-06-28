@@ -1384,6 +1384,22 @@ img {
   height: 14px;
 }
 
+.ui-counters{
+  width: 50px;
+  height: 15px;
+  font-size: 1px;
+  padding: 1px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.ui-counters > p{
+  margin-left: 2px;
+  font-size: 12px;
+}
+
 .ui-background-yellow {
   background-color: #ffff00;
 }
