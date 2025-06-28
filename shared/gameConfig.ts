@@ -274,7 +274,7 @@ export const GameConfig = {
             regular: 0xfee2c6,
             saturated: 0xffd9b3,
             chambered: 0xff7f00,
-            apRounds: 0xa54b0b,
+            apSaturated: 0xa54b0b,
             alphaRate: 0.92,
             alphaMin: 0.14,
         },
@@ -343,7 +343,7 @@ export const GameConfig = {
             apSaturated: 0x470349,
         },
         shrapnel: { regular: 0x333333, saturated: 0x333333 },
-        frag: { regular: 0xcb0000, saturated: 0xcb0000 },
+        frag: { regular: 0xcb0000, saturated: 0xcb0000, apSaturated: 0xcb0000 },
         invis: { regular: 0, saturated: 0, chambered: 0, apSaturated: 0 },
     },
     scopeZoomRadius: {

@@ -141,7 +141,7 @@ export class LootBarn {
 
             const doPreload = preload || preloadGun;
 
-            if ((doPreload || preloadMode) && source !== "player") {
+            if ((doPreload || preloadMode) && !def.ammoInfinite && source !== "player") {
                 loot.isPreloadedGun = true;
             }
         }
