@@ -2516,6 +2516,13 @@ export class Player extends BaseGameObject {
 
         let finalDamage = params.amount!;
 
+        const reduceDamage = (multi: number) => {
+            if (params.armorPenetration !== undefined) {
+                multi *= params.armorPenetration;
+            }
+            finalDamage -= finalDamage * multi;
+        };
+
         // ignore armor for gas and bleeding damage
         if (
             params.damageType !== GameConfig.DamageType.Gas &&
@@ -2523,40 +2530,40 @@ export class Player extends BaseGameObject {
             params.damageType !== GameConfig.DamageType.Airdrop
         ) {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
-
-            if (this.hasPerk("flak_jacket")) {
-                finalDamage -=
-                    finalDamage *
-                    (params.isExplosion
-                        ? PerkProperties.flak_jacket.explosionDamageReduction
-                        : PerkProperties.flak_jacket.damageReduction);
-            }
-
-            if (this.hasPerk("steelskin")) {
-                finalDamage -= finalDamage * PerkProperties.steelskin.damageReduction;
-            }
-
             let isHeadShot = false;
 
-            if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                isHeadShot =
-                    gameSourceDef.type != "melee" &&
-                    Math.random() < GameConfig.player.headshotChance;
+            if (
+                gameSourceDef &&
+                gameSourceDef.type != "melee" &&
+                "headshotMult" in gameSourceDef
+            ) {
+                isHeadShot = Math.random() < GameConfig.player.headshotChance;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
                 }
             }
 
+            if (this.hasPerk("flak_jacket")) {
+                reduceDamage(
+                    params.isExplosion
+                        ? PerkProperties.flak_jacket.explosionDamageReduction
+                        : PerkProperties.flak_jacket.damageReduction,
+                );
+            }
+
+            if (this.hasPerk("steelskin")) {
+                reduceDamage(PerkProperties.steelskin.damageReduction);
+            }
+
             const chest = GameObjectDefs[this.chest] as ChestDef;
             if (chest && !isHeadShot) {
-                finalDamage -= finalDamage * chest.damageReduction;
+                reduceDamage(chest.damageReduction);
             }
 
             const helmet = GameObjectDefs[this.helmet] as HelmetDef;
             if (helmet) {
-                finalDamage -=
-                    finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+                reduceDamage(helmet.damageReduction * (isHeadShot ? 1 : 0.3));
             }
         }
 
