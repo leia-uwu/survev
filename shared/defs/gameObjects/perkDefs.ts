@@ -1,8 +1,10 @@
 export const PerkProperties = {
     leadership: {
+        minBoost: 100,
         scale: 0.25,
     },
     assume_leadership: {
+        minBoost: 50,
         scale: 0.15,
     },
     steelskin: {
