@@ -630,7 +630,7 @@
   "game-steelskin": "Cast Ironskin",
   "game-steelskin-desc": "Take reduced damage and reflect enemy bullets.</br>Increased size.",
   "game-ap_rounds": "AP Rounds",
-  "game-ap_rounds-desc": "Damage multiplier increases with opponent vest.</br>Increased Obstacle Damage.",
+  "game-ap_rounds-desc": "Bullets are more effective against armored enemies and obstacles.",
   "game-splinter": "Splinter Rounds",
   "game-splinter-desc": "Rounds fragment into three less powerful bullets.",
   "game-small_arms": "Small Arms",

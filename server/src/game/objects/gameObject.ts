@@ -39,7 +39,16 @@ export interface DamageParams {
     mapSourceType?: string;
     source?: GameObject;
     isExplosion?: boolean;
-    weaponSourceType?: string; // used by potato weapon swaps, gets passed down to e.g explosions
+    /**
+     * The source weapon that originally triggered the damage
+     * Used by potato weapon swaps, gets passed down to e.g explosions
+     */
+    weaponSourceType?: string;
+    /**
+     * Multiplier applied to armor reduction
+     * Example: 0.85 will reduce 15% of the armor
+     */
+    armorPenetration?: number;
 }
 
 const MAX_ID = 65535;

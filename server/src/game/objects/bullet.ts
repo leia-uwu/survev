@@ -3,6 +3,7 @@ import {
     type BulletDef,
     BulletDefs,
 } from "../../../../shared/defs/gameObjects/bulletDefs";
+import { PerkDefs, PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../../shared/gameConfig";
@@ -579,9 +580,9 @@ export class Bullet {
 
                 const def = GameObjectDefs[this.bulletType] as BulletDef;
                 // AP Obstacle Multiplier Buff
-                let apMultiplier = def.obstacleDamage;
-                if (this.player?.hasPerk("ap_rounds")) {
-                    apMultiplier *= 1.5;
+                let obstacleMult = def.obstacleDamage;
+                if (this.apRounds) {
+                    obstacleMult *= PerkProperties.ap_rounds.obstacleMult;
                 }
 
                 this.bulletManager.damages.push({
@@ -591,7 +592,7 @@ export class Bullet {
                     mapSourceType: this.mapSourceType,
                     damageType: this.damageType,
                     source: this.player,
-                    amount: finalDamage * apMultiplier,
+                    amount: finalDamage * obstacleMult,
                     dir: this.dir,
                 });
 
@@ -610,21 +611,6 @@ export class Bullet {
                     if (isHighValueTarget) {
                         multiplier *= 1.25;
                     }
-                    // AP Rounds Vest Multipliers. Subject to balance changes.
-                    if (this.player?.hasPerk("ap_rounds")) {
-                        const opponentArmor = col.player?.chest ?? "";
-                        if (opponentArmor === "") {
-                            multiplier *= 1.15;
-                        } else if (opponentArmor === "chest01") {
-                            multiplier *= 1.2;
-                        } else if (opponentArmor === "chest02") {
-                            multiplier *= 1.25;
-                        } else if (opponentArmor === "chest03") {
-                            multiplier *= 1.3;
-                        } else if (opponentArmor === "chest04") {
-                            multiplier *= 1.35;
-                        }
-                    }
 
                     this.bulletManager.damages.push({
                         obj: col.player!,
@@ -636,6 +622,9 @@ export class Bullet {
                         amount: multiplier * finalDamage,
                         dir: this.dir,
                         isExplosion: this.isShrapnel,
+                        armorPenetration: this.apRounds
+                            ? PerkProperties.ap_rounds.obstacleMult
+                            : 0,
                     });
                 }
                 hit = col.collidable;
