@@ -42,7 +42,6 @@ const defaultConfig = {
     musicVolume: 1,
     highResTex: true,
     interpolation: true,
-    localRotation: false,
     screenShake: true,
     anonPlayerNames: false,
     touchMoveStyle: "anywhere" as "locked" | "anywhere",
