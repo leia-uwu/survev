@@ -904,11 +904,11 @@ const SkinDefs = {
             baseTint: 0xffffff,
             baseTintRed: 0xffffff,
             baseTintBlue: 0xffffff,
-            baseSprite: "img/loot/player-helmet-captain.svg",
+            baseSprite: "player-helmet-captain.img",
             spriteScale: 0.3,
         },
         lootImg: {
-            sprite: "img/loot/player-helmet-captain.svg",
+            sprite: "player-helmet-captain.img",
             scale: 0.3,
             rot: 0.5 * Math.PI,
         },
