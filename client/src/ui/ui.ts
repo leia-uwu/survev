@@ -1013,7 +1013,7 @@ export class UiManager {
 
             // Add the inner dot sprite
             let texture = "player-map-inner.img";
-                if (customMapIcon && roleDef.mapIcon!.dead) {
+            if (customMapIcon && roleDef.mapIcon!.dead) {
                 texture = roleDef.mapIcon!.alive;
             }
             if (playerStatus.dead) {
