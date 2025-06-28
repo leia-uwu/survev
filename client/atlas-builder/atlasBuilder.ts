@@ -4,8 +4,8 @@ import type { ISpritesheetData } from "pixi.js-legacy";
 import type { Atlas } from "../../shared/defs/mapDefs.ts";
 import {
     type AtlasDef,
-    type AtlasRes,
     AtlasesConfig,
+    type AtlasRes,
     type MainToWorkerMsg,
     type WorkerToMainMsg,
 } from "./atlasConfig.ts";

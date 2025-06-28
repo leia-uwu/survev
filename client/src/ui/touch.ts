@@ -12,10 +12,10 @@ import { type Vec2, v2 } from "../../../shared/utils/v2";
 import type { Camera } from "../camera";
 import type { ConfigManager } from "../config";
 import { device } from "../device";
+import type { InputHandler } from "./../input";
 import type { Map } from "../map";
 import type { Player } from "../objects/player";
 import type { Renderer } from "../renderer";
-import type { InputHandler } from "./../input";
 
 interface Pad {
     touched: boolean;

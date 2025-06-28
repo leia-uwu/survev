@@ -1,18 +1,18 @@
 import fs from "node:fs";
 import fsp from "node:fs/promises";
-import { type Image, createCanvas, loadImage } from "canvas";
+import { createCanvas, type Image, loadImage } from "canvas";
 import { type Bin, MaxRectsPacker, type Rectangle } from "maxrects-packer";
 import type { ISpritesheetData } from "pixi.js-legacy";
 import sharp from "sharp";
 import {
     type AtlasDef,
-    type AtlasRes,
     AtlasesConfig,
+    type AtlasRes,
     type MainToWorkerMsg,
-    type WorkerToMainMsg,
     scaledSprites,
+    type WorkerToMainMsg,
 } from "./atlasConfig.ts";
-import { type Edges, detectEdges } from "./detectEdges.ts";
+import { detectEdges, type Edges } from "./detectEdges.ts";
 
 interface ImageData {
     image: Image;

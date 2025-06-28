@@ -4,8 +4,8 @@ import { Config } from "../../config";
 import { db } from "../db";
 import {
     type SessionTableSelect,
-    type UsersTableSelect,
     sessionTable,
+    type UsersTableSelect,
     usersTable,
 } from "../db/schema";
 

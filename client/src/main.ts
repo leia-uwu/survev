@@ -19,7 +19,7 @@ import { errorLogManager } from "./errorLogs";
 import { Game } from "./game";
 import { helpers } from "./helpers";
 import { InputHandler } from "./input";
-import { InputBindUi, InputBinds } from "./inputBinds";
+import { InputBinds, InputBindUi } from "./inputBinds";
 import { PingTest } from "./pingTest";
 import { proxy } from "./proxy";
 import { ResourceManager } from "./resources";

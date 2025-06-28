@@ -21,10 +21,10 @@ import { validateUserName } from "../../../utils/serverHelpers";
 import { server } from "../../apiServer";
 import {
     authMiddleware,
+    databaseEnabledMiddleware,
     rateLimitMiddleware,
     validateParams,
 } from "../../auth/middleware";
-import { databaseEnabledMiddleware } from "../../auth/middleware";
 import { db } from "../../db";
 import { itemsTable, matchDataTable, usersTable } from "../../db/schema";
 import type { Context } from "../../index";

@@ -1,5 +1,6 @@
 import { MapObjectDefs } from "../../../shared/defs/mapObjectDefs";
 import type { StructureDef } from "../../../shared/defs/mapObjectsTyping";
+import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import {
     type AABB,
     type AABBWithHeight,
@@ -23,7 +24,6 @@ import {
 import { debugLines } from "../debugLines";
 import type { Ctx } from "../game";
 import type { Map } from "../map";
-import type { ObjectData, ObjectType } from "./../../../shared/net/objectSerializeFns";
 import type { AbstractObject, Player } from "./player";
 
 interface Stair {

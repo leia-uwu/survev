@@ -1,6 +1,5 @@
-import { type SQL, and, count, eq, gte, inArray, ne, sql } from "drizzle-orm";
+import { and, count, eq, gte, inArray, ne, type SQL, sql } from "drizzle-orm";
 import { Hono } from "hono";
-import type { Context } from "../..";
 import { MinGames } from "../../../../../shared/constants";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import {
@@ -8,9 +7,13 @@ import {
     type LeaderboardResponse,
     zLeaderboardsRequest,
 } from "../../../../../shared/types/stats";
+import type { Context } from "../..";
 import { server } from "../../apiServer";
-import { databaseEnabledMiddleware, rateLimitMiddleware } from "../../auth/middleware";
-import { validateParams } from "../../auth/middleware";
+import {
+    databaseEnabledMiddleware,
+    rateLimitMiddleware,
+    validateParams,
+} from "../../auth/middleware";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import { matchDataTable, usersTable } from "../../db/schema";

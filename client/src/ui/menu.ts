@@ -1,7 +1,7 @@
 import $ from "jquery";
 import { device } from "../device";
 import { helpers } from "../helpers";
-import type { InputBindUi, InputBinds } from "../inputBinds";
+import type { InputBinds, InputBindUi } from "../inputBinds";
 import { MenuModal } from "./menuModal";
 
 function createToast(

@@ -42,7 +42,7 @@ import { validateUserName } from "../../utils/serverHelpers";
 import type { Game, JoinTokenData } from "../game";
 import { Group } from "../group";
 import { Team } from "../team";
-import { WeaponManager, throwableList } from "../weaponManager";
+import { throwableList, WeaponManager } from "../weaponManager";
 import type { Building } from "./building";
 import { BaseGameObject, type DamageParams, type GameObject } from "./gameObject";
 import type { Loot } from "./loot";

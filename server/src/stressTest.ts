@@ -7,8 +7,8 @@ import { GameConfig, type Input } from "../../shared/gameConfig";
 import * as net from "../../shared/net/net";
 import {
     type ObjectData,
-    ObjectType,
     type ObjectsPartialData,
+    ObjectType,
 } from "../../shared/net/objectSerializeFns";
 import type { LocalData } from "../../shared/net/updateMsg";
 import type {

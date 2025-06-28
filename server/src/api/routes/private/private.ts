@@ -1,13 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
-import type { Context } from "../..";
 import { saveConfig } from "../../../../../config";
 import { GameObjectDefs } from "../../../../../shared/defs/gameObjectDefs";
 import { MapDefs } from "../../../../../shared/defs/mapDefs";
 import { TeamMode } from "../../../../../shared/gameConfig";
 import { serverConfigPath } from "../../../config";
 import { type SaveGameBody, zUpdateRegionBody } from "../../../utils/types";
+import type { Context } from "../..";
 import { server } from "../../apiServer";
 import {
     databaseEnabledMiddleware,
@@ -18,13 +18,13 @@ import { getRedisClient } from "../../cache";
 import { leaderboardCache } from "../../cache/leaderboard";
 import { db } from "../../db";
 import {
-    type MatchDataTable,
     itemsTable,
+    type MatchDataTable,
     matchDataTable,
     usersTable,
 } from "../../db/schema";
 import { MOCK_USER_ID } from "../user/auth/mock";
-import { ModerationRouter, logPlayerIPs } from "./ModerationRouter";
+import { logPlayerIPs, ModerationRouter } from "./ModerationRouter";
 
 export const PrivateRouter = new Hono<Context>()
     .use(privateMiddleware)

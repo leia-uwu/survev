@@ -1,14 +1,14 @@
-import { isIP } from "net";
+import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import type { Context } from "hono";
+import { isIP } from "net";
 import {
     DataSet,
-    RegExpMatcher,
     englishDataset,
     englishRecommendedTransformers,
     pattern,
+    RegExpMatcher,
 } from "obscenity";
 import ProxyCheck, { type IPAddressInfo } from "proxycheck-ts";
-import type { HttpRequest, HttpResponse } from "uWebSockets.js";
 import { Constants } from "../../../shared/net/net";
 import { Config } from "../config";
 import { defaultLogger } from "./logger";

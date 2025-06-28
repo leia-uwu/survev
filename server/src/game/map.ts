@@ -16,7 +16,7 @@ import { collider } from "../../../shared/utils/collider";
 import { mapHelpers } from "../../../shared/utils/mapHelpers";
 import { math } from "../../../shared/utils/math";
 import type { River } from "../../../shared/utils/river";
-import { type MapRiverData, generateTerrain } from "../../../shared/utils/terrainGen";
+import { generateTerrain, type MapRiverData } from "../../../shared/utils/terrainGen";
 import { assert, util } from "../../../shared/utils/util";
 import { type Vec2, v2 } from "../../../shared/utils/v2";
 import { Config } from "../config";

@@ -1,12 +1,11 @@
 import { resolve } from "node:path";
-import { type Plugin, type ServerOptions, defineConfig } from "vite";
+import { defineConfig, type Plugin, type ServerOptions } from "vite";
+import stripBlockPlugin from "vite-plugin-strip-block";
 import { getConfig } from "../config";
 import { version } from "../package.json";
 import { GIT_VERSION } from "../server/src/utils/gitRevision";
 import { codefendPlugin } from "./vite-plugins/codefendPlugin";
 import { ejsPlugin } from "./vite-plugins/ejsPlugin";
-
-import stripBlockPlugin from "vite-plugin-strip-block";
 
 export const SplashThemes = {
     main: {

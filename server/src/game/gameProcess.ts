@@ -1,5 +1,5 @@
-import { platform } from "os";
 import NanoTimer from "nanotimer";
+import { platform } from "os";
 import { Config } from "../config";
 import { logErrorToWebhook } from "../utils/serverHelpers";
 import { type ProcessMsg, ProcessMsgType } from "../utils/types";
