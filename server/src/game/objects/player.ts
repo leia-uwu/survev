@@ -1314,13 +1314,17 @@ export class Player extends BaseGameObject {
             this.flareTimer -= dt;
             if (this.flareTimer <= 0) {
                 const flareGunIndex = this.weapons.findIndex(
-                    (w) => w.type === "flare_gun",
+                    (w) => w.type === "flare_gun" || w.type === "flare_gun_dual",
                 );
                 if (flareGunIndex !== -1) {
                     this.weaponManager.setCurWeapIndex(flareGunIndex);
                     this.weaponManager.fireWeapon(false, true);
                     this.hasFiredFlare = true;
                     this.flareTimer = 0;
+                    // go back to melee if we fired while downed lol
+                    if (this.downed) {
+                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    }
                 }
             }
         }
@@ -4104,7 +4108,7 @@ export class Player extends BaseGameObject {
         if (this.game.map.perkMode && !this.role) return;
         if (
             this.role === "leader" &&
-            dropMsg.item === "flare_gun" &&
+            (dropMsg.item === "flare_gun" || dropMsg.item === "flare_gun_dual") &&
             !this.hasFiredFlare
         ) {
             return;
