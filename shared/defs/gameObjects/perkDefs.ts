@@ -102,7 +102,7 @@ export const PerkDefs: Record<string, PerkDef> = {
         name: "Assume Leadership",
         type: "perk",
         lootImg: {
-            sprite: "img/loot/loot-perk-assume-leadership.svg",
+            sprite: "loot-perk-assume-leadership.img",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,
@@ -214,7 +214,7 @@ export const PerkDefs: Record<string, PerkDef> = {
         name: "AP Rounds",
         type: "perk",
         lootImg: {
-            sprite: "img/loot/loot-perk-ap-rounds.svg",
+            sprite: "loot-perk-ap-rounds.img",
             tint: 0xffffff,
             border: "loot-circle-outer-03.img",
             borderTint: 0xffffff,

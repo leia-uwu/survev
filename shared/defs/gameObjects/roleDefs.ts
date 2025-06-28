@@ -197,7 +197,7 @@ export const RoleDefs: Record<string, RoleDef> = {
         killFeed: { assign: true },
         sound: { assign: "captain_assigned_01" },
         mapIcon: {
-            alive: "img/gui/player-captain.svg",
+            alive: "player-captain.img",
         },
         perks: ["assume_leadership", "firepower"],
         defaultItems: createDefaultItems({
