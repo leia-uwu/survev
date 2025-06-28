@@ -12,6 +12,7 @@ export default class Camera {
     m_shakeInt = 0;
 
     m_interpEnabled = true;
+    m_localRotationEnabled = false;
     m_interpInterval = 0;
 
     m_z() {
@@ -46,6 +47,10 @@ export default class Camera {
 
     m_setInterpEnabled(en: boolean) {
         this.m_interpEnabled = en;
+    }
+
+    m_setRotationEnabled(en: boolean) {
+        this.m_localRotationEnabled = en;
     }
 
     m_addShake(pos: Vec2, intensity: number) {
