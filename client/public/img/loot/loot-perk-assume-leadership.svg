@@ -22,14 +22,14 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:zoom="0.96166522"
-     inkscape:cx="128.42307"
+     inkscape:cx="127.38321"
      inkscape:cy="33.275613"
      inkscape:window-width="1350"
      inkscape:window-height="720"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="g4" />
+     inkscape:current-layer="g6" />
   <g
      id="g3"
      transform="matrix(1.0457976,0,0,1.0457976,-3.8574329,-3.2914942)">
@@ -48,15 +48,23 @@
              width="51.315186"
              height="8.9802094"
              x="140.52078"
-             y="8.4291992"
+             y="7.7772217"
              transform="rotate(90)" />
           <rect
              style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none"
              id="rect10"
-             width="74.476135"
-             height="26.581398"
-             x="128.94029"
-             y="-24.236202"
+             width="71.576591"
+             height="23.333706"
+             x="130.39008"
+             y="-23.264328"
+             transform="rotate(90)" />
+          <rect
+             style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none"
+             id="rect10-8"
+             width="71.576591"
+             height="23.333706"
+             x="130.39006"
+             y="24.465275"
              transform="rotate(90)" />
           <rect
              style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:4.25169;stroke-dasharray:none"
@@ -64,15 +72,7 @@
              width="84.465279"
              height="35.6614"
              x="123.94572"
-             y="-28.776203"
-             transform="rotate(90)" />
-          <rect
-             style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0;stroke-dasharray:none"
-             id="rect10-83"
-             width="74.476135"
-             height="26.581398"
-             x="128.94029"
-             y="23.361048"
+             y="-29.428177"
              transform="rotate(90)" />
           <rect
              style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:4.25169;stroke-dasharray:none"
@@ -80,7 +80,7 @@
              width="84.465279"
              height="35.6614"
              x="123.94572"
-             y="18.821047"
+             y="18.169071"
              transform="rotate(90)" />
         </g>
       </g>
