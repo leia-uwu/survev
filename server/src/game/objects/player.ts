@@ -597,9 +597,9 @@ export class Player extends BaseGameObject {
     }
 
     set health(health: number) {
+        health = math.clamp(health, 0, GameConfig.player.health);
         if (this._health === health) return;
         this._health = health;
-        this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.healthDirty = true;
         this.setGroupStatuses();
 
@@ -613,19 +613,9 @@ export class Player extends BaseGameObject {
         }
     }
 
-    private _boost: number = 0;
-
-    get boost(): number {
-        return this._boost;
-    }
-
-    set boost(boost: number) {
-        if (this._boost === boost) return;
-        if (this.downed && boost > 0) return; // can't gain adren while knocked, can only set it to zero
-        this._boost = boost;
-        this._boost = math.clamp(this._boost, 0, 100);
-        this.boostDirty = true;
-    }
+    minBoost = 0;
+    lastBoost = 0;
+    boost = 0;
 
     speed: number = 0;
     moveVel = v2.create(0, 0);
@@ -1097,12 +1087,10 @@ export class Player extends BaseGameObject {
             );
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = PerkProperties.fabricate.refillInterval;
-        } else if (type === "leadership") {
-            this.boost = 100;
-        } else if (type === "assume_leadership") {
-            this.boost = 50;
         }
+
         this.recalculateScale();
+        this.recalculateMinBoost();
     }
 
     removePerk(type: string): void {
@@ -1125,6 +1113,7 @@ export class Player extends BaseGameObject {
         }
 
         this.recalculateScale();
+        this.recalculateMinBoost();
     }
 
     get hasPerks(): boolean {
@@ -1352,17 +1341,25 @@ export class Player extends BaseGameObject {
         //
         // Boost logic
         //
-        if (
-            this.boost > 0 &&
-            !this.hasPerk("leadership") &&
-            !(this.hasPerk("assume_leadership") && this.boost <= 50)
-        ) {
+        if (!this.downed) {
+            if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
+            else if (this.boost >= 25 && this.boost <= 50) this.health += 1.25 * dt;
+            else if (this.boost >= 50 && this.boost <= 87.5) this.health += 1.5 * dt;
+            else if (this.boost >= 87.5 && this.boost <= 100) this.health += 1.75 * dt;
+
             this.boost -= 0.375 * dt;
+
+            this.boost = math.clamp(this.boost, this.minBoost, 100);
+        } else {
+            this.boost = 0;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 1.25 * dt;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
+
+        // only set to dirty if it changed enough from last time we sent it
+        // since it only uses 8 bits the precision is really low and sending it every tick is a waste
+        if (!math.eqAbs(this.lastBoost, this.boost, 0.1)) {
+            this.lastBoost = this.boost;
+            this.boostDirty = true;
+        }
 
         if (this.hasPerk("gotw")) {
             this.health += PerkProperties.gotw.healthRegen * dt;
@@ -1507,8 +1504,6 @@ export class Player extends BaseGameObject {
                             target.wearingPan = false;
                         }
 
-                        if (target.hasPerk("leadership")) target.boost = 100;
-                        if (target.hasPerk("assume_leadership")) target.boost = 50;
                         target.setDirty();
                         target.setGroupStatuses();
                         this.game.pluginManager.emit("playerRevived", target);
@@ -4492,6 +4487,17 @@ export class Player extends BaseGameObject {
         );
 
         this.setDirty();
+    }
+
+    recalculateMinBoost() {
+        this.minBoost = 0;
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i].type;
+            const perkProps = PerkProperties[perk as keyof typeof PerkProperties];
+            if (typeof perkProps === "object" && "minBoost" in perkProps) {
+                this.minBoost = math.max(perkProps.minBoost as number, this.minBoost);
+            }
+        }
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
