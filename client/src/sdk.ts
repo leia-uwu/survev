@@ -278,13 +278,13 @@ class SDKManager {
         };
     }
 
-    private async initPoki(): Promise<void> {
+    private initPoki(): Promise<void> {
         return new Promise(function (resolve) {
             const pokiScript = document.createElement("script");
             pokiScript.src = "https://game-cdn.poki.com/scripts/v2/poki-sdk.js";
             document.head.appendChild(pokiScript);
 
-            pokiScript.addEventListener("load", async function () {
+            pokiScript.addEventListener("load", () => {
                 window.PokiSDK.init()
                     .then(() => {
                         console.log("Poki SDK successfully initialized");

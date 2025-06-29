@@ -3,7 +3,7 @@ import {
     type BulletDef,
     BulletDefs,
 } from "../../../../shared/defs/gameObjects/bulletDefs";
-import { PerkDefs, PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
+import { PerkProperties } from "../../../../shared/defs/gameObjects/perkDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
 import { GameConfig } from "../../../../shared/gameConfig";
