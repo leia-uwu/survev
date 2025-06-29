@@ -260,6 +260,7 @@ const mapDef: PartialMapDef = {
             { name: "ak47", count: 1, weight: 2.7 },
             { name: "scar", count: 1, weight: 0.01 },
             { name: "dp28", count: 1, weight: 0.5 },
+            { name: "bar", count: 1, weight: 0.25 },
             { name: "mosin", count: 1, weight: 0.1 },
             { name: "bar", count: 1, weight: 0.1 },
             { name: "m39", count: 1, weight: 0.1 },

@@ -72,6 +72,7 @@ const mapDef: PartialMapDef = {
             { name: "qbb97", count: 1, weight: 0.1 },
             { name: "bar", count: 1, weight: 3 },
             { name: "pkp", count: 1, weight: 0.005 },
+            { name: "m249", count: 1, weight: 0.008 },
         ],
         tier_ammo: [
             { name: "762mm", count: 60, weight: 3 },
@@ -113,6 +114,7 @@ const mapDef: PartialMapDef = {
             { name: "4xscope", count: 1, weight: 1 },
             { name: "8xscope", count: 1, weight: 0.5 },
             { name: "pkp", count: 1, weight: 0.05 },
+            { name: "m249", count: 1, weight: 0.05 },
         ],
         tier_airdrop_throwables: [
             { name: "frag", count: 2, weight: 1 },
