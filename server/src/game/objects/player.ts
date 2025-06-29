@@ -969,22 +969,37 @@ export class Player extends BaseGameObject {
             }
         }
 
+        // we first need to build a list of the new perks to add
+        const newPerks = new Set<string>();
         if (roleDef.perks) {
-            for (let i = 0; i < this.perks.length; i++) {
-                if (this.perks[i].isFromRole) {
-                    this.removePerk(this.perks[i].type);
-                    i--;
-                }
-            }
-
             for (let i = 0; i < roleDef.perks.length; i++) {
                 const perkOrPerkFunc = roleDef.perks[i];
                 const perkType =
-                    perkOrPerkFunc instanceof Function
-                        ? perkOrPerkFunc()
-                        : perkOrPerkFunc;
-                this.addPerk(perkType, false, undefined, true);
+                    typeof perkOrPerkFunc === "string"
+                        ? perkOrPerkFunc
+                        : perkOrPerkFunc();
+
+                newPerks.add(perkType);
             }
+        }
+        // then remove perks from the old role
+        // but skip perks we are about to add again and remove them from the list
+        // so they both aren't removed to just be added again
+        // and aren't added twice
+        for (let i = 0; i < this.perks.length; i++) {
+            const perkType = this.perks[i].type;
+            if (this.perks[i].isFromRole) {
+                if (!newPerks.has(perkType)) {
+                    this.removePerk(perkType);
+                    i--;
+                } else {
+                    newPerks.delete(perkType);
+                }
+            }
+        }
+
+        for (const perk of newPerks) {
+            this.addPerk(perk, false, undefined, true);
         }
     }
 
