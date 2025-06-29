@@ -425,12 +425,8 @@ export class TeamMenu {
                     closeReason = "behind_proxy";
                 }
 
-                try {
-                    if (await isBanned(ip!)) {
-                        closeReason = "banned";
-                    }
-                } catch (err) {
-                    this.logger.error("Failed to check if IP is banned", err);
+                if (await isBanned(ip!)) {
+                    closeReason = "banned";
                 }
 
                 wsRateLimit.ipConnected(ip!);

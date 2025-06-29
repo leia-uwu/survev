@@ -23,6 +23,11 @@ export interface FindGameMatchData {
 }
 
 export type FindGameError =
+    | "invalid_ip"
+    | "find_game_failed"
+    | "mode_disabled"
+    | "invalid_region"
+    | "failed_to_parse_body"
     | "full"
     | "invalid_protocol"
     | "join_game_failed"
