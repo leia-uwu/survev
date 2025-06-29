@@ -94,6 +94,7 @@ export class BulletBarn {
             regular: number;
             saturated: number;
             chambered: number;
+            apSaturated: number;
             alphaRate: number;
             alphaMin: number;
         }
@@ -178,7 +179,9 @@ export class BulletBarn {
         // Use saturated color if the player is on a bright surface
         const tracerColors = this.tracerColors[bulletDef.tracerColor];
         let tracerTint = tracerColors.regular;
-        if (bullet.trailSaturated) {
+        if (bullet.apRounds) {
+            tracerTint = tracerColors.apSaturated;
+        } else if (bullet.trailSaturated) {
             tracerTint = tracerColors.chambered || tracerColors.saturated;
         } else if (player?.surface?.data.isBright) {
             tracerTint = tracerColors.saturated;

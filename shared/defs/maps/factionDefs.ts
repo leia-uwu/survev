@@ -261,6 +261,7 @@ const mapDef: PartialMapDef = {
             { name: "scar", count: 1, weight: 0.01 },
             { name: "dp28", count: 1, weight: 0.5 },
             { name: "mosin", count: 1, weight: 0.1 },
+            { name: "bar", count: 1, weight: 0.1 },
             { name: "m39", count: 1, weight: 0.1 },
             { name: "vss", count: 1, weight: 0.1 },
             { name: "mp5", count: 1, weight: 10 },
@@ -329,6 +330,7 @@ const mapDef: PartialMapDef = {
         ],
         tier_airdrop_uncommon: [
             { name: "mk12", count: 1, weight: 2.5 },
+            { name: "bar", count: 1, weight: 2 },
             { name: "scar", count: 1, weight: 0.75 },
             { name: "mosin", count: 1, weight: 2.5 },
             { name: "m39", count: 1, weight: 2.5 },

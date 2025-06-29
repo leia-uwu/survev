@@ -564,6 +564,8 @@ export class Player extends BaseGameObject {
     weapsDirty = true;
     spectatorCountDirty = false;
     activeIdDirty = true;
+    hasFiredFlare = false;
+    flareTimer = 0;
 
     team: Team | undefined = undefined;
     group: Group | undefined = undefined;
@@ -595,9 +597,9 @@ export class Player extends BaseGameObject {
     }
 
     set health(health: number) {
+        health = math.clamp(health, 0, GameConfig.player.health);
         if (this._health === health) return;
         this._health = health;
-        this._health = math.clamp(this._health, 0, GameConfig.player.health);
         this.healthDirty = true;
         this.setGroupStatuses();
 
@@ -611,19 +613,9 @@ export class Player extends BaseGameObject {
         }
     }
 
-    private _boost: number = 0;
-
-    get boost(): number {
-        return this._boost;
-    }
-
-    set boost(boost: number) {
-        if (this._boost === boost) return;
-        if (this.downed && boost > 0) return; // can't gain adren while knocked, can only set it to zero
-        this._boost = boost;
-        this._boost = math.clamp(this._boost, 0, 100);
-        this.boostDirty = true;
-    }
+    minBoost = 0;
+    lastBoost = 0;
+    boost = 0;
 
     speed: number = 0;
     moveVel = v2.create(0, 0);
@@ -830,6 +822,11 @@ export class Player extends BaseGameObject {
             return;
         }
 
+        if (role === "leader") {
+            this.hasFiredFlare = false;
+            this.flareTimer = 15;
+        }
+
         if (this.role == "medic") {
             const index = this.game.playerBarn.medics.indexOf(this);
             if (index != -1) this.game.playerBarn.medics.splice(index, 1);
@@ -972,22 +969,37 @@ export class Player extends BaseGameObject {
             }
         }
 
+        // we first need to build a list of the new perks to add
+        const newPerks = new Set<string>();
         if (roleDef.perks) {
-            for (let i = 0; i < this.perks.length; i++) {
-                if (this.perks[i].isFromRole) {
-                    this.removePerk(this.perks[i].type);
-                    i--;
-                }
-            }
-
             for (let i = 0; i < roleDef.perks.length; i++) {
                 const perkOrPerkFunc = roleDef.perks[i];
                 const perkType =
-                    perkOrPerkFunc instanceof Function
-                        ? perkOrPerkFunc()
-                        : perkOrPerkFunc;
-                this.addPerk(perkType, false, undefined, true);
+                    typeof perkOrPerkFunc === "string"
+                        ? perkOrPerkFunc
+                        : perkOrPerkFunc();
+
+                newPerks.add(perkType);
             }
+        }
+        // then remove perks from the old role
+        // but skip perks we are about to add again and remove them from the list
+        // so they both aren't removed to just be added again
+        // and aren't added twice
+        for (let i = 0; i < this.perks.length; i++) {
+            const perkType = this.perks[i].type;
+            if (this.perks[i].isFromRole) {
+                if (!newPerks.has(perkType)) {
+                    this.removePerk(perkType);
+                    i--;
+                } else {
+                    newPerks.delete(perkType);
+                }
+            }
+        }
+
+        for (const perk of newPerks) {
+            this.addPerk(perk, false, undefined, true);
         }
     }
 
@@ -1090,11 +1102,10 @@ export class Player extends BaseGameObject {
             );
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = PerkProperties.fabricate.refillInterval;
-        } else if (type === "leadership") {
-            this.boost = 100;
         }
 
         this.recalculateScale();
+        this.recalculateMinBoost();
     }
 
     removePerk(type: string): void {
@@ -1112,11 +1123,19 @@ export class Player extends BaseGameObject {
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = 0;
         } else if (type === "firepower") {
-            this.weaponManager.reload(GameConfig.WeaponSlot.Primary);
-            this.weaponManager.reload(GameConfig.WeaponSlot.Secondary);
+            for (let i = 0; i < this.weapons.length; i++) {
+                const weap = this.weapons[i];
+                const def = GameObjectDefs[weap.type];
+                if (def.type !== "gun") continue;
+                const ammo = this.weaponManager.getTrueAmmoStats(def);
+
+                weap.ammo = math.min(weap.ammo, ammo.trueMaxClip);
+                this.weapsDirty = true;
+            }
         }
 
         this.recalculateScale();
+        this.recalculateMinBoost();
     }
 
     get hasPerks(): boolean {
@@ -1313,6 +1332,25 @@ export class Player extends BaseGameObject {
             this.timeUntilHidden -= dt;
         }
 
+        if (this.role === "leader" && !this.hasFiredFlare && this.flareTimer > 0) {
+            this.flareTimer -= dt;
+            if (this.flareTimer <= 0) {
+                const flareGunIndex = this.weapons.findIndex(
+                    (w) => w.type === "flare_gun" || w.type === "flare_gun_dual",
+                );
+                if (flareGunIndex !== -1) {
+                    this.weaponManager.setCurWeapIndex(flareGunIndex);
+                    this.weaponManager.fireWeapon(false, true);
+                    this.hasFiredFlare = true;
+                    this.flareTimer = 0;
+                    // go back to melee if we fired while downed lol
+                    if (this.downed) {
+                        this.weaponManager.setCurWeapIndex(GameConfig.WeaponSlot.Melee);
+                    }
+                }
+            }
+        }
+
         if (this.roleMenuTicker > 0) {
             this.roleMenuTicker -= dt;
             if (this.roleMenuTicker <= 0) {
@@ -1329,13 +1367,25 @@ export class Player extends BaseGameObject {
         //
         // Boost logic
         //
-        if (this.boost > 0 && !this.hasPerk("leadership")) {
+        if (!this.downed) {
+            if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
+            else if (this.boost >= 25 && this.boost <= 50) this.health += 1.25 * dt;
+            else if (this.boost >= 50 && this.boost <= 87.5) this.health += 1.5 * dt;
+            else if (this.boost >= 87.5 && this.boost <= 100) this.health += 1.75 * dt;
+
             this.boost -= 0.375 * dt;
+
+            this.boost = math.clamp(this.boost, this.minBoost, 100);
+        } else {
+            this.boost = 0;
         }
-        if (this.boost > 0 && this.boost <= 25) this.health += 0.5 * dt;
-        else if (this.boost > 25 && this.boost <= 50) this.health += 1.25 * dt;
-        else if (this.boost > 50 && this.boost <= 87.5) this.health += 1.5 * dt;
-        else if (this.boost > 87.5 && this.boost <= 100) this.health += 1.75 * dt;
+
+        // only set to dirty if it changed enough from last time we sent it
+        // since it only uses 8 bits the precision is really low and sending it every tick is a waste
+        if (!math.eqAbs(this.lastBoost, this.boost, 0.1)) {
+            this.lastBoost = this.boost;
+            this.boostDirty = true;
+        }
 
         if (this.hasPerk("gotw")) {
             this.health += PerkProperties.gotw.healthRegen * dt;
@@ -1480,7 +1530,6 @@ export class Player extends BaseGameObject {
                             target.wearingPan = false;
                         }
 
-                        if (target.hasPerk("leadership")) target.boost = 100;
                         target.setDirty();
                         target.setGroupStatuses();
                         this.game.pluginManager.emit("playerRevived", target);
@@ -2282,8 +2331,9 @@ export class Player extends BaseGameObject {
 
                 // faction team leader
                 if (
-                    emotePlayer.role === "leader" &&
-                    emotePlayer.teamId === player.teamId
+                    emotePlayer.role === "leader" ||
+                    (emotePlayer.role === "captain" &&
+                        emotePlayer.teamId === player.teamId)
                 ) {
                     return true;
                 }
@@ -2487,6 +2537,13 @@ export class Player extends BaseGameObject {
 
         let finalDamage = params.amount!;
 
+        const reduceDamage = (multi: number) => {
+            if (params.armorPenetration !== undefined) {
+                multi *= params.armorPenetration;
+            }
+            finalDamage -= finalDamage * multi;
+        };
+
         // ignore armor for gas and bleeding damage
         if (
             params.damageType !== GameConfig.DamageType.Gas &&
@@ -2494,40 +2551,40 @@ export class Player extends BaseGameObject {
             params.damageType !== GameConfig.DamageType.Airdrop
         ) {
             const gameSourceDef = GameObjectDefs[params.gameSourceType ?? ""];
-
-            if (this.hasPerk("flak_jacket")) {
-                finalDamage -=
-                    finalDamage *
-                    (params.isExplosion
-                        ? PerkProperties.flak_jacket.explosionDamageReduction
-                        : PerkProperties.flak_jacket.damageReduction);
-            }
-
-            if (this.hasPerk("steelskin")) {
-                finalDamage -= finalDamage * PerkProperties.steelskin.damageReduction;
-            }
-
             let isHeadShot = false;
 
-            if (gameSourceDef && "headshotMult" in gameSourceDef) {
-                isHeadShot =
-                    gameSourceDef.type != "melee" &&
-                    Math.random() < GameConfig.player.headshotChance;
+            if (
+                gameSourceDef &&
+                gameSourceDef.type != "melee" &&
+                "headshotMult" in gameSourceDef
+            ) {
+                isHeadShot = Math.random() < GameConfig.player.headshotChance;
 
                 if (isHeadShot) {
                     finalDamage *= gameSourceDef.headshotMult;
                 }
             }
 
+            if (this.hasPerk("flak_jacket")) {
+                reduceDamage(
+                    params.isExplosion
+                        ? PerkProperties.flak_jacket.explosionDamageReduction
+                        : PerkProperties.flak_jacket.damageReduction,
+                );
+            }
+
+            if (this.hasPerk("steelskin")) {
+                reduceDamage(PerkProperties.steelskin.damageReduction);
+            }
+
             const chest = GameObjectDefs[this.chest] as ChestDef;
             if (chest && !isHeadShot) {
-                finalDamage -= finalDamage * chest.damageReduction;
+                reduceDamage(chest.damageReduction);
             }
 
             const helmet = GameObjectDefs[this.helmet] as HelmetDef;
             if (helmet) {
-                finalDamage -=
-                    finalDamage * (helmet.damageReduction * (isHeadShot ? 1 : 0.3));
+                reduceDamage(helmet.damageReduction * (isHeadShot ? 1 : 0.3));
             }
         }
 
@@ -2637,6 +2694,7 @@ export class Player extends BaseGameObject {
         // lone survivr can be given on knock or kill
         if (this.game.map.factionMode) {
             this.team!.checkAndApplyLastMan();
+            this.team!.checkAndApplyCaptain();
         }
     }
 
@@ -2746,6 +2804,7 @@ export class Player extends BaseGameObject {
         if (this.game.map.factionMode) {
             // lone survivr can be given on knock or kill
             this.team!.checkAndApplyLastMan();
+            this.team!.checkAndApplyCaptain();
 
             //golden airdrops depend on alive counts, so we only do this logic on kill
             if (this.game.planeBarn.canDropSpecialAirdrop()) {
@@ -3775,7 +3834,7 @@ export class Player extends BaseGameObject {
                 }
                 break;
             case "outfit":
-                if (this.role == "leader") {
+                if (this.role == "leader" || this.role == "captain") {
                     amountLeft = 1;
                     pickupMsg.type = net.PickupMsgType.BetterItemEquipped;
                     break;
@@ -4029,6 +4088,9 @@ export class Player extends BaseGameObject {
             useCountForAmmo,
             10,
             v2.neg(this.dir),
+            undefined,
+            undefined,
+            "player",
         );
     }
 
@@ -4066,6 +4128,13 @@ export class Player extends BaseGameObject {
     dropItem(dropMsg: net.DropItemMsg): void {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
+        if (
+            this.role === "leader" &&
+            (dropMsg.item === "flare_gun" || dropMsg.item === "flare_gun_dual") &&
+            !this.hasFiredFlare
+        ) {
+            return;
+        }
 
         const itemDef = GameObjectDefs[dropMsg.item] as LootDef;
         if (!itemDef) return;
@@ -4444,6 +4513,17 @@ export class Player extends BaseGameObject {
         );
 
         this.setDirty();
+    }
+
+    recalculateMinBoost() {
+        this.minBoost = 0;
+        for (let i = 0; i < this.perks.length; i++) {
+            const perk = this.perks[i].type;
+            const perkProps = PerkProperties[perk as keyof typeof PerkProperties];
+            if (typeof perkProps === "object" && "minBoost" in perkProps) {
+                this.minBoost = math.max(perkProps.minBoost as number, this.minBoost);
+            }
+        }
     }
 
     recalculateSpeed(hasTreeClimbing: boolean): void {
