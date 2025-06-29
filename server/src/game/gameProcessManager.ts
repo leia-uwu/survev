@@ -208,7 +208,7 @@ export class GameProcessManager implements GameManager {
         }, 0);
     }
 
-    async newGame(config: ServerGameConfig): Promise<GameProcess> {
+    newGame(config: ServerGameConfig): GameProcess {
         let gameProc: GameProcess | undefined;
 
         for (let i = 0; i < this.processes.length; i++) {
@@ -294,7 +294,7 @@ export class GameProcessManager implements GameManager {
             })[0];
 
         if (!game) {
-            game = await this.newGame({
+            game = this.newGame({
                 teamMode: body.teamMode,
                 mapName: body.mapName as keyof typeof MapDefs,
             });
@@ -303,7 +303,7 @@ export class GameProcessManager implements GameManager {
         // if the game has not finished creating
         // wait for it to be created to send the find game response
         if (!game.created) {
-            return new Promise((resolve) => {
+            return await new Promise((resolve) => {
                 game.onCreatedCbs.push((game) => {
                     game.addJoinTokens(body.playerData, body.autoFill);
                     resolve(game.id);
