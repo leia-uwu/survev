@@ -114,7 +114,7 @@ app.options("/api/find_game", (res) => {
     res.end();
 });
 
-app.post("/api/find_game", async (res, req) => {
+app.post("/api/find_game", (res, req) => {
     res.onAborted(() => {
         res.aborted = true;
     });
@@ -142,6 +142,11 @@ app.post("/api/find_game", async (res, req) => {
             }
         },
         () => {
+            res.cork(() => {
+                res.writeStatus("500 Internal Server Error");
+                res.write("500 Internal Server Error");
+                res.end();
+            });
             server.logger.warn("/api/find_game: Error retrieving body");
         },
     );
