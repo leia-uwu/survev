@@ -1,5 +1,6 @@
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
+import { error } from "console";
 import { Cron } from "croner";
 import { randomUUID } from "crypto";
 import { Hono } from "hono";
@@ -90,7 +91,7 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
     const ip = getHonoIp(c, Config.apiServer.proxyIPHeader);
 
     if (!ip) {
-        return c.json({}, 500);
+        return c.json<FindGameResponse>({ error: "invalid_ip" }, 500);
     }
 
     if (findGameRateLimit.isRateLimited(ip)) {
