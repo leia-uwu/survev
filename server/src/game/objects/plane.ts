@@ -208,16 +208,18 @@ export class PlaneBarn {
         const redAliveCount = red.livingPlayers.length;
         const blueAliveCount = blue.livingPlayers.length;
 
-        const maxAliveCount = Math.max(redAliveCount, blueAliveCount);
-        const minAliveCount = Math.min(redAliveCount, blueAliveCount);
+        const maxAliveCount = math.max(redAliveCount, blueAliveCount);
+        const minAliveCount = math.min(redAliveCount, blueAliveCount);
 
         const threshold =
             (maxAliveCount - minAliveCount) /
-            Math.max(red.highestAliveCount, blue.highestAliveCount);
+            math.max(red.highestAliveCount, blue.highestAliveCount);
         return threshold >= SpecialAirdropConfig.aliveCountThreshold;
     }
 
     addSpecialAirdrop(): void {
+        if (!this.game.playerBarn.teams.length) return;
+
         const losingTeam = this.game.playerBarn.teams.reduce((losingTeam, team) =>
             losingTeam.livingPlayers.length < team.livingPlayers.length
                 ? losingTeam
@@ -240,14 +242,17 @@ export class PlaneBarn {
         winningTeamMean.x /= winningTeam.livingPlayers.length;
         winningTeamMean.y /= winningTeam.livingPlayers.length;
 
-        const furthestLosingTeamPlayer = losingTeam.livingPlayers
-            .filter((p) => !p.disconnected && !this.game.gas.isInGas(p.pos))
-            .reduce((furthest, current) => {
-                return v2.distance(winningTeamMean, furthest.pos) >
-                    v2.distance(winningTeamMean, current.pos)
-                    ? furthest
-                    : current;
-            });
+        const players = losingTeam.livingPlayers.filter(
+            (p) => !p.disconnected && !this.game.gas.isInGas(p.pos),
+        );
+        if (!players.length) return;
+
+        const furthestLosingTeamPlayer = players.reduce((furthest, current) => {
+            return v2.distance(winningTeamMean, furthest.pos) >
+                v2.distance(winningTeamMean, current.pos)
+                ? furthest
+                : current;
+        }, players[0]);
 
         const pos = v2.add(furthestLosingTeamPlayer.pos, v2.mul(v2.randomUnit(), 5));
         this.game.planeBarn.addAirdrop(pos, "airdrop_crate_04"); //golden airdrop

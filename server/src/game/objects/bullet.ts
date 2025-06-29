@@ -616,8 +616,8 @@ export class Bullet {
                         dir: this.dir,
                         isExplosion: this.isShrapnel,
                         armorPenetration: this.apRounds
-                            ? PerkProperties.ap_rounds.obstacleMult
-                            : 0,
+                            ? PerkProperties.ap_rounds.armorPenetration
+                            : undefined,
                     });
                 }
                 hit = col.collidable;
