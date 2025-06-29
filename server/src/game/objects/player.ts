@@ -1133,7 +1133,7 @@ export class Player extends BaseGameObject {
             for (let i = 0; i < this.weapons.length; i++) {
                 const weap = this.weapons[i];
                 const def = GameObjectDefs[weap.type];
-                if (def.type !== "gun") continue;
+                if (def?.type !== "gun") continue;
                 const ammo = this.weaponManager.getTrueAmmoStats(def);
 
                 weap.ammo = math.min(weap.ammo, ammo.trueMaxClip);
