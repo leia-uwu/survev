@@ -24,7 +24,7 @@ function tierLoot(tier: string, min: number, max: number, props?: LootSpawnDef["
         props,
     };
 }
-function autoLoot(type: string, count: number, props?: any) {
+function autoLoot(type: string, count: number, props?: LootSpawnDef["props"]) {
     props = props || {};
     return { type, count, props };
 }
@@ -8700,10 +8700,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         sound: { enter: "bush_enter_02" },
     }),
     bush_07x: createBush({ img: { sprite: "map-bush-07x.img" } }),
-    case_01: createCase({ loot: [autoLoot("deagle", 1)] }),
+    case_01: createCase({ loot: [autoLoot("deagle", 1, { preloadGuns: true })] }),
     case_02: createCase({
         img: { sprite: "map-case-deagle-02.img" },
-        loot: [autoLoot("deagle", 1), autoLoot("deagle", 1)],
+        loot: [autoLoot("deagle_dual", 1, { preloadGuns: true })],
     }),
     case_03: createCase({
         health: 140,
@@ -8963,7 +8963,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_02f: createCrate({
         health: 140,
         loot: [
-            tierLoot("tier_guns", 3, 3),
+            tierLoot("tier_guns", 3, 3, { preloadGuns: true }),
             tierLoot("tier_armor", 2, 2),
             tierLoot("tier_packs", 1, 1),
         ],
@@ -8976,10 +8976,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_02d: createCrate({
         health: 140,
         loot: [
-            autoLoot("m1014", 1, 1),
-            autoLoot("helmet03_lt_aged", 1, 1),
-            autoLoot("outfitRedLeaderAged", 1, 1),
-            autoLoot("machete_taiga", 1, 1),
+            autoLoot("m1014", 1),
+            autoLoot("helmet03_lt_aged", 1),
+            autoLoot("outfitRedLeaderAged", 1),
+            autoLoot("machete_taiga", 1),
         ],
         map: { display: true, color: 0xcc0000 },
         terrain: { grass: true, beach: false },
@@ -9000,11 +9000,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         hitParticle: "glassChip",
         explodeParticle: ["glassPlank"],
         collision: collider.createAabbExtents(v2.create(0, 0), v2.create(1.575, 1.575)),
-        loot: [
-            autoLoot("snowball", 4, 4),
-            autoLoot("snowball", 4, 4),
-            autoLoot("snowball", 4, 4),
-        ],
+        loot: [autoLoot("snowball", 4), autoLoot("snowball", 4), autoLoot("snowball", 4)],
         map: { color: 0x7c77, scale: 0.875 },
         terrain: { grass: true, beach: false },
         img: { sprite: "map-crate-03x.img", scale: 0.35 },
@@ -9405,7 +9401,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_22: createCrate({
         health: 140,
         loot: [
-            tierLoot("tier_guns", 3, 3),
+            tierLoot("tier_guns", 3, 3, { preloadGuns: true }),
             tierLoot("tier_armor", 2, 2),
             tierLoot("tier_packs", 1, 1),
         ],
@@ -9418,10 +9414,10 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     crate_22d: createCrate({
         health: 140,
         loot: [
-            autoLoot("an94", 1, 1),
-            autoLoot("helmet03_lt_aged", 1, 1),
-            autoLoot("outfitBlueLeaderAged", 1, 1),
-            autoLoot("kukri_trad", 1, 1),
+            autoLoot("an94", 1),
+            autoLoot("helmet03_lt_aged", 1),
+            autoLoot("outfitBlueLeaderAged", 1),
+            autoLoot("kukri_trad", 1),
         ],
         map: { display: true, color: 0x7eff },
         terrain: { grass: true, beach: false },
@@ -10005,7 +10001,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
     }),
     locker_03: createLocker({
         img: { sprite: "map-locker-03.img" },
-        loot: [autoLoot("ak47", 1, 1), autoLoot("backpack02", 1, 1)],
+        loot: [autoLoot("ak47", 1), autoLoot("backpack02", 1)],
     }),
     oven_01: createOven({}),
     piano_01: {
@@ -10149,7 +10145,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         },
         hitParticle: "squashChip",
         explodeParticle: "squashBreak",
-        loot: [autoLoot("turkey_shoot", 1, 1), tierLoot("tier_fruit_xp", 1, 1)],
+        loot: [autoLoot("turkey_shoot", 1), tierLoot("tier_fruit_xp", 1, 1)],
     }),
     refrigerator_01: createRefrigerator({}),
     refrigerator_01b: createRefrigerator({
@@ -10262,7 +10258,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
         scale: { createMin: 1, createMax: 1, destroy: 0.9 },
         destructible: true,
         health: 2500,
-        loot: [autoLoot("potato_smg", 1, 1)],
+        loot: [autoLoot("potato_smg", 1)],
         img: {
             residue: "map-smoke-res.img",
             tint: 0xff944d,
@@ -10601,7 +10597,7 @@ export const MapObjectDefs: Record<string, MapObjectDef> = {
             sprite: "map-toilet-02.img",
             tint: 0xb4b4b4,
         },
-        loot: [autoLoot("fireaxe", 1, 1)],
+        loot: [autoLoot("fireaxe", 1)],
     }),
     toilet_03: createToilet({
         reflectBullets: true,
