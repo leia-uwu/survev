@@ -106,6 +106,9 @@ importers:
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      tsx:
+        specifier: ^4.20.3
+        version: 4.20.3
 
   server:
     dependencies:
