@@ -102,18 +102,14 @@ app.post("/api/find_game", validateParams(zFindGameBody), async (c) => {
         return c.json<FindGameResponse>({ error: "behind_proxy" });
     }
 
-    try {
-        const banData = await isBanned(ip);
-        if (banData) {
-            return c.json<FindGameResponse>({
-                banned: true,
-                reason: banData.reason,
-                permanent: banData.permanent,
-                expiresIn: banData.expiresIn,
-            });
-        }
-    } catch (err) {
-        server.logger.error("/api/find_game: Failed to check if IP is banned", err);
+    const banData = await isBanned(ip);
+    if (banData) {
+        return c.json<FindGameResponse>({
+            banned: true,
+            reason: banData.reason,
+            permanent: banData.permanent,
+            expiresIn: banData.expiresIn,
+        });
     }
 
     const token = randomUUID();

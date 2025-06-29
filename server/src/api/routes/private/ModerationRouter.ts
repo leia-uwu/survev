@@ -409,34 +409,38 @@ export async function cleanupOldLogs() {
 
 export async function isBanned(ip: string, isEncoded = false) {
     if (!Config.database.enabled) return undefined;
-
-    const encodedIp = isEncoded ? ip : hashIp(ip);
-    const banned = await db.query.bannedIpsTable.findFirst({
-        where: eq(bannedIpsTable.encodedIp, encodedIp),
-        columns: {
-            permanent: true,
-            expiresIn: true,
-            reason: true,
-        },
-    });
-    if (banned) {
-        const { expiresIn, permanent, reason } = banned;
-        if (permanent || expiresIn.getTime() > Date.now()) {
-            server.logger.info(`${encodedIp} is banned.`);
-            return {
-                permanent,
-                expiresIn,
-                reason,
-            };
+    try {
+        const encodedIp = isEncoded ? ip : hashIp(ip);
+        const banned = await db.query.bannedIpsTable.findFirst({
+            where: eq(bannedIpsTable.encodedIp, encodedIp),
+            columns: {
+                permanent: true,
+                expiresIn: true,
+                reason: true,
+            },
+        });
+        if (banned) {
+            const { expiresIn, permanent, reason } = banned;
+            if (permanent || expiresIn.getTime() > Date.now()) {
+                server.logger.info(`${encodedIp} is banned.`);
+                return {
+                    permanent,
+                    expiresIn,
+                    reason,
+                };
+            }
+            // unban the ip
+            await db
+                .delete(bannedIpsTable)
+                .where(eq(bannedIpsTable.encodedIp, encodedIp))
+                .execute();
+            return undefined;
         }
-        // unban the ip
-        await db
-            .delete(bannedIpsTable)
-            .where(eq(bannedIpsTable.encodedIp, encodedIp))
-            .execute();
+        return undefined;
+    } catch (err) {
+        server.logger.error("Failed to check if IP is banned", err);
         return undefined;
     }
-    return undefined;
 }
 
 export async function logPlayerIPs(data: SaveGameBody["matchData"]) {
