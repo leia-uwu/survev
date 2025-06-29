@@ -459,7 +459,6 @@ const mapDef: PartialMapDef = {
                 chest_03f: 1,
                 mil_crate_02: { odds: 1 },
                 tree_02: 3,
-                river_town_01: 1,
             },
         ],
         randomSpawns: [],
