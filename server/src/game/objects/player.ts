@@ -615,7 +615,14 @@ export class Player extends BaseGameObject {
 
     minBoost = 0;
     lastBoost = 0;
-    boost = 0;
+
+    private _boost = 0;
+    get boost() {
+        return this._boost;
+    }
+    set boost(boost: number) {
+        this._boost = math.clamp(boost, 0, 100);
+    }
 
     speed: number = 0;
     moveVel = v2.create(0, 0);
