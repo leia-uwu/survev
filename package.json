@@ -23,8 +23,8 @@
   "devDependencies": {
     "@biomejs/biome": "2.0.5",
     "@types/hjson": "^2.4.6",
-    "@types/node": "^22.15.29",
-    "concurrently": "^9.1.2",
+    "@types/node": "^22.15.34",
+    "concurrently": "^9.2.0",
     "typescript": "^5.8.3"
   },
   "workspaces": [
@@ -36,6 +36,6 @@
   "dependencies": {
     "enquirer": "^2.4.1",
     "hjson": "^3.2.2",
-    "tsx": "^4.19.4"
+    "tsx": "^4.20.3"
   }
 }
