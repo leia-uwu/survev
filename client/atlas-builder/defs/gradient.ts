@@ -14,5 +14,6 @@ export const GradientAtlas: AtlasDef = {
         "map/map-light-01.svg",
         "map/map-plane-01.svg",
         "map/map-plane-02.svg",
+        "map/map-decal-flyer-01.svg",
     ],
 };
