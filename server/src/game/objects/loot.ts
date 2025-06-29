@@ -137,11 +137,9 @@ export class LootBarn {
         this._addLoot(loot);
 
         if (def && def.type === "gun") {
-            const preloadMode = this.game.map.mapDef.gameMode?.factionMode;
-
             const doPreload = preload || preloadGun;
 
-            if ((doPreload || preloadMode) && !def.ammoInfinite && source !== "player") {
+            if (doPreload && !def.ammoInfinite && source !== "player") {
                 loot.isPreloadedGun = true;
             }
         }
