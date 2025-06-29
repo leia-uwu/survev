@@ -1123,8 +1123,15 @@ export class Player extends BaseGameObject {
         } else if (type === "fabricate") {
             this.fabricateRefillTicker = 0;
         } else if (type === "firepower") {
-            this.weaponManager.reload(GameConfig.WeaponSlot.Primary);
-            this.weaponManager.reload(GameConfig.WeaponSlot.Secondary);
+            for (let i = 0; i < this.weapons.length; i++) {
+                const weap = this.weapons[i];
+                const def = GameObjectDefs[weap.type];
+                if (def.type !== "gun") continue;
+                const ammo = this.weaponManager.getTrueAmmoStats(def);
+
+                weap.ammo = math.min(weap.ammo, ammo.trueMaxClip);
+                this.weapsDirty = true;
+            }
         }
 
         this.recalculateScale();
