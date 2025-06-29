@@ -1,6 +1,5 @@
 import { serve } from "@hono/node-server";
 import { createNodeWebSocket } from "@hono/node-ws";
-import { error } from "console";
 import { Cron } from "croner";
 import { randomUUID } from "crypto";
 import { Hono } from "hono";
