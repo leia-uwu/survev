@@ -769,6 +769,52 @@ const SkinDefs = {
             rot: 0.5 * Math.PI,
         },
     }),
+    //Returning Pre-Savannah Marksman Helmets
+    helmet03_dm01: defineSkin("helmet03", {
+        name: "Marksman",
+        perk: "endless_ammo",
+        skinImg: {
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
+            baseSprite: "player-helmet-dm01.img",
+            spriteScale: 0.3,
+        },
+        lootImg: {
+            sprite: "player-helmet-dm01.img",
+            rot: 0.5 * Math.PI,
+        },
+    }),
+    helmet03_dm02: defineSkin("helmet03", {
+        name: "Marksman",
+        perk: "splinter",
+        skinImg: {
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
+            baseSprite: "player-helmet-dm02.img",
+            spriteScale: 0.3,
+        },
+        lootImg: {
+            sprite: "player-helmet-dm02.img",
+            rot: 0.5 * Math.PI,
+        },
+    }),
+    helmet03_dm03: defineSkin("helmet03", {
+        name: "Marksman",
+        perk: "small_arms",
+        skinImg: {
+            baseTint: 0xffffff,
+            baseTintRed: 0xffffff,
+            baseTintBlue: 0xffffff,
+            baseSprite: "player-helmet-dm03.img",
+            spriteScale: 0.3,
+        },
+        lootImg: {
+            sprite: "player-helmet-dm03.img",
+            rot: 0.5 * Math.PI,
+        },
+    }),
     helmet03_marksman: defineSkin("helmet03", {
         name: "Marksman Helmet",
         noDrop: true,
