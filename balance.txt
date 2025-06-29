@@ -1,5 +1,8 @@
 Log any balance changes made here to keep track of differences from the original game.
 
+AN-94:
++ damage 17.5 -> 20
+
 M9 + Cursed:
 + damage 12 -> 14
 + moveSpread 8 -> 3
@@ -29,5 +32,20 @@ M1 Garand:
 VSS:
 + made more common
 
+Flak Jacket:
+Size increase +0.2 -> +0.1
+
+Ironskin:
+Damage reduction 50% -> 40%
+
 Loot Caches:
 Added more mode specific variations of mosin tree and ak rock
+
+Loot tables:
+Added bar to normal loot tables
+
+Other:
+- Certain roles receive healing when promoted: Commander recieves 5 bandages and 1 medkit, Lieutenant receives 10 bandages and 3 sodas; Bugler receives 5 bandages and 2 sodas; Grenadier, Marksman, and Recon all receive 5 bandages.
+- Lone Survivr no longer has Splinter Rounds, and instead have an additional perk: AP Rounds.
+- Lone Survivr third perk odds have been adjusted.
+- Last Breath adjusted (overall buff).
