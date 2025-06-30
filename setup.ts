@@ -115,6 +115,17 @@ async function setupDatabase(config: PartialConfig, initial = true) {
 
     if (dbEnabled.value) {
         await setupAccounts(config);
+
+        const setupBot = await prompt<{ value: boolean }>({
+            message: "Would you like to setup the moderation bot?",
+            name: "value",
+            type: "confirm",
+            initial: false,
+        });
+
+        if (setupBot.value) {
+            await setupBotConfig(config);
+        }
     }
 }
 
@@ -347,6 +358,23 @@ async function setupProductionConfig(config: PartialConfig) {
 
 async function setupDevelopmentConfig(config: PartialConfig) {
     await setupDatabase(config, false);
+}
+
+async function setupBotConfig(config: PartialConfig) {
+    config.secrets ??= {};
+    const discordBotToken = await prompt<{ value: string }>({
+        message: "Enter the discord bot token",
+        name: "value",
+        type: "text",
+    });
+    config.secrets.DISCORD_BOT_TOKEN = discordBotToken.value;
+
+    const discordRoleId = await prompt<{ value: string }>({
+        message: "Enter the discord role ID",
+        name: "value",
+        type: "text",
+    });
+    config.discordRoleId = discordRoleId.value;
 }
 
 const configPath = path.join(import.meta.dirname, configFileName);

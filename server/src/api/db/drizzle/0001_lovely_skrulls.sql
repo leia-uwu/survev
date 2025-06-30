@@ -1,0 +1,1 @@
+ALTER TABLE "ip_logs" ADD COLUMN "team_mode" integer DEFAULT 1 NOT NULL;
