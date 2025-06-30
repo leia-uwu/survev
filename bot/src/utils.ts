@@ -30,7 +30,7 @@ export function hasPermission(interaction: Interaction): boolean {
     const member = interaction.member as GuildMember;
 
     if (member && "roles" in member) {
-        return member.roles.cache.has(DISCORD_ROLE_ID);
+        return member.roles.cache.has(DISCORD_ROLE_ID!);
     }
 
     return false;
