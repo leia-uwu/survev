@@ -7,7 +7,7 @@ import {
     EmbedBuilder,
     type RepliableInteraction,
     StringSelectMenuBuilder,
-    type StringSelectMenuInteraction
+    type StringSelectMenuInteraction,
 } from "discord.js";
 import { BUTTON_PREFIXES, type SelectedPlayer } from "./commands/search-player";
 import { createCollector, formatDate, honoClient } from "./utils";
@@ -22,7 +22,7 @@ export async function createDiscordDropdownUI(
         const slug = player.slug ? ` (slug: ${player.slug})` : "";
 
         return {
-            label: `[${player.region}] - ${player.mapId.toLowerCase()} - ${player.teamMode} - ${player.username} ${slug}`, 
+            label: `[${player.region}] - ${player.mapId.toLowerCase()} - ${player.teamMode} - ${player.username} ${slug}`,
             description: `Played at: ${formatDate(player.createdAt)}`,
             value: `ban_${index}`,
         };
@@ -60,9 +60,9 @@ export async function createDiscordDropdownUI(
             const selectedValue = interaction.values[0];
             // fomrat: ban_<index>
             const playerIndex = parseInt(selectedValue.split("_")[1]);
-    
+
             const selectedPlayer = matchingPlayers[playerIndex];
-    
+
             await createDiscordPlayerInfoCardUI({
                 interaction,
                 selectedPlayer,
@@ -70,8 +70,8 @@ export async function createDiscordDropdownUI(
                 originalUserId,
                 matchingPlayers,
             });
-        }}
-    );
+        },
+    });
 }
 
 export async function createDiscordPlayerInfoCardUI({
@@ -194,7 +194,6 @@ export async function clearEmbedWithMessage(
     });
 }
 
-
 function getEmbedFields(selectedPlayer: SelectedPlayer) {
     const fields = [
         { name: "Player Name", value: selectedPlayer.username, inline: true },
@@ -236,5 +235,5 @@ function getEmbedFields(selectedPlayer: SelectedPlayer) {
         inline: false,
     });
 
-    return fields
+    return fields;
 }
