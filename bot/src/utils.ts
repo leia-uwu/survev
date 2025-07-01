@@ -79,7 +79,7 @@ export function createCollector<
     });
 
     collector.on("ignore", async (interaction: RepliableInteraction) => {
-        await interaction.followUp({
+        await interaction.reply({
             content: "You are not the original creator. Please create a new command.",
             flags: MessageFlags.Ephemeral,
         });
