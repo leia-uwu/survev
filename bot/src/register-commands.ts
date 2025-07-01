@@ -2,6 +2,7 @@ import { REST, Routes } from "discord.js";
 import { banAccountHandler, banIpHandler } from "./commands";
 import { searchPlayersHandler } from "./commands/search-player";
 import { DISCORD_BOT_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID } from "./config";
+
 async function run() {
     const commands = [
         banIpHandler.command,

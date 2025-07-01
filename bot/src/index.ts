@@ -1,4 +1,4 @@
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
 import { banAccountHandler, banIpHandler } from "./commands";
 import { searchPlayersHandler } from "./commands/search-player";
 import { DISCORD_BOT_TOKEN } from "./config";
@@ -18,7 +18,7 @@ function setupInteractionHandlers() {
             if (interaction.isRepliable()) {
                 await interaction.reply({
                     content: "You do not have permission to use this command",
-                    ephemeral: true,
+                    flags: MessageFlags.Ephemeral,
                 });
             }
             return;
@@ -37,7 +37,7 @@ function setupInteractionHandlers() {
             console.error(`Error executing command "${commandName}":`, error);
             await interaction.reply({
                 content: "There was an error while executing this command!",
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         }
     });

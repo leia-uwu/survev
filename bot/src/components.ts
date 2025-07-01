@@ -1,3 +1,4 @@
+import type { ButtonInteraction, Message } from "discord.js";
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -9,7 +10,6 @@ import {
     StringSelectMenuBuilder,
     type StringSelectMenuInteraction,
 } from "discord.js";
-import type { ButtonInteraction } from "discord.js";
 import { BUTTON_PREFIXES, type SelectedPlayer } from "./commands/search-player";
 import { honoClient } from "./utils";
 
@@ -20,6 +20,7 @@ export async function createDiscordDropdownUI(
     matchingPlayers: SelectedPlayer[],
     searchName: string,
 ) {
+    const originalUserId = interaction.user.id;
     const options = matchingPlayers.map((player, index) => {
         const slug = player.slug ? ` (slug: ${player.slug})` : "";
 
@@ -51,47 +52,46 @@ export async function createDiscordDropdownUI(
     });
 
     const collector = response.createMessageComponentCollector({
+        filter: (i) => i.user.id === originalUserId,
         componentType: ComponentType.StringSelect,
         time: TIMEOUT_IN_SECONDS * 1000,
     });
 
     collector.on("collect", async (interaction: StringSelectMenuInteraction) => {
-        const pendingBans = interaction.client.tempUserData?.get(interaction.user.id);
-
-        if (interaction.user.id !== pendingBans?.originalUserId) {
-            await interaction.followUp({
-                content: "You are not the original creator. Please create a new command.",
-                ephemeral: true,
-            });
-            return;
-        }
-
         await interaction.deferUpdate();
         const selectedValue = interaction.values[0];
+        // fomrat: ban_<index>
         const playerIndex = parseInt(selectedValue.split("_")[1]);
 
-        if (!pendingBans || !pendingBans.matchingPlayers[playerIndex]) {
-            await clearEmbedWithMessage(
-                interaction,
-                "Error: Player data not found. Please try the command again.",
-            );
-            interaction.client.tempUserData?.delete(interaction.user.id);
-            return;
-        }
+        const selectedPlayer = matchingPlayers[playerIndex];
 
-        const selectedPlayer = pendingBans.matchingPlayers[playerIndex];
-        await createDiscordPlayerInfoCardUI(interaction, selectedPlayer, playerIndex);
+        await createDiscordPlayerInfoCardUI({
+            interaction,
+            selectedPlayer,
+            playerIdx: playerIndex,
+            originalUserId,
+            matchingPlayers,
+        });
 
         collector.stop("completed");
     });
-    collector.on("end", (_, reason) => onTimeout(interaction, reason));
+    collector.on("ignore", onIgnore);
+    collector.on("end", (_, reason) => onEnd(interaction, reason));
 }
 
-export async function createDiscordPlayerInfoCardUI(
-    interaction: RepliableInteraction,
-    selectedPlayer: SelectedPlayer,
-    playerIdx: number,
-) {
+export async function createDiscordPlayerInfoCardUI({
+    interaction,
+    selectedPlayer,
+    playerIdx,
+    originalUserId,
+    matchingPlayers,
+}: {
+    interaction: RepliableInteraction;
+    selectedPlayer: SelectedPlayer;
+    playerIdx: number;
+    originalUserId: string;
+    matchingPlayers: SelectedPlayer[];
+}) {
     // is this jquery?
     const fields = [
         { name: "Player Name", value: selectedPlayer.username, inline: true },
@@ -169,36 +169,20 @@ export async function createDiscordPlayerInfoCardUI(
     });
 
     const collector = response.createMessageComponentCollector({
+        filter: (i) => i.user.id === originalUserId,
         componentType: ComponentType.Button,
         time: TIMEOUT_IN_SECONDS * 1000,
     });
 
     collector.on("collect", async (interaction: ButtonInteraction) => {
-        const pendingBans = interaction.client.tempUserData?.get(interaction.user.id);
-
-        if (interaction.user.id !== pendingBans?.originalUserId) {
-            await interaction.followUp({
-                content: "You are not the original user. Please try again.",
-                flags: MessageFlags.Ephemeral,
-            });
-            return;
-        }
-
         await interaction.deferUpdate();
 
         const parts = interaction.customId.split("_");
         const playerIndex = parseInt(parts[parts.length - 1]);
 
-        if (!pendingBans || !pendingBans.matchingPlayers[playerIndex]) {
-            await clearEmbedWithMessage(
-                interaction,
-                "Error: Player data not found. Please try the command again.",
-            );
-            return;
-        }
-
-        const selectedPlayer = pendingBans.matchingPlayers[playerIndex];
+        const selectedPlayer = matchingPlayers[playerIndex];
         const excutorId = interaction.user.id;
+
         const { ipBanDuration, banReason } = interaction.customId.startsWith(
             BUTTON_PREFIXES.BAN_FOR_CHEATING,
         )
@@ -246,15 +230,20 @@ export async function createDiscordPlayerInfoCardUI(
         }
 
         await clearEmbedWithMessage(interaction, responseMessage);
-        interaction.client.tempUserData?.delete(interaction.user.id);
-
         collector.stop("completed");
     });
-
-    collector.on("end", (_, reason) => onTimeout(interaction, reason));
+    collector.on("ignore", onIgnore);
+    collector.on("end", );
 }
 
-async function onTimeout(interaction: RepliableInteraction, reason: string) {
+async function onIgnore(interaction: RepliableInteraction) {
+    await interaction.followUp({
+        content: "You are not the original creator. Please create a new command.",
+        flags: MessageFlags.Ephemeral,
+    });
+}
+
+async function onEnd(interaction: RepliableInteraction, reason: string) {
     if (reason === "time") {
         await interaction.editReply({
             content: "Timed out, please try again.",
@@ -273,5 +262,44 @@ export async function clearEmbedWithMessage(
         content,
         components: [],
         embeds: [],
+    });
+}
+
+
+function createCollector<T extends ButtonInteraction | StringSelectMenuInteraction>(
+    response: Message,
+    onCollect: (interaction: T) => Promise<void>,
+    options: {
+        originalUserId: string;
+        componentType: ComponentType.Button | ComponentType.StringSelect;
+    }
+) {
+    const collector = response.createMessageComponentCollector({
+        filter: (i) => i.user.id === options.originalUserId,
+        componentType: options.componentType,
+        time: TIMEOUT_IN_SECONDS * 1000,
+    });
+
+    collector.on("collect", async (interaction: T) => {
+        await onCollect(interaction);
+        collector.stop("completed");
+    });
+
+    collector.on("ignore", async (interaction: RepliableInteraction) => {
+        await interaction.followUp({
+            content: "You are not the original creator. Please create a new command.",
+            flags: MessageFlags.Ephemeral,
+        });
+    });
+
+    collector.on("end", async (interaction: RepliableInteraction, reason) => {
+        if (reason === "time") {
+            await interaction.editReply({
+                content: "Timed out, please try again.",
+                components: [],
+                embeds: [],
+            });
+            return;
+        }
     });
 }

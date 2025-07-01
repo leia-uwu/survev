@@ -1,6 +1,5 @@
+import type { GuildMember, Interaction } from "discord.js";
 import { type ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
-import type { GuildMember } from "discord.js";
-import type { Interaction } from "discord.js";
 import { hc } from "hono/client";
 import type { PrivateRouteApp } from "../../server/src/api/routes/private/private";
 import { API_URL, Config, DISCORD_ROLE_ID } from "./config";

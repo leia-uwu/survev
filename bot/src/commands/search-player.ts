@@ -8,18 +8,6 @@ export type SelectedPlayer = Extract<
     any[]
 >[number];
 
-declare module "discord.js" {
-    interface Client {
-        tempUserData?: Map<
-            string,
-            {
-                matchingPlayers: SelectedPlayer[];
-                originalUserId: string;
-            }
-        >;
-    }
-}
-
 export const BUTTON_PREFIXES = {
     BAN_FOR_CHEATING: `search_player_ban_for_cheating_`,
     BAN_FOR_BAD_NAME: `search_player_ban_for_name_`,
@@ -68,13 +56,6 @@ export const searchPlayersHandler = {
             const matchingPlayers = result;
 
             await createDiscordDropdownUI(interaction, matchingPlayers, searchName);
-
-            // store the matching players data temporarily, find a better way to do this
-            interaction.client.tempUserData ??= new Map();
-            interaction.client.tempUserData.set(interaction.user.id, {
-                matchingPlayers,
-                originalUserId: interaction.user.id,
-            });
         } catch (error) {
             console.error("Error in banplayer command:", error);
             await interaction.editReply({
