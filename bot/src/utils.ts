@@ -1,5 +1,17 @@
-import type { GuildMember, Interaction } from "discord.js";
-import { type ChatInputCommandInteraction, PermissionFlagsBits } from "discord.js";
+import type {
+    ButtonInteraction,
+    ComponentType,
+    GuildMember,
+    Interaction,
+    Message,
+    RepliableInteraction,
+    StringSelectMenuInteraction,
+} from "discord.js";
+import {
+    type ChatInputCommandInteraction,
+    MessageFlags,
+    PermissionFlagsBits,
+} from "discord.js";
 import { hc } from "hono/client";
 import type { PrivateRouteApp } from "../../server/src/api/routes/private/private";
 import { API_URL, Config, DISCORD_ROLE_ID } from "./config";
@@ -33,4 +45,66 @@ export function hasPermission(interaction: Interaction): boolean {
     }
 
     return false;
+}
+
+const TIMEOUT_IN_SECONDS = 60;
+
+/**
+ * generic collector that handles timeouts and only allows interactions but the original user
+ */
+export function createCollector<
+    T extends ButtonInteraction | StringSelectMenuInteraction,
+>({
+    response,
+    onCollect,
+    options,
+}: {
+    response: Message;
+    onCollect: (interaction: T) => Promise<void>;
+    options: {
+        interaction: RepliableInteraction;
+        originalUserId: string;
+        componentType: ComponentType.Button | ComponentType.StringSelect;
+    };
+}) {
+    const collector = response.createMessageComponentCollector({
+        filter: (i) => i.user.id === options.originalUserId,
+        componentType: options.componentType,
+        time: TIMEOUT_IN_SECONDS * 1000,
+    });
+
+    collector.on("collect", async (interaction: T) => {
+        await onCollect(interaction);
+        collector.stop("completed");
+    });
+
+    collector.on("ignore", async (interaction: RepliableInteraction) => {
+        await interaction.followUp({
+            content: "You are not the original creator. Please create a new command.",
+            flags: MessageFlags.Ephemeral,
+        });
+    });
+
+    collector.on("end", async (_, reason) => {
+        if (reason === "time") {
+            await options.interaction.editReply({
+                content: "Timed out, please try again.",
+                components: [],
+                embeds: [],
+            });
+            return;
+        }
+    });
+}
+
+export function formatDate(date?: string) {
+    return date
+        ? new Date(date).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+          })
+        : "Unknown";
 }

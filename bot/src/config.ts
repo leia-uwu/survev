@@ -4,20 +4,20 @@ const isProd = process.env["NODE_ENV"] === "production";
 export const serverConfigPath = isProd ? "../../" : "";
 export const Config = getConfig(isProd, serverConfigPath);
 
-const API_URL = `http://${Config.apiServer.host}:${Config.apiServer.port}/private`;
-const { DISCORD_BOT_TOKEN, DISCORD_CLIENT_ID } = Config.secrets;
-const DISCORD_ROLE_ID = Config.discordRoleId;
-const DISCORD_GUILD_ID = Config.discordGuildId;
-
 // sanitiy check
-if (!DISCORD_CLIENT_ID || !DISCORD_BOT_TOKEN || !DISCORD_ROLE_ID || !DISCORD_GUILD_ID) {
+if (!Config.discordGuildId || !Config.discordRoleId || !Config.secrets.DISCORD_CLIENT_ID || !Config.secrets.DISCORD_BOT_TOKEN) {
     throw new Error("Bot config not set up properly");
-}
-
-export {
-    API_URL,
-    DISCORD_BOT_TOKEN,
-    DISCORD_CLIENT_ID,
-    DISCORD_ROLE_ID,
-    DISCORD_GUILD_ID,
 };
+
+const API_URL = `http://${Config.apiServer.host}:${Config.apiServer.port}/private`;
+const {
+    discordGuildId: DISCORD_GUILD_ID,
+    discordRoleId: DISCORD_ROLE_ID,
+    secrets: {
+        DISCORD_CLIENT_ID,
+        DISCORD_BOT_TOKEN,
+    },
+} = Config;
+
+
+export { DISCORD_GUILD_ID, DISCORD_ROLE_ID, DISCORD_CLIENT_ID, DISCORD_BOT_TOKEN, API_URL };
