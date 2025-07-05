@@ -43,7 +43,7 @@ class Region {
     async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
         const data = await this.fetch<FindGamePrivateRes>("api/find_game", body);
         if (!data) {
-            return { error: "full" };
+            return { error: "find_game_failed" };
         }
         return data;
     }
@@ -112,7 +112,7 @@ export class ApiServer {
         if (body.region in this.regions) {
             return await this.regions[body.region].findGame(body);
         }
-        return { error: "full" };
+        return { error: "find_game_failed" };
     }
 }
 
