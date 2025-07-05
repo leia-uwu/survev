@@ -218,7 +218,7 @@ export class PlayerView {
     constructor(readonly app: App) {}
     getUrlParams() {
         const slug = helpers.getParameterByName("slug") || "";
-        const interval = helpers.getParameterByName("t") || "all";
+        const interval = helpers.getParameterByName("t") || "alltime";
         const mapId = helpers.getParameterByName("mapId") || ALL_MAPS;
         return {
             slug: slug,

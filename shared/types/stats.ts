@@ -75,13 +75,7 @@ const VALID_MAP_IDS = Object.values(MapId)
     .map((id) => id.toString()) as [string, ...string[]];
 
 export const zUserStatsRequest = z.object({
-    // why is the client sending null as the default value
-    // and why is there all and alltime???
-    // TODO: remove all and send "alltime" as the default
-    interval: z
-        .enum(["all", "daily", "weekly", "alltime"])
-        .nullable()
-        .transform((v) => v ?? "all"),
+    interval: z.enum(["daily", "weekly", "alltime"]),
     slug: z.string().min(1),
     mapIdFilter: z.enum([ALL_MAPS, ...VALID_MAP_IDS]),
 });
