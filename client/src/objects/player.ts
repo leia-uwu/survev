@@ -22,7 +22,6 @@ import {
     Input,
     type WeaponSlot,
 } from "../../../shared/gameConfig";
-import { InputHandler } from "../input";
 import type { ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import {
     type GroupStatus,
@@ -47,6 +46,7 @@ import { device } from "../device";
 import { errorLogManager } from "../errorLogs";
 import type { Ctx } from "../game";
 import { helpers } from "../helpers";
+import type { InputHandler } from "../input";
 import type { InputBinds } from "./../inputBinds";
 import type { SoundHandle } from "../lib/createJS";
 import type { Map } from "../map";
@@ -1259,7 +1259,7 @@ export class Player implements AbstractObject {
         this.visualsDirty = false;
 
         this.updateAura(dt, isActivePlayer, activePlayer);
-        
+
         this.Zr(inputBinds.input, camera, isActivePlayer, isSpectating, displayingStats);
 
         // @NOTE: There's an off-by-one frame issue for effects spawned earlier
