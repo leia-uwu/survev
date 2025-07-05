@@ -238,12 +238,16 @@ export class LoadoutMenu {
         const displayBlockingElem = function () {
             $("#modal-screen-block").fadeIn(200);
         };
-        const confirmNextNewItem = () => {
-            this.confirmNextItem();
-        };
         this.confirmItemModal = new MenuModal($("#modal-item-confirm"));
         this.confirmItemModal.onShow(displayBlockingElem);
-        this.confirmItemModal.onHide(confirmNextNewItem);
+        this.confirmItemModal.onHide((e) => {
+            const confirmAll = e?.target?.dataset?.confirmAll;
+            if (confirmAll) {
+                this.confirmAllItems();
+                return;
+            }
+            this.confirmNextItem();
+        });
         account.addEventListener("request", this.onRequest.bind(this));
         account.addEventListener("loadout", this.onLoadout.bind(this));
         account.addEventListener("items", this.onItems.bind(this));
@@ -523,6 +527,11 @@ export class LoadoutMenu {
             this.confirmingItems = true;
             this.confirmNextItem();
         }
+    }
+
+    confirmAllItems() {
+        this.clearConfirmItemModal();
+        $("#modal-screen-block").fadeOut(300);
     }
 
     confirmNextItem() {

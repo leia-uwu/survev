@@ -5,12 +5,12 @@ export class MenuModal {
     skipFade = false;
     visible = false;
     onShowFn = function () {};
-    onHideFn = function () {};
+    onHideFn = function (e?: JQuery.TriggeredEvent) {};
     modalCloseListener: (e: JQuery.TriggeredEvent) => void;
 
     constructor(public selector: JQuery<HTMLElement>) {
-        selector.find(".close").click((_e) => {
-            this.hide();
+        selector.find(".close").click((e) => {
+            this.hide(e);
         });
 
         this.modalCloseListener = (e) => {
@@ -28,7 +28,7 @@ export class MenuModal {
         this.onShowFn = fn;
     }
 
-    onHide(fn: () => void) {
+    onHide(fn: (e?: JQuery.TriggeredEvent) => void) {
         this.onHideFn = fn;
     }
 
@@ -48,7 +48,7 @@ export class MenuModal {
         }
     }
 
-    hide() {
+    hide(e?: JQuery.TriggeredEvent) {
         if (this.visible) {
             this.visible = false;
             if (this.skipFade) {
@@ -56,7 +56,7 @@ export class MenuModal {
             } else {
                 this.selector.fadeOut(200);
             }
-            this.onHideFn();
+            this.onHideFn(e);
             $(document).off("click touchend", this.modalCloseListener);
         }
     }
