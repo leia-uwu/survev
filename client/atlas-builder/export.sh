@@ -14,6 +14,22 @@ mkdir $OUT_DIR
 # then remove the SVGs from the output dir since we only care about the PNGs
 cp -r ../public/img/ -T ./$OUT_DIR
 
-SVGS=$(find $OUT_DIR -iname \*svg)
-inkscape --export-type=png $SVGS
-rm $SVGS
+# Process top-level SVGs
+ROOT_SVGS=$(find "$OUT_DIR" -maxdepth 1 -iname "*.svg")
+if [ -n "$ROOT_SVGS" ]; then
+  echo "📁 Processing root-level SVGs..."
+  inkscape --export-type=png $ROOT_SVGS
+  rm $ROOT_SVGS
+fi
+
+# Process folders one-by-one
+for folder in "$OUT_DIR"/*; do
+  if [ -d "$folder" ]; then
+    echo "📦 Processing folder: $folder"
+    SVGS=$(find "$folder" -maxdepth 1 -iname "*.svg")
+    if [ -n "$SVGS" ]; then
+      inkscape --export-type=png $SVGS
+      rm $SVGS
+    fi
+  fi
+done
