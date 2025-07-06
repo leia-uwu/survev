@@ -776,6 +776,11 @@ export class Player implements AbstractObject {
         return this.perkTypes.includes(type);
     }
 
+    // Allows flare to display as infinite only with the Desert Helmet
+    m_hasHelmet(type: string) {
+        return this.m_netData.m_helmet.includes(type);
+    }
+
     m_update(
         dt: number,
         playerBarn: PlayerBarn,
