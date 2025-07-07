@@ -26,7 +26,7 @@ export const ModerationRouter = new Hono()
             z.object({
                 slug: z.string(),
                 banReason: z.string().default("Cheating"),
-                excutorId: z.string().default("admin"),
+                executorId: z.string().default("admin"),
                 banAssociatedIps: z.boolean().default(true),
                 ipBanDuration: z.number().default(7),
                 ipBanPermanent: z.boolean().default(false),
@@ -36,7 +36,7 @@ export const ModerationRouter = new Hono()
             const {
                 slug,
                 banReason,
-                excutorId,
+                executorId,
                 banAssociatedIps,
                 ipBanDuration,
                 ipBanPermanent,
@@ -58,7 +58,7 @@ export const ModerationRouter = new Hono()
                 return c.json({ message: "User is already banned." }, 200);
             }
 
-            await banAccount(user.id, banReason, excutorId);
+            await banAccount(user.id, banReason, executorId);
 
             if (banAssociatedIps) {
                 const ips = await db
@@ -86,7 +86,7 @@ export const ModerationRouter = new Hono()
                         encodedIp,
                         permanent: ipBanPermanent,
                         reason: banReason,
-                        bannedBy: excutorId,
+                        bannedBy: executorId,
                     };
                 });
 
@@ -100,7 +100,7 @@ export const ModerationRouter = new Hono()
                                 expiresIn: expiresIn,
                                 reason: banReason,
                                 permanent: ipBanPermanent,
-                                bannedBy: excutorId,
+                                bannedBy: executorId,
                             },
                         });
                 }
@@ -166,7 +166,7 @@ export const ModerationRouter = new Hono()
                 banAssociatedAccount: z.boolean().default(true),
                 ipBanDuration: z.number().default(7),
                 banReason: z.string().default("Cheating"),
-                excutorId: z.string().default("admin"),
+                executorId: z.string().default("admin"),
             }),
         ),
         async (c) => {
@@ -177,7 +177,7 @@ export const ModerationRouter = new Hono()
                 banAssociatedAccount,
                 ipBanDuration,
                 banReason,
-                excutorId,
+                executorId,
             } = c.req.valid("json");
             const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
             const encodedIp = isEncoded ? ip : hashIp(ip);
@@ -189,7 +189,7 @@ export const ModerationRouter = new Hono()
                     expiresIn,
                     permanent,
                     reason: banReason,
-                    bannedBy: excutorId,
+                    bannedBy: executorId,
                 })
                 .onConflictDoUpdate({
                     target: bannedIpsTable.encodedIp,
@@ -211,7 +211,7 @@ export const ModerationRouter = new Hono()
                     },
                 });
                 if (user?.userId) {
-                    await banAccount(user.userId, banReason, excutorId);
+                    await banAccount(user.userId, banReason, executorId);
                 }
             }
 
@@ -394,13 +394,13 @@ export const ModerationRouter = new Hono()
         },
     );
 
-async function banAccount(userId: string, banReason: string, excutorId: string) {
+async function banAccount(userId: string, banReason: string, executorId: string) {
     await db
         .update(usersTable)
         .set({
             banned: true,
             banReason,
-            bannedBy: excutorId,
+            bannedBy: executorId,
         })
         .where(eq(usersTable.id, userId));
 

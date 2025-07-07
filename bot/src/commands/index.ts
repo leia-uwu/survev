@@ -21,13 +21,13 @@ export const banIpHandler = {
     async execute(interaction: ChatInputCommandInteraction) {
         const ip = interaction.options.getString("ip")!;
         const reason = interaction.options.getString("reason") ?? undefined;
-        const excutorId = interaction.user.id;
+        const executorId = interaction.user.id;
 
         const res = await honoClient.moderation.ban_ip.$post({
             json: {
                 ip,
                 banReason: reason,
-                excutorId,
+                executorId,
             },
         });
 
@@ -61,13 +61,13 @@ export const banAccountHandler = {
     async execute(interaction: ChatInputCommandInteraction) {
         const slug = interaction.options.getString("slug")!;
         const reason = interaction.options.getString("reason") ?? undefined;
-        const excutorId = interaction.user.id;
+        const executorId = interaction.user.id;
 
         const res = await honoClient.moderation.ban_account.$post({
             json: {
                 slug,
                 banReason: reason,
-                excutorId,
+                executorId,
             },
         });
 

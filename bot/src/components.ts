@@ -130,7 +130,7 @@ export async function createDiscordPlayerInfoCardUI({
             const playerIndex = parseInt(parts[parts.length - 1]);
 
             const selectedPlayer = matchingPlayers[playerIndex];
-            const excutorId = interaction.user.id;
+            const executorId = interaction.user.id;
 
             const { ipBanDuration, banReason } = interaction.customId.startsWith(
                 BUTTON_PREFIXES.BAN_FOR_CHEATING,
@@ -153,7 +153,7 @@ export async function createDiscordPlayerInfoCardUI({
                         ipBanDuration: ipBanDuration,
                         banAssociatedIps: true,
                         ipBanPermanent: false,
-                        excutorId,
+                        executorId,
                     },
                 });
                 if (!res.ok) {
@@ -167,7 +167,7 @@ export async function createDiscordPlayerInfoCardUI({
                         ip: selectedPlayer.ip,
                         ipBanDuration,
                         banReason,
-                        excutorId,
+                        executorId,
                     },
                 });
 
