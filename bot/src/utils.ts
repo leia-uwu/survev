@@ -14,7 +14,7 @@ import {
 } from "discord.js";
 import { hc } from "hono/client";
 import type { PrivateRouteApp } from "../../server/src/api/routes/private/private";
-import { API_URL, Config, DISCORD_ROLE_ID } from "./config";
+import { API_URL, Config, DISCORD_GUILD_ID, DISCORD_ROLE_ID } from "./config";
 
 // we love enums
 export const enum Command {
@@ -34,6 +34,10 @@ export const honoClient = hc<PrivateRouteApp>(API_URL, {
 });
 
 export function hasPermission(interaction: Interaction): boolean {
+    if ( interaction.guild?.id !== DISCORD_GUILD_ID) {
+        return false;
+    }
+
     if (interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) {
         return true;
     }
@@ -50,7 +54,7 @@ export function hasPermission(interaction: Interaction): boolean {
 const TIMEOUT_IN_SECONDS = 60;
 
 /**
- * generic collector that handles timeouts and only allows interactions but the original user
+ * generic collector that handles timeouts and only allows interactions buy the original user
  */
 export function createCollector<
     T extends ButtonInteraction | StringSelectMenuInteraction,
