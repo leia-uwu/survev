@@ -380,6 +380,13 @@ async function setupBotConfig(config: PartialConfig) {
     });
     config.secrets.DISCORD_BOT_TOKEN = discordBotToken.value;
 
+    const discordGuildId = await prompt<{ value: string }>({
+        message: "Enter the guild ID",
+        name: "value",
+        type: "text",
+    });
+    config.discordGuildId = discordGuildId.value;
+
     const discordRoleId = await prompt<{ value: string }>({
         message: "Enter the discord role ID",
         name: "value",
