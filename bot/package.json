@@ -1,16 +1,10 @@
 {
   "name": "bot",
-  "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch --clear-screen=false --include ../server/src/api/routes/private/private.ts  src/index.ts",
     "register-commands": "tsx src/register-commands.ts"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "tsx": "^4.19.4"
   },
