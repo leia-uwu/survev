@@ -34,7 +34,7 @@ export const honoClient = hc<PrivateRouteApp>(API_URL, {
 });
 
 export function hasPermission(interaction: Interaction): boolean {
-    if ( interaction.guild?.id !== DISCORD_GUILD_ID) {
+    if (interaction.guild?.id !== DISCORD_GUILD_ID) {
         return false;
     }
 

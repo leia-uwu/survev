@@ -158,7 +158,7 @@ export async function createDiscordPlayerInfoCardUI({
                 const { message } = await res.json();
                 await clearEmbedWithMessage(interaction, message);
                 return;
-            };
+            }
 
             const res = await honoClient.moderation.ban_ip.$post({
                 json: {

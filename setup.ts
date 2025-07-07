@@ -363,7 +363,7 @@ async function setupDevelopmentConfig(config: PartialConfig) {
 async function setupBotConfig(config: PartialConfig) {
     config.secrets ??= {};
 
-    if ( !config.secrets.DISCORD_CLIENT_ID ) {
+    if (!config.secrets.DISCORD_CLIENT_ID) {
         const clientId = await prompt<{ value: string }>({
             message: "Enter discord client ID",
             name: "value",
