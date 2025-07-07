@@ -144,7 +144,6 @@ export async function createDiscordPlayerInfoCardUI({
                       ipBanDuration: 7,
                   };
 
-            let responseMessage: string;
             if (selectedPlayer.slug) {
                 const res = await honoClient.moderation.ban_account.$post({
                     json: {
@@ -156,29 +155,22 @@ export async function createDiscordPlayerInfoCardUI({
                         executorId,
                     },
                 });
-                if (!res.ok) {
-                    responseMessage = "Failed to ban account";
-                } else {
-                    responseMessage = `Banned ${selectedPlayer.slug} account and all associated IPs for ${ipBanDuration} days.`;
-                }
-            } else {
-                const res = await honoClient.moderation.ban_ip.$post({
-                    json: {
-                        ip: selectedPlayer.ip,
-                        ipBanDuration,
-                        banReason,
-                        executorId,
-                    },
-                });
+                const { message } = await res.json();
+                await clearEmbedWithMessage(interaction, message);
+                return;
+            };
 
-                if (!res.ok) {
-                    responseMessage = "Failed to ban IP";
-                } else {
-                    responseMessage = `Banned ${selectedPlayer.username}'s IP for ${ipBanDuration} days.`;
-                }
-            }
+            const res = await honoClient.moderation.ban_ip.$post({
+                json: {
+                    ip: selectedPlayer.ip,
+                    ipBanDuration,
+                    banReason,
+                    executorId,
+                },
+            });
 
-            await clearEmbedWithMessage(interaction, responseMessage);
+            const { message } = await res.json();
+            await clearEmbedWithMessage(interaction, message);
         },
     });
 }

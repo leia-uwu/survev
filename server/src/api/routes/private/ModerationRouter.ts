@@ -110,7 +110,7 @@ export const ModerationRouter = new Hono()
                 }
             }
 
-            return c.json({ message: "User has been banned." }, 200);
+            return c.json({ message: `Banned ${slug} account and all associated IPs for ${ipBanDuration} days.` }, 200);
         },
     )
     .post(
