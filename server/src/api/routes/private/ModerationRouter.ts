@@ -17,243 +17,232 @@ export const zGetPlayerIpParams = z.object({
     useAccountSlug: z.boolean().default(false),
     gameId: z.string().optional(),
 });
+export const zBanIpParams = z.object({
+    ip: z.string(),
+    isEncoded: z.boolean().default(false),
+    permanent: z.boolean().default(false),
+    banAssociatedAccount: z.boolean().default(true),
+    ipBanDuration: z.number().default(7),
+    ban_reason: z.string().default("Cheating"),
+    executorId: z.string().default("admin"),
+});
+
+export const zBanAccountParams = z.object({
+    slug: z.string(),
+    ban_reason: z.string().default("Cheating"),
+    executorId: z.string().default("admin"),
+    banAssociatedIps: z.boolean().default(true),
+    ipBanDuration: z.number().default(7),
+    ipBanPermanent: z.boolean().default(false),
+});
+
+export const zUnbanIpParams = z.object({
+    ip: z.string(),
+    isEncoded: z.boolean().default(true),
+});
+
+export const zUnbanAccountParams = z.object({
+    slug: z.string(),
+});
+
+export const zSetMatchDataNameParams = z.object({
+    current_name: z.string(),
+    new_name: z.string(),
+});
+
+export const zSetAccountNameParams = z.object({
+    new_name: z.string(),
+    current_slug: z.string(),
+});
 
 export const ModerationRouter = new Hono()
     .use(databaseEnabledMiddleware)
-    .post(
-        "/ban_account",
-        validateParams(
-            z.object({
-                slug: z.string(),
-                banReason: z.string().default("Cheating"),
-                executorId: z.string().default("admin"),
-                banAssociatedIps: z.boolean().default(true),
-                ipBanDuration: z.number().default(7),
-                ipBanPermanent: z.boolean().default(false),
-            }),
-        ),
-        async (c) => {
-            const {
-                slug,
-                banReason,
-                executorId,
-                banAssociatedIps,
-                ipBanDuration,
-                ipBanPermanent,
-            } = c.req.valid("json");
+    .post("/ban_account", validateParams(zBanAccountParams), async (c) => {
+        const {
+            slug,
+            ban_reason: banReason,
+            executorId,
+            banAssociatedIps,
+            ipBanDuration,
+            ipBanPermanent,
+        } = c.req.valid("json");
 
-            const user = await db.query.usersTable.findFirst({
-                where: eq(usersTable.slug, slug),
-                columns: {
-                    id: true,
-                    banned: true,
-                },
-            });
+        const user = await db.query.usersTable.findFirst({
+            where: eq(usersTable.slug, slug),
+            columns: {
+                id: true,
+                banned: true,
+            },
+        });
 
-            if (!user) {
-                return c.json({ message: "No user found with that slug." }, 200);
-            }
+        if (!user) {
+            return c.json({ message: "No user found with that slug." }, 200);
+        }
 
-            if (user.banned) {
-                return c.json({ message: "User is already banned." }, 200);
-            }
+        if (user.banned) {
+            return c.json({ message: "User is already banned." }, 200);
+        }
 
-            await banAccount(user.id, banReason, executorId);
+        await banAccount(user.id, banReason, executorId);
 
-            if (banAssociatedIps) {
-                const ips = await db
-                    .select({
-                        encodedIp: ipLogsTable.encodedIp,
-                        findGameEncodedIp: ipLogsTable.findGameEncodedIp,
-                    })
-                    .from(ipLogsTable)
-                    .where(eq(ipLogsTable.userId, user.id))
-                    .groupBy(ipLogsTable.encodedIp, ipLogsTable.findGameEncodedIp);
-
-                const expiresIn = new Date(
-                    Date.now() + ipBanDuration * 24 * 60 * 60 * 1000,
-                );
-
-                const bans = [
-                    ...new Set(
-                        ips
-                            .map((data) => [data.encodedIp, data.findGameEncodedIp])
-                            .flat(),
-                    ),
-                ].map((encodedIp) => {
-                    return {
-                        expiresIn: expiresIn,
-                        encodedIp,
-                        permanent: ipBanPermanent,
-                        reason: banReason,
-                        bannedBy: executorId,
-                    };
-                });
-
-                if (bans.length) {
-                    await db
-                        .insert(bannedIpsTable)
-                        .values(bans)
-                        .onConflictDoUpdate({
-                            target: bannedIpsTable.encodedIp,
-                            set: {
-                                expiresIn: expiresIn,
-                                reason: banReason,
-                                permanent: ipBanPermanent,
-                                bannedBy: executorId,
-                            },
-                        });
-                }
-
-                for (const ban of bans) {
-                    server.teamMenu.disconnectPlayers(ban.encodedIp);
-                }
-            }
-
-            return c.json(
-                {
-                    message: `Banned ${slug} account and all associated IPs for ${ipBanDuration} days.`,
-                },
-                200,
-            );
-        },
-    )
-    .post(
-        "/unban_account",
-        validateParams(
-            z.object({
-                slug: z.string(),
-            }),
-        ),
-        async (c) => {
-            const { slug } = c.req.valid("json");
-
-            const user = await db.query.usersTable.findFirst({
-                where: eq(usersTable.slug, slug),
-                columns: {
-                    id: true,
-                    banned: true,
-                },
-            });
-
-            if (!user) {
-                return c.json({ error: "No user found with that slug." }, 404);
-            }
-
-            if (!user.banned) {
-                return c.json({ error: "User is not banned." }, 400);
-            }
-
-            await db
-                .update(usersTable)
-                .set({
-                    banned: false,
-                    banReason: "",
-                    bannedBy: "",
+        if (banAssociatedIps) {
+            const ips = await db
+                .select({
+                    encodedIp: ipLogsTable.encodedIp,
+                    findGameEncodedIp: ipLogsTable.findGameEncodedIp,
                 })
-                .where(eq(usersTable.id, user.id));
+                .from(ipLogsTable)
+                .where(eq(ipLogsTable.userId, user.id))
+                .groupBy(ipLogsTable.encodedIp, ipLogsTable.findGameEncodedIp);
 
-            await db
-                .update(matchDataTable)
-                .set({ userBanned: false })
-                .where(eq(matchDataTable.userId, user.id));
-
-            return c.json({ message: "User has been unbanned." }, 200);
-        },
-    )
-    .post(
-        "/ban_ip",
-        validateParams(
-            z.object({
-                ip: z.string(),
-                isEncoded: z.boolean().default(false),
-                permanent: z.boolean().default(false),
-                banAssociatedAccount: z.boolean().default(true),
-                ipBanDuration: z.number().default(7),
-                banReason: z.string().default("Cheating"),
-                executorId: z.string().default("admin"),
-            }),
-        ),
-        async (c) => {
-            const {
-                ip,
-                isEncoded,
-                permanent,
-                banAssociatedAccount,
-                ipBanDuration,
-                banReason,
-                executorId,
-            } = c.req.valid("json");
             const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
-            const encodedIp = isEncoded ? ip : hashIp(ip);
 
-            await db
-                .insert(bannedIpsTable)
-                .values({
+            const bans = [
+                ...new Set(
+                    ips.map((data) => [data.encodedIp, data.findGameEncodedIp]).flat(),
+                ),
+            ].map((encodedIp) => {
+                return {
+                    expiresIn: expiresIn,
                     encodedIp,
-                    expiresIn,
-                    permanent,
+                    permanent: ipBanPermanent,
                     reason: banReason,
                     bannedBy: executorId,
-                })
-                .onConflictDoUpdate({
-                    target: bannedIpsTable.encodedIp,
-                    set: {
-                        expiresIn: expiresIn,
-                        reason: banReason,
-                        permanent: permanent,
-                    },
-                });
+                };
+            });
 
-            if (banAssociatedAccount) {
-                const user = await db.query.ipLogsTable.findFirst({
-                    where: and(
-                        eq(ipLogsTable.encodedIp, encodedIp),
-                        ne(ipLogsTable.userId, ""),
-                    ),
-                    columns: {
-                        userId: true,
-                    },
-                });
-                if (user?.userId) {
-                    await banAccount(user.userId, banReason, executorId);
-                }
+            if (bans.length) {
+                await db
+                    .insert(bannedIpsTable)
+                    .values(bans)
+                    .onConflictDoUpdate({
+                        target: bannedIpsTable.encodedIp,
+                        set: {
+                            expiresIn: expiresIn,
+                            reason: banReason,
+                            permanent: ipBanPermanent,
+                            bannedBy: executorId,
+                        },
+                    });
             }
 
-            server.teamMenu.disconnectPlayers(encodedIp);
-
-            if (permanent) {
-                return c.json(
-                    { message: `IP ${encodedIp} has been permanently banned.` },
-                    200,
-                );
+            for (const ban of bans) {
+                server.teamMenu.disconnectPlayers(ban.encodedIp);
             }
-            return c.json(
-                {
-                    message: `IP ${encodedIp} has been banned for ${ipBanDuration} days.`,
+        }
+
+        return c.json(
+            {
+                message: `Banned ${slug} account and all associated IPs for ${ipBanDuration} days.`,
+            },
+            200,
+        );
+    })
+    .post("/unban_account", validateParams(zUnbanAccountParams), async (c) => {
+        const { slug } = c.req.valid("json");
+
+        const user = await db.query.usersTable.findFirst({
+            where: eq(usersTable.slug, slug),
+            columns: {
+                id: true,
+                banned: true,
+            },
+        });
+
+        if (!user) {
+            return c.json({ message: "No user found with that slug." }, 404);
+        }
+
+        if (!user.banned) {
+            return c.json({ message: "User is not banned." }, 400);
+        }
+
+        await db
+            .update(usersTable)
+            .set({
+                banned: false,
+                banReason: "",
+                bannedBy: "",
+            })
+            .where(eq(usersTable.id, user.id));
+
+        await db
+            .update(matchDataTable)
+            .set({ userBanned: false })
+            .where(eq(matchDataTable.userId, user.id));
+
+        return c.json({ message: "User has been unbanned." }, 200);
+    })
+    .post("/ban_ip", validateParams(zBanIpParams), async (c) => {
+        const {
+            ip,
+            isEncoded,
+            permanent,
+            banAssociatedAccount,
+            ipBanDuration,
+            ban_reason: banReason,
+            executorId,
+        } = c.req.valid("json");
+        const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
+        const encodedIp = isEncoded ? ip : hashIp(ip);
+
+        await db
+            .insert(bannedIpsTable)
+            .values({
+                encodedIp,
+                expiresIn,
+                permanent,
+                reason: banReason,
+                bannedBy: executorId,
+            })
+            .onConflictDoUpdate({
+                target: bannedIpsTable.encodedIp,
+                set: {
+                    expiresIn: expiresIn,
+                    reason: banReason,
+                    permanent: permanent,
                 },
+            });
+
+        if (banAssociatedAccount) {
+            const user = await db.query.ipLogsTable.findFirst({
+                where: and(
+                    eq(ipLogsTable.encodedIp, encodedIp),
+                    ne(ipLogsTable.userId, ""),
+                ),
+                columns: {
+                    userId: true,
+                },
+            });
+            if (user?.userId) {
+                await banAccount(user.userId, banReason, executorId);
+            }
+        }
+
+        server.teamMenu.disconnectPlayers(encodedIp);
+
+        if (permanent) {
+            return c.json(
+                { message: `IP ${encodedIp} has been permanently banned.` },
                 200,
             );
-        },
-    )
-    .post(
-        "/unban_ip",
-        validateParams(
-            z.object({
-                ip: z.string(),
-                isEncoded: z.boolean().default(false),
-            }),
-        ),
-        async (c) => {
-            const { ip, isEncoded } = c.req.valid("json");
-            const encodedIp = isEncoded ? ip : hashIp(ip);
-            await db
-                .delete(bannedIpsTable)
-                .where(eq(bannedIpsTable.encodedIp, encodedIp))
-                .execute();
-            return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
-        },
-    )
+        }
+        return c.json(
+            {
+                message: `IP ${encodedIp} has been banned for ${ipBanDuration} days.`,
+            },
+            200,
+        );
+    })
+    .post("/unban_ip", validateParams(zUnbanIpParams), async (c) => {
+        const { ip, isEncoded } = c.req.valid("json");
+        const encodedIp = isEncoded ? ip : hashIp(ip);
+        await db
+            .delete(bannedIpsTable)
+            .where(eq(bannedIpsTable.encodedIp, encodedIp))
+            .execute();
+        return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
+    })
     .post("/get_player_ip", validateParams(zGetPlayerIpParams), async (c) => {
         const { name, useAccountSlug, gameId } = c.req.valid("json");
 
@@ -328,59 +317,48 @@ export const ModerationRouter = new Hono()
     .post(
         // useful for purging bad names from leaderboards
         "/set_match_data_name",
-        validateParams(
-            z.object({
-                currentName: z.string(),
-                newName: z.string(),
-            }),
-        ),
+        validateParams(zSetMatchDataNameParams),
         async (c) => {
-            const { currentName, newName } = c.req.valid("json");
+            const { current_name, new_name } = c.req.valid("json");
 
             const res = await db
                 .update(matchDataTable)
                 .set({
-                    username: newName,
+                    username: new_name,
                 })
-                .where(eq(matchDataTable.username, currentName));
+                .where(eq(matchDataTable.username, current_name));
 
             return c.json({ message: `Updated ${res.rowCount} rows` }, 200);
         },
     )
-    .post(
-        "/set_account_name",
-        validateParams(
-            z.object({
-                newName: z.string(),
-                currentSlug: z.string(),
-            }),
-        ),
-        async (c) => {
-            const { newName, currentSlug } = c.req.valid("json");
+    .post("/set_account_name", validateParams(zSetAccountNameParams), async (c) => {
+        const { new_name, current_slug } = c.req.valid("json");
 
-            const sanitized = validateUserName(newName);
+        const sanitized = validateUserName(new_name);
 
-            if (sanitized.originalWasInvalid) {
-                return c.json({ message: "Invalid new username" }, 200);
-            }
+        if (sanitized.originalWasInvalid) {
+            return c.json({ message: "Invalid new username" }, 200);
+        }
 
-            const newSlug = sanitizeSlug(sanitized.validName);
+        const newSlug = sanitizeSlug(sanitized.validName);
 
-            const res = await db
-                .update(usersTable)
-                .set({
-                    username: sanitized.validName,
-                    slug: newSlug,
-                })
-                .where(eq(usersTable.slug, currentSlug));
+        const res = await db
+            .update(usersTable)
+            .set({
+                username: sanitized.validName,
+                slug: newSlug,
+            })
+            .where(eq(usersTable.slug, current_slug));
 
-            if (res.rowCount) {
-                return c.json({ message: `Success` }, 200);
-            }
+        if (res.rowCount) {
+            return c.json(
+                { message: `updated player's name to ${sanitized.validName}` },
+                200,
+            );
+        }
 
-            return c.json({ message: `User not found` }, 400);
-        },
-    )
+        return c.json({ message: `User not found` }, 400);
+    })
     .post(
         "/delete_game",
         validateParams(

@@ -7,11 +7,7 @@ import type {
     RepliableInteraction,
     StringSelectMenuInteraction,
 } from "discord.js";
-import {
-    type ChatInputCommandInteraction,
-    MessageFlags,
-    PermissionFlagsBits,
-} from "discord.js";
+import { MessageFlags, PermissionFlagsBits } from "discord.js";
 import { hc } from "hono/client";
 import type { PrivateRouteApp } from "../../server/src/api/routes/private/private";
 import { API_URL, Config, DISCORD_GUILD_ID, DISCORD_ROLE_ID } from "./config";
@@ -21,11 +17,11 @@ export const enum Command {
     BanIp = "ban_ip",
     BanAccount = "ban_account",
     SearchPlayer = "search_player",
+    UnbanAccount = "unban_account",
+    UnbanIp = "unban_ip",
+    SetMatchDataName = "set_match_data_name",
+    SetAccountName = "set_account_name",
 }
-
-export type CommandHandlers = {
-    [key in Command]: (interaction: ChatInputCommandInteraction) => Promise<void>;
-};
 
 export const honoClient = hc<PrivateRouteApp>(API_URL, {
     headers: {
@@ -45,7 +41,7 @@ export function hasPermission(interaction: Interaction): boolean {
     const member = interaction.member as GuildMember;
 
     if (member && "roles" in member) {
-        return member.roles.cache.has(DISCORD_ROLE_ID!);
+        return member.roles.cache.has(DISCORD_ROLE_ID);
     }
 
     return false;

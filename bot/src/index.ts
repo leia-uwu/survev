@@ -1,14 +1,7 @@
 import { Client, Events, GatewayIntentBits, MessageFlags } from "discord.js";
-import { banAccountHandler, banIpHandler } from "./commands";
-import { searchPlayersHandler } from "./commands/search-player";
+import { commandHandlers } from "./commands";
 import { DISCORD_BOT_TOKEN } from "./config";
-import { Command, type CommandHandlers, hasPermission } from "./utils";
-
-export const commandHandlers: CommandHandlers = {
-    [Command.BanIp]: banIpHandler.execute,
-    [Command.BanAccount]: banAccountHandler.execute,
-    [Command.SearchPlayer]: searchPlayersHandler.execute,
-};
+import { type Command, hasPermission } from "./utils";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 

@@ -148,7 +148,7 @@ export async function createDiscordPlayerInfoCardUI({
                 const res = await honoClient.moderation.ban_account.$post({
                     json: {
                         slug: selectedPlayer.slug,
-                        banReason,
+                        ban_reason: banReason,
                         ipBanDuration: ipBanDuration,
                         banAssociatedIps: true,
                         ipBanPermanent: false,
@@ -164,7 +164,7 @@ export async function createDiscordPlayerInfoCardUI({
                 json: {
                     ip: selectedPlayer.ip,
                     ipBanDuration,
-                    banReason,
+                    ban_reason: banReason,
                     executorId,
                 },
             });

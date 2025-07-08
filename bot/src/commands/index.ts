@@ -1,85 +1,149 @@
 import {
+    ApplicationCommandOptionType,
     type ChatInputCommandInteraction,
-    MessageFlags,
-    SlashCommandBuilder,
+    type SlashCommandOptionsOnlyBuilder,
 } from "discord.js";
-import { Command, honoClient } from "../utils";
+import {
+    zBanAccountParams,
+    zBanIpParams,
+    zSetAccountNameParams,
+    zSetMatchDataNameParams,
+    zUnbanAccountParams,
+    zUnbanIpParams,
+} from "../../../server/src/api/routes/private/ModerationRouter";
+import { Command } from "../utils";
+import { createCommand, createSlashCommnad, genericExecute } from "./helpers";
+import { searchPlayersHandler } from "./search-player";
 
-export const banIpHandler = {
-    command: new SlashCommandBuilder()
-        .setName(Command.BanIp)
-        .setDescription("ban an IP")
-        .addStringOption((option) =>
-            option.setName("ip").setDescription("The IP to ban").setRequired(true),
-        )
-        .addStringOption((option) =>
-            option
-                .setName("reason")
-                .setDescription("Reason for the ban")
-                .setRequired(false),
-        ),
-    async execute(interaction: ChatInputCommandInteraction) {
-        const ip = interaction.options.getString("ip")!;
-        const reason = interaction.options.getString("reason") ?? undefined;
-        const executorId = interaction.user.id;
-
-        const res = await honoClient.moderation.ban_ip.$post({
-            json: {
-                ip,
-                banReason: reason,
-                executorId,
+/**
+ * for generic commands that only makes an api call and return it's meessage
+ */
+const commands = {
+    [Command.BanIp]: createCommand({
+        name: Command.BanIp,
+        description: "ban an IP",
+        optionValidator: zBanIpParams,
+        options: [
+            {
+                name: "ip",
+                description: "The IP to ban",
+                required: true,
+                type: ApplicationCommandOptionType.String,
             },
-        });
-
-        if (!res.ok) {
-            await interaction.reply("Failed to ban IP");
-            return;
-        }
-
-        const { message } = await res.json();
-
-        await interaction.reply(message);
-    },
+            {
+                name: "ban_reason",
+                description: "The reason for the ban",
+                required: false,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
+    [Command.BanAccount]: createCommand({
+        name: Command.BanAccount,
+        description: "ban an account",
+        optionValidator: zBanAccountParams,
+        options: [
+            {
+                name: "slug",
+                description: "The account slug to ban",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+            {
+                name: "ban_reason",
+                description: "The reason for the ban",
+                required: false,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
+    [Command.UnbanAccount]: createCommand({
+        name: Command.UnbanAccount,
+        description: "unban an account",
+        optionValidator: zUnbanAccountParams,
+        options: [
+            {
+                name: "slug",
+                description: "The account slug to unban",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
+    [Command.UnbanIp]: createCommand({
+        name: Command.UnbanIp,
+        description: "unban an ip",
+        optionValidator: zUnbanIpParams,
+        options: [
+            {
+                name: "ip",
+                description: "The ip to unban",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
+    [Command.SetMatchDataName]: createCommand({
+        name: Command.SetMatchDataName,
+        description:
+            "update the name of a player in a game, useful for purging bad names from leaderboards",
+        optionValidator: zSetMatchDataNameParams,
+        options: [
+            {
+                name: "current_name",
+                description: "The current name of the player",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+            {
+                name: "new_name",
+                description: "The new name of the player",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
+    [Command.SetAccountName]: createCommand({
+        name: Command.SetAccountName,
+        description: "update the usernamename of an account",
+        optionValidator: zSetAccountNameParams,
+        options: [
+            {
+                name: "new_name",
+                description: "The new name of the account",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+            {
+                name: "current_slug",
+                description: "The current slug of the account",
+                required: true,
+                type: ApplicationCommandOptionType.String,
+            },
+        ],
+    }),
 };
 
-export const banAccountHandler = {
-    command: new SlashCommandBuilder()
-        .setName(Command.BanAccount)
-        .setDescription("ban an account")
-        .addStringOption((option) =>
-            option
-                .setName("slug")
-                .setDescription("The account slug to ban")
-                .setRequired(true),
-        )
-        .addStringOption((option) =>
-            option
-                .setName("reason")
-                .setDescription("Reason for the ban")
-                .setRequired(false),
-        ),
-    async execute(interaction: ChatInputCommandInteraction) {
-        const slug = interaction.options.getString("slug")!;
-        const reason = interaction.options.getString("reason") ?? undefined;
-        const executorId = interaction.user.id;
-
-        const res = await honoClient.moderation.ban_account.$post({
-            json: {
-                slug,
-                banReason: reason,
-                executorId,
-            },
-        });
-
-        if (!res.ok) {
-            await interaction.reply({
-                content: "Failed to ban account",
-                flags: MessageFlags.Ephemeral,
-            });
-            return;
-        }
-
-        const { message } = await res.json();
-        await interaction.reply(message);
-    },
+export type CommandHandlers = {
+    [key in Command]: (interaction: ChatInputCommandInteraction) => Promise<void>;
 };
+
+export const commandHandlers: CommandHandlers = (
+    Object.keys(commands) as Array<keyof typeof commands>
+).reduce(
+    (obj, key) => {
+        obj[key] = (interaction) =>
+            genericExecute(key, interaction, commands[key].optionValidator);
+        return obj;
+    },
+    {
+        // add non generic commands here
+        [Command.SearchPlayer]: searchPlayersHandler.execute,
+    } as CommandHandlers,
+);
+
+export const commandsToRegister: SlashCommandOptionsOnlyBuilder[] = [
+    ...Object.values(commands).map(createSlashCommnad),
+    // add non generic commands here
+    searchPlayersHandler.command,
+];

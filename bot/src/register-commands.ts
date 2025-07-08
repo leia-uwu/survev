@@ -1,14 +1,8 @@
 import { REST, Routes } from "discord.js";
-import { banAccountHandler, banIpHandler } from "./commands";
-import { searchPlayersHandler } from "./commands/search-player";
+import { commandsToRegister } from "./commands";
 import { DISCORD_BOT_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID } from "./config";
 
 async function run() {
-    const commands = [
-        banIpHandler.command,
-        banAccountHandler.command,
-        searchPlayersHandler.command,
-    ];
     async function registerCommands() {
         const rest = new REST({ version: "10" }).setToken(DISCORD_BOT_TOKEN);
         try {
@@ -16,7 +10,7 @@ async function run() {
             await rest.put(
                 Routes.applicationGuildCommands(DISCORD_CLIENT_ID, DISCORD_GUILD_ID!),
                 {
-                    body: commands.map((command) => command.toJSON()),
+                    body: commandsToRegister.map((command) => command.toJSON()),
                 },
             );
             console.log("Successfully reloaded application (/) commands.");
