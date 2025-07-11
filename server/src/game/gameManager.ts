@@ -158,6 +158,7 @@ export class SingleThreadGameManager implements GameManager {
         const data = socket.getUserData();
         const game = this.gamesById.get(data.gameId);
         if (game === undefined) {
+            console.log(`Game ${data.gameId} not found, closing socket.`);
             socket.close();
             return;
         }
