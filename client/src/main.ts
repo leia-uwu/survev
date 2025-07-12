@@ -334,9 +334,7 @@ class Application {
                 if (errMsg) {
                     this.showErrorModal(errMsg);
                 }
-                if (IS_DEV) {
-                    console.error("onQuit", errMsg);
-                }
+                console.error("Quitting", errMsg);
                 SDK.gamePlayStop();
             };
             this.game = new Game(
