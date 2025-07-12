@@ -12,7 +12,7 @@ import {
     zUnbanIpParams,
 } from "../../../server/src/api/routes/private/ModerationRouter";
 import { Command } from "../utils";
-import { createCommand, createSlashCommnad, genericExecute } from "./helpers";
+import { createCommand, createSlashCommand, genericExecute } from "./helpers";
 import { searchPlayersHandler } from "./search-player";
 
 /**
@@ -105,7 +105,7 @@ const commands = {
     }),
     [Command.SetAccountName]: createCommand({
         name: Command.SetAccountName,
-        description: "update the usernamename of an account",
+        description: "update the username of an account",
         optionValidator: zSetAccountNameParams,
         options: [
             {
@@ -143,7 +143,7 @@ export const commandHandlers: CommandHandlers = (
 );
 
 export const commandsToRegister: SlashCommandOptionsOnlyBuilder[] = [
-    ...Object.values(commands).map(createSlashCommnad),
+    ...Object.values(commands).map(createSlashCommand),
     // add non generic commands here
     searchPlayersHandler.command,
 ];

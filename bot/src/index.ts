@@ -10,7 +10,7 @@ function setupInteractionHandlers() {
         if (!hasPermission(interaction)) {
             if (interaction.isRepliable()) {
                 await interaction.reply({
-                    content: "You do not have permission to use this command",
+                    content: "You do not have permission to use this action.",
                     flags: MessageFlags.Ephemeral,
                 });
             }
@@ -28,10 +28,16 @@ function setupInteractionHandlers() {
             await commandHandlers[commandName](interaction);
         } catch (error) {
             console.error(`Error executing command "${commandName}":`, error);
-            await interaction.reply({
+            const errorMessage = {
                 content: "There was an error while executing this command!",
-                flags: MessageFlags.Ephemeral,
-            });
+                ephemeral: true,
+            };
+
+            if (interaction.replied || interaction.deferred) {
+                await interaction.followUp(errorMessage);
+            } else {
+                await interaction.reply(errorMessage);
+            }
         }
     });
 }

@@ -53,11 +53,10 @@ export async function genericExecute<N extends Exclude<Command, "search_player">
     });
 
     const { message } = await res.json();
-
     await interaction.reply(message);
 }
 
-export function createSlashCommnad(config: ReturnType<typeof createCommand>) {
+export function createSlashCommand(config: ReturnType<typeof createCommand>) {
     const builder = new SlashCommandBuilder()
         .setName(config.name)
         .setDescription(config.description);

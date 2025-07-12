@@ -9,12 +9,16 @@ if (
     !Config.discordGuildId ||
     !Config.discordRoleId ||
     !Config.secrets.DISCORD_CLIENT_ID ||
-    !Config.secrets.DISCORD_BOT_TOKEN
+    !Config.secrets.DISCORD_BOT_TOKEN ||
+    !Config.gameServer.apiServerUrl
 ) {
     throw new Error("Bot config not set up properly");
 }
 
-const API_URL = `http://${Config.apiServer.host}:${Config.apiServer.port}/private`;
+const API_URL = isProd
+    ? Config.gameServer.apiServerUrl
+    : `http://${Config.apiServer.host}:${Config.apiServer.port}/private`;
+
 const {
     discordGuildId: DISCORD_GUILD_ID,
     discordRoleId: DISCORD_ROLE_ID,

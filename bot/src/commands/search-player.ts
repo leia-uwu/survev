@@ -27,7 +27,7 @@ export const searchPlayersHandler = {
     async execute(interaction: ChatInputCommandInteraction) {
         const searchName = interaction.options.getString("in-game-name")!;
 
-        await interaction.deferReply({});
+        await interaction.deferReply();
 
         try {
             const res = await honoClient.moderation.get_player_ip.$post({
