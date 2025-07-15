@@ -246,7 +246,11 @@ export class Bullet {
         this.trailThick = params.trailThick ?? false;
         this.varianceT = params.varianceT ?? 1;
         this.distAdjIdx = distAdjIdx;
-        this.distance = this.maxDistance = distance * variance + distAdj;
+        this.distance = this.maxDistance = math.clamp(
+            distance * variance + distAdj,
+            0,
+            1024,
+        );
         this.clipDistance = !!params.clipDistance;
         this.endPos = v2.add(params.pos, v2.mul(this.dir, this.distance));
         this.clientEndPos = v2.copy(this.endPos);
