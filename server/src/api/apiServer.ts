@@ -105,10 +105,6 @@ export class ApiServer {
     }
 
     async findGame(body: FindGamePrivateBody): Promise<FindGamePrivateRes> {
-        if (body.version !== GameConfig.protocolVersion) {
-            return { error: "invalid_protocol" };
-        }
-
         if (body.region in this.regions) {
             return await this.regions[body.region].findGame(body);
         }
