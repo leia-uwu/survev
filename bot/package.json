@@ -7,10 +7,8 @@
     "dev": "tsx watch --clear-screen=false --include '../server/src/api/routes/private/*' --include ../survev-config.hjson src/index.ts",
     "register-commands": "tsx src/register-commands.ts"
   },
-  "devDependencies": {
-    "tsx": "^4.19.4"
-  },
   "dependencies": {
+    "tsx": "^4.19.4",
     "discord.js": "^14.21.0",
     "hono": "^4.7.11",
     "zod": "^3.25.45"
