@@ -10,7 +10,7 @@ import {
     zSetMatchDataNameParams,
     zUnbanAccountParams,
     zUnbanIpParams,
-} from "../../../server/src/api/routes/private/ModerationRouter";
+} from "../../../shared/types/moderation";
 import { Command } from "../utils";
 import { createCommand, createSlashCommand, genericExecute } from "./helpers";
 import { searchPlayersHandler } from "./search-player";
