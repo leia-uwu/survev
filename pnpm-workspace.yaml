@@ -3,6 +3,7 @@ packages:
   - shared/
   - client/
   - client/atlas-builder
+  - bot/
   - '!**dist/**'
 
 onlyBuiltDependencies:
