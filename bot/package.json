@@ -1,6 +1,7 @@
 {
   "name": "bot",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
     "dev": "tsx watch --clear-screen=false --include '../server/src/api/routes/private/*' --include ../survev-config.hjson src/index.ts",
