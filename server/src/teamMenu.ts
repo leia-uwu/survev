@@ -464,6 +464,7 @@ export class TeamMenu {
                                     },
                                 } satisfies TeamErrorMsg),
                             );
+                            teamMenu.logger.warn(`closed socket for ${closeReason}`);
                             ws.close();
                             return;
                         }
@@ -474,6 +475,7 @@ export class TeamMenu {
                         const data = ws.raw! as SocketData;
 
                         if (wsRateLimit.isRateLimited(data.rateLimit)) {
+                            teamMenu.logger.warn("Rate limited, closing socket.");
                             ws.close();
                             return;
                         }
@@ -519,6 +521,7 @@ export class TeamMenu {
             msg = JSON.parse(data);
             zTeamClientMsg.parse(msg);
         } catch {
+            this.logger.warn("Failed to parse message, closing socket.");
             ws.close();
             return;
         }
@@ -526,6 +529,7 @@ export class TeamMenu {
         const player = ws.raw?.player;
         // i really don't think this is necessary but /shrug
         if (!player) {
+            this.logger.warn("Player not found, closing socket.");
             ws.close();
             return;
         }
@@ -570,6 +574,7 @@ export class TeamMenu {
         // if we don't have a room at this point it meant both creation and joining failed
         // so close the socket
         if (!player.room) {
+            this.logger.warn("Player not in room, closing socket.");
             ws.close();
             return;
         }
@@ -582,6 +587,7 @@ export class TeamMenu {
         const player = ws.raw?.player;
 
         if (!player) {
+            this.logger.warn("Player not found, closing socket.");
             ws.close();
             return;
         }

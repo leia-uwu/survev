@@ -233,6 +233,7 @@ app.ws<GameSocketData>("/play", {
 
     message(socket: WebSocket<GameSocketData>, message) {
         if (gameWsRateLimit.isRateLimited(socket.getUserData().rateLimit)) {
+            server.logger.warn("Game websocket rate limited, closing socket.");
             socket.close();
             return;
         }
@@ -293,6 +294,7 @@ app.ws<pingSocketData>("/ptc", {
 
     message(socket: WebSocket<pingSocketData>, message) {
         if (pingWsRateLimit.isRateLimited(socket.getUserData().rateLimit)) {
+            server.logger.warn("Ping websocket rate limited, closing socket.");
             socket.close();
             return;
         }

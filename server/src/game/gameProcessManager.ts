@@ -256,6 +256,7 @@ export class GameProcessManager implements GameManager {
             const data = socket.getUserData();
             if (data.closed) continue;
             if (data.gameId !== gameProc.id) continue;
+            this.logger.warn(`Closing socket for ${gameProc.id}`);
             socket.close();
         }
 
@@ -319,6 +320,7 @@ export class GameProcessManager implements GameManager {
         const data = socket.getUserData();
         const proc = this.processById.get(data.gameId);
         if (proc === undefined) {
+            this.logger.warn("prcoess not found, closing socket.");
             socket.close();
             return;
         }

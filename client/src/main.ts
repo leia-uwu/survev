@@ -334,7 +334,7 @@ class Application {
                 if (errMsg) {
                     this.showErrorModal(errMsg);
                 }
-
+                console.error("Quitting", errMsg);
                 SDK.gamePlayStop();
             };
             this.game = new Game(
