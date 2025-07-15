@@ -42,16 +42,13 @@ function setupInteractionHandlers() {
     });
 }
 
-async function startBot() {
-    try {
-        client.once(Events.ClientReady, (readyClient) => {
-            console.log(`Logged in as ${readyClient.user.tag}!`);
-        });
-        setupInteractionHandlers();
-        await client.login(DISCORD_BOT_TOKEN);
-    } catch (error) {
-        console.error("Failed to start the bot:", error);
-        process.exit(1);
-    }
+try {
+    client.once(Events.ClientReady, (readyClient) => {
+        console.log(`Logged in as ${readyClient.user.tag}!`);
+    });
+    setupInteractionHandlers();
+    await client.login(DISCORD_BOT_TOKEN);
+} catch (error) {
+    console.error("Failed to start the bot:", error);
+    process.exit(1);
 }
-startBot();
