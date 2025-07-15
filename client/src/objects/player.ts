@@ -815,6 +815,8 @@ export class Player implements AbstractObject {
                     1,
                 );
                 this.m_visualDir = v2.lerp(dirT, this.m_visualDirOld, this.m_dir);
+            } else {
+                this.m_visualDir = v2.copy(this.m_dir);
             }
         } else {
             this.m_visualPos = v2.copy(this.m_pos);
