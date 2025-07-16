@@ -2,31 +2,32 @@ import { z } from "zod";
 
 export const zGetPlayerIpParams = z.object({
     name: z.string(),
-    useAccountSlug: z.boolean().default(false),
-    gameId: z.string().optional(),
+    use_account_slug: z.boolean().default(false),
+    game_id: z.string().optional(),
 });
+
 export const zBanIpParams = z.object({
     ip: z.string(),
-    isEncoded: z.boolean().default(false),
+    is_encoded: z.boolean().default(false),
     permanent: z.boolean().default(false),
-    banAssociatedAccount: z.boolean().default(true),
-    ipBanDuration: z.number().default(7),
+    ban_associated_account: z.boolean().default(true),
+    ip_ban_duration: z.number().default(7),
     ban_reason: z.string().default("Cheating"),
-    executorId: z.string().default("admin"),
+    executor_id: z.string().default("admin"),
 });
 
 export const zBanAccountParams = z.object({
     slug: z.string(),
     ban_reason: z.string().default("Cheating"),
-    executorId: z.string().default("admin"),
-    banAssociatedIps: z.boolean().default(true),
-    ipBanDuration: z.number().default(7),
-    ipBanPermanent: z.boolean().default(false),
+    executor_id: z.string().default("admin"),
+    ban_associated_ips: z.boolean().default(true),
+    ip_ban_duration: z.number().default(7),
+    ip_ban_permanent: z.boolean().default(false),
 });
 
 export const zUnbanIpParams = z.object({
     ip: z.string(),
-    isEncoded: z.boolean().default(true),
+    is_encoded: z.boolean().default(true),
 });
 
 export const zUnbanAccountParams = z.object({

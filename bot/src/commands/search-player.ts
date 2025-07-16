@@ -19,13 +19,29 @@ export const searchPlayersHandler = {
         .setDescription("Search and ban a player by name")
         .addStringOption((option) =>
             option
-                .setName("in-game-name")
+                .setName("name")
                 .setDescription("The name of the player to search for")
                 .setRequired(true),
+        )
+        .addBooleanOption((option) =>
+            option
+                .setName("use_account_slug")
+                .setDescription(
+                    "If should search for account slugs instead of in-game names (defaults to false)",
+                )
+                .setRequired(false),
+        )
+        .addStringOption((option) =>
+            option
+                .setName("game_id")
+                .setDescription("Specify a specific game to search for")
+                .setRequired(false),
         ),
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const searchName = interaction.options.getString("in-game-name")!;
+        const searchName = interaction.options.getString("name")!;
+        const useSlug = interaction.options.getBoolean("use_account_slug") || false;
+        const gameId = interaction.options.getString("game_id") || undefined;
 
         await interaction.deferReply();
 
@@ -33,6 +49,8 @@ export const searchPlayersHandler = {
             const res = await honoClient.moderation.get_player_ip.$post({
                 json: {
                     name: searchName!,
+                    use_account_slug: useSlug,
+                    game_id: gameId,
                 },
             });
 

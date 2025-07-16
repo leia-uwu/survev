@@ -27,10 +27,10 @@ export const ModerationRouter = new Hono()
         const {
             slug,
             ban_reason: banReason,
-            executorId,
-            banAssociatedIps,
-            ipBanDuration,
-            ipBanPermanent,
+            executor_id,
+            ban_associated_ips,
+            ip_ban_duration,
+            ip_ban_permanent,
         } = c.req.valid("json");
 
         const user = await db.query.usersTable.findFirst({
@@ -49,9 +49,9 @@ export const ModerationRouter = new Hono()
             return c.json({ message: "User is already banned." }, 200);
         }
 
-        await banAccount(user.id, banReason, executorId);
+        await banAccount(user.id, banReason, executor_id);
 
-        if (banAssociatedIps) {
+        if (ban_associated_ips) {
             const ips = await db
                 .select({
                     encodedIp: ipLogsTable.encodedIp,
@@ -61,7 +61,9 @@ export const ModerationRouter = new Hono()
                 .where(eq(ipLogsTable.userId, user.id))
                 .groupBy(ipLogsTable.encodedIp, ipLogsTable.findGameEncodedIp);
 
-            const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
+            const expiresIn = new Date(
+                Date.now() + ip_ban_duration * 24 * 60 * 60 * 1000,
+            );
 
             const bans = [
                 ...new Set(
@@ -71,9 +73,9 @@ export const ModerationRouter = new Hono()
                 return {
                     expiresIn: expiresIn,
                     encodedIp,
-                    permanent: ipBanPermanent,
+                    permanent: ip_ban_permanent,
                     reason: banReason,
-                    bannedBy: executorId,
+                    bannedBy: executor_id,
                 };
             });
 
@@ -86,8 +88,8 @@ export const ModerationRouter = new Hono()
                         set: {
                             expiresIn: expiresIn,
                             reason: banReason,
-                            permanent: ipBanPermanent,
-                            bannedBy: executorId,
+                            permanent: ip_ban_permanent,
+                            bannedBy: executor_id,
                         },
                     });
             }
@@ -99,7 +101,7 @@ export const ModerationRouter = new Hono()
 
         return c.json(
             {
-                message: `Banned ${slug} account and all associated IPs for ${ipBanDuration} days.`,
+                message: `Banned ${slug} account and all associated IPs for ${ip_ban_duration} days.`,
             },
             200,
         );
@@ -142,15 +144,15 @@ export const ModerationRouter = new Hono()
     .post("/ban_ip", validateParams(zBanIpParams), async (c) => {
         const {
             ip,
-            isEncoded,
+            is_encoded,
             permanent,
-            banAssociatedAccount,
-            ipBanDuration,
-            ban_reason: banReason,
-            executorId,
+            ban_associated_account,
+            ip_ban_duration,
+            ban_reason,
+            executor_id,
         } = c.req.valid("json");
-        const expiresIn = new Date(Date.now() + ipBanDuration * 24 * 60 * 60 * 1000);
-        const encodedIp = isEncoded ? ip : hashIp(ip);
+        const expiresIn = new Date(Date.now() + ip_ban_duration * 24 * 60 * 60 * 1000);
+        const encodedIp = is_encoded ? ip : hashIp(ip);
 
         await db
             .insert(bannedIpsTable)
@@ -158,19 +160,19 @@ export const ModerationRouter = new Hono()
                 encodedIp,
                 expiresIn,
                 permanent,
-                reason: banReason,
-                bannedBy: executorId,
+                reason: ban_reason,
+                bannedBy: executor_id,
             })
             .onConflictDoUpdate({
                 target: bannedIpsTable.encodedIp,
                 set: {
                     expiresIn: expiresIn,
-                    reason: banReason,
+                    reason: ban_reason,
                     permanent: permanent,
                 },
             });
 
-        if (banAssociatedAccount) {
+        if (ban_associated_account) {
             const user = await db.query.ipLogsTable.findFirst({
                 where: and(
                     eq(ipLogsTable.encodedIp, encodedIp),
@@ -181,7 +183,7 @@ export const ModerationRouter = new Hono()
                 },
             });
             if (user?.userId) {
-                await banAccount(user.userId, banReason, executorId);
+                await banAccount(user.userId, ban_reason, executor_id);
             }
         }
 
@@ -195,14 +197,14 @@ export const ModerationRouter = new Hono()
         }
         return c.json(
             {
-                message: `IP ${encodedIp} has been banned for ${ipBanDuration} days.`,
+                message: `IP ${encodedIp} has been banned for ${ip_ban_duration} days.`,
             },
             200,
         );
     })
     .post("/unban_ip", validateParams(zUnbanIpParams), async (c) => {
-        const { ip, isEncoded } = c.req.valid("json");
-        const encodedIp = isEncoded ? ip : hashIp(ip);
+        const { ip, is_encoded } = c.req.valid("json");
+        const encodedIp = is_encoded ? ip : hashIp(ip);
         await db
             .delete(bannedIpsTable)
             .where(eq(bannedIpsTable.encodedIp, encodedIp))
@@ -210,11 +212,11 @@ export const ModerationRouter = new Hono()
         return c.json({ message: `IP ${encodedIp} has been unbanned.` }, 200);
     })
     .post("/get_player_ip", validateParams(zGetPlayerIpParams), async (c) => {
-        const { name, useAccountSlug, gameId } = c.req.valid("json");
+        const { name, use_account_slug, game_id } = c.req.valid("json");
 
         let userId: string | null = null;
 
-        if (useAccountSlug) {
+        if (use_account_slug) {
             const user = await db.query.usersTable.findFirst({
                 where: eq(usersTable.slug, name),
                 columns: {
@@ -252,7 +254,7 @@ export const ModerationRouter = new Hono()
                     userId
                         ? eq(ipLogsTable.userId, userId)
                         : eq(ipLogsTable.username, name),
-                    gameId ? eq(ipLogsTable.gameId, gameId) : undefined,
+                    game_id ? eq(ipLogsTable.gameId, game_id) : undefined,
                 ),
             )
             .leftJoin(usersTable, eq(ipLogsTable.userId, usersTable.id))
