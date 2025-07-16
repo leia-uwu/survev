@@ -39,7 +39,7 @@ export async function genericExecute<N extends Exclude<Command, "search_player">
 
     const args = validator.safeParse({
         ...options,
-        executorId: interaction.user.id,
+        executor_id: interaction.user.id,
     });
 
     if (!args.success) {
