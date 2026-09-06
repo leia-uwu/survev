@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js-legacy";
-import type { ConfigManager } from "../config.ts";
+import type { ConfigManager } from "../lib/modules/ConfigManager.svelte.ts";
 import type { Game } from "../game.ts";
 import type { AbstractObject, Pool } from "../objects/objectPool.ts";
 import { defaultLabelTextOptions, Graph, type GraphKey, type GraphOptions } from "./graph.ts";

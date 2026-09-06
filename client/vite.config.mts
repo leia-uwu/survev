@@ -1,18 +1,18 @@
+import { svelte, vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { resolve } from "node:path";
-import { defineConfig, loadEnv, PluginOption, type ServerOptions } from "vite";
+import { defineConfig, loadEnv, type PluginOption, type ServerOptions } from "vite";
 import { getConfig } from "../config.ts";
 import pkgJson from "../package.json" with { type: "json" };
 import { GIT_VERSION } from "../server/src/utils/gitRevision.ts";
 import { stripBlockPlugin } from "../shared/utils/stripBlockPlugin.ts";
 import { atlasBuilderPlugin } from "./atlas-builder/vitePlugin.ts";
 import { codefendPlugin } from "./vite-plugins/codefendPlugin.ts";
-import { ejsPlugin } from "./vite-plugins/ejsPlugin.ts";
 import { svgoPlugin } from "./vite-plugins/svgoPlugin.ts";
 
 export default defineConfig(({ mode }) => {
-    const viteEnv = loadEnv(mode, process.cwd(), "VITE_");
     const isDev = mode === "development";
 
+    const viteEnv = loadEnv(mode, process.cwd(), "VITE_");
     const Config = getConfig(!isDev, "");
 
     process.env.VITE_TURNSTILE_SCRIPT = "";
@@ -30,15 +30,17 @@ export default defineConfig(({ mode }) => {
     process.env.VITE_SPELLSYNC_PUBLIC_TOKEN = Config.secrets.SPELLSYNC_PUBLIC_TOKEN;
 
     const plugins: PluginOption[] = [
-        ejsPlugin(),
+        svelte({
+            configFile: false,
+            preprocess: [vitePreprocess()],
+        }),
         ...atlasBuilderPlugin(mode === "production"),
         svgoPlugin(),
     ];
 
     if (!isDev) {
-        plugins.push(codefendPlugin());
-
         plugins.push(
+            codefendPlugin(),
             stripBlockPlugin({
                 start: "STRIP_FROM_PROD_CLIENT:START",
                 end: "STRIP_FROM_PROD_CLIENT:END",
@@ -50,11 +52,15 @@ export default defineConfig(({ mode }) => {
         port: Config.vite.port,
         host: Config.vite.host,
         proxy: {
-            // this redirects /stats to /stats/
-            // because vite is cringe and does not work without trailing slashes at the end of paths 😭
-            "^/stats(?!/$).*": {
+            // Redirect all /stats requests to /stats/.
+            "^/stats(?!/).*": {
                 target: `http://${Config.vite.host}:${Config.vite.port}`,
-                rewrite: (path) => path.replace(/^\/stats(?!\/$).*/, "/stats/"),
+                configure(proxy) {
+                    proxy.on("proxyReq", (_, req, res) => {
+                        res.writeHead(302, { location: req.url!.replace(/^\/stats(\?|$)/, "/stats/$1") });
+                        res.end();
+                    });
+                },
                 changeOrigin: true,
                 secure: false,
             },
@@ -92,12 +98,7 @@ export default defineConfig(({ mode }) => {
                         : {}),
                 },
                 output: {
-                    assetFileNames(assetInfo) {
-                        if (assetInfo.names[0]?.endsWith(".css")) {
-                            return "css/[name]-[hash][extname]";
-                        }
-                        return "assets/[name]-[hash][extname]";
-                    },
+                    assetFileNames: "[ext]/[hash].[ext]",
                     entryFileNames: "js/[hash].js",
                     chunkFileNames: "js/[hash].js",
                 },
@@ -106,9 +107,17 @@ export default defineConfig(({ mode }) => {
         resolve: {
             extensions: [".ts", ".js"],
             alias: {
+                "$lib": resolve(import.meta.dirname, "./src/lib/"),
                 "@/sdk.ts": viteEnv?.VITE_ENABLE_SURVEV_ADS === "true"
-                    ? "./sdk-manager.prod"
-                    : "./sdk-manager",
+                    ? resolve(import.meta.dirname, "./src/sdk/sdk-manager.prod.ts")
+                    : resolve(import.meta.dirname, "./src/sdk/sdk-manager.ts"),
+            },
+        },
+        css: {
+            preprocessorOptions: {
+                scss: {
+                    silenceDeprecations: ["color-functions", "if-function", "import", "global-builtin"],
+                },
             },
         },
         define: {
