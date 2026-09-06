@@ -107,7 +107,6 @@ export default defineConfig(({ mode }) => {
         resolve: {
             extensions: [".ts", ".js"],
             alias: {
-                "$lib": resolve(import.meta.dirname, "./src/lib/"),
                 "@/sdk.ts": viteEnv?.VITE_ENABLE_SURVEV_ADS === "true"
                     ? resolve(import.meta.dirname, "./src/sdk/sdk-manager.prod.ts")
                     : resolve(import.meta.dirname, "./src/sdk/sdk-manager.ts"),

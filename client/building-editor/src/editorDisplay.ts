@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 
-import type { ConfigManager, DebugRendererOpts } from "$lib/modules/ConfigManager.svelte.ts";
-import { device } from "$lib/modules/Device.svelte.ts";
+import type { ConfigManager, DebugRendererOpts } from "#lib/modules/ConfigManager.svelte.ts";
+import { device } from "#lib/modules/Device.svelte.ts";
 import { MapDefs } from "../../../shared/defs/mapDefs.ts";
 import { MapObjectDefs } from "../../../shared/defs/register.ts";
 import { MapMsg } from "../../../shared/net/mapMsg.ts";

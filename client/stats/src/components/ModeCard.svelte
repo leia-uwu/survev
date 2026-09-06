@@ -2,7 +2,7 @@
     import { helpers } from "../../../src/helpers.ts";
     import { RequestState, TeamModeToTranslationKey } from "../helpers.ts";
 
-    import { Localization } from "$lib/modules/Localization.svelte.ts";
+    import { Localization } from "#lib/modules/Localization.svelte.ts";
 
     import type { TeamMode } from "../../../../shared/gameConfig.ts";
     import type { Mode } from "../../../../shared/types/stats.ts";

@@ -12,7 +12,7 @@
         TypeToTranslationKey,
     } from "../helpers.ts";
 
-    import type { Localization } from "$lib/modules/Localization.svelte";
+    import type { Localization } from "#lib/modules/Localization.svelte";
 
     import type { LeaderboardRequest, LeaderboardResponse } from "../../../shared/types/stats.ts";
     import { api } from "../../../src/api.ts";

@@ -7,7 +7,7 @@ import {
     type ConfigManager,
     type ConfigType,
     debugRendererConfig,
-} from "$lib/modules/ConfigManager.svelte.ts";
+} from "#lib/modules/ConfigManager.svelte.ts";
 import * as PIXI from "pixi.js-legacy";
 import { MapObjectDefs } from "../../../shared/defs/register.ts";
 import { collider } from "../../../shared/utils/collider.ts";

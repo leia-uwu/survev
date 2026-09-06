@@ -9,12 +9,12 @@
     import Leaderboard from "./src/components/Leaderboard.svelte";
     import Player from "./src/components/Player.svelte";
 
-    import { ConfigManager } from "$lib/modules/ConfigManager.svelte.ts";
-    import { type Locale, Localization } from "$lib/modules/Localization.svelte.ts";
+    import { ConfigManager } from "#lib/modules/ConfigManager.svelte.ts";
+    import { type Locale, Localization } from "#lib/modules/Localization.svelte.ts";
 
     import type { SDKManager } from "../src/sdk/sdk-manager.ts";
 
-    import "$lib/scss/index.scss";
+    import "#lib/scss/index.scss";
 
     const adMap = new SvelteMap<StatsAds, boolean>();
     for (const ad of Object.values(StatsAds)) adMap.set(ad, false);
@@ -57,7 +57,7 @@
         import("bootstrap/js/dist/collapse.js");
         import("bootstrap/js/dist/dropdown.js");
 
-        const { Device } = await import("$lib/modules/Device.svelte.ts");
+        const { Device } = await import("#lib/modules/Device.svelte.ts");
         const { SDK } = await import("../src/sdk/sdk.ts");
 
         config.load(() => {

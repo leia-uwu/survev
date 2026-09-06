@@ -1,8 +1,8 @@
 <script lang="ts">
     import slugify from "slugify";
 
-    import { ConfigManager } from "$lib/modules/ConfigManager.svelte.ts";
-    import { type Locale, Locales, Localization } from "$lib/modules/Localization.svelte.ts";
+    import { ConfigManager } from "#lib/modules/ConfigManager.svelte.ts";
+    import { type Locale, Locales, Localization } from "#lib/modules/Localization.svelte.ts";
 
     const { config, localization }: { config: ConfigManager; localization: Localization } = $props();
 

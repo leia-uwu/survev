@@ -14,7 +14,7 @@
     import MatchCard from "./MatchCard.svelte";
     import ModeCard from "./ModeCard.svelte";
 
-    import type { Localization } from "$lib/modules/Localization.svelte.ts";
+    import type { Localization } from "#lib/modules/Localization.svelte.ts";
     import { helpers } from "../../../src/helpers.ts";
 
     import { EmotesDefs } from "../../../../shared/defs/gameObjects/emoteDefs.ts";

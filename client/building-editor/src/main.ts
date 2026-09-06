@@ -1,5 +1,5 @@
-import { ConfigManager } from "$lib/modules/ConfigManager.svelte.ts";
-import { device } from "$lib/modules/Device.svelte.ts";
+import { ConfigManager } from "#lib/modules/ConfigManager.svelte.ts";
+import { device } from "#lib/modules/Device.svelte.ts";
 import * as PIXI from "pixi.js-legacy";
 import { math } from "../../../shared/utils/math.ts";
 import { Ambiance } from "../../src/ambiance.ts";

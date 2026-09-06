@@ -5,8 +5,6 @@
     "lib": ["DOM", "ESNext"],
     "paths": {
       "@/sdk.ts": ["./src/sdk/sdk-manager.ts"],
-      "$lib": ["./src/lib"],
-      "$lib/*": ["./src/lib/*"]
     }
   },
   "include": [

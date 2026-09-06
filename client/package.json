@@ -2,6 +2,9 @@
   "name": "@survev/client",
   "private": true,
   "type": "module",
+  "imports": {
+    "#lib/*": "./src/lib/*"
+  },
   "scripts": {
     "build": "vite build",
     "typecheck": "tsc --noEmit",

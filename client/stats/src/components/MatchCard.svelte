@@ -3,7 +3,7 @@
 
     import { TeamModeToTranslationKey } from "../helpers.ts";
 
-    import type { Localization } from "$lib/modules/Localization.svelte.ts";
+    import type { Localization } from "#lib/modules/Localization.svelte.ts";
     import { helpers } from "../../../src/helpers.ts";
 
     import { TeamMode } from "../../../../shared/gameConfig.ts";
@@ -235,7 +235,7 @@
 </div>
 
 <style lang="scss">
-    @import "$lib/scss/mixins.scss";
+    @import "#lib/scss/mixins.scss";
 
     @mixin specific-card($color, $width) {
         & {
