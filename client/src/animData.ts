@@ -306,13 +306,13 @@ export const Animations: Record<
     pan: {
         keyframes: [
             frame(0, { [Bones.HandR]: new Pose(v2.create(14, 12.25)) }),
-            frame(0.15, {
+            frame(def("pan").attack.cooldownTime * 0.3, {
                 [Bones.HandR]: new Pose(v2.create(22, -8.25)).rotate(-Math.PI * 0.2),
             }),
-            frame(0.25, {
+            frame(def("pan").attack.cooldownTime * 0.5, {
                 [Bones.HandR]: new Pose(v2.create(28, -8.25)).rotate(Math.PI * 0.5),
             }, math.easeInOutSine),
-            frame(0.55, {
+            frame(def("pan").attack.cooldownTime, {
                 [Bones.HandR]: new Pose(v2.create(14, 12.25)),
             }, math.easeInSine),
         ],
