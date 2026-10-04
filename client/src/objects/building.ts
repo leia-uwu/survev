@@ -1,5 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 
+import type { SoundHandle } from "#lib/createJS.ts";
+import type { DebugRendererOpts } from "#lib/modules/ConfigManager.svelte.ts";
 import type { FloorImage } from "../../../shared/defs/mapObjects/buildings/buildingDefs.ts";
 import type { SurfaceData, SurfaceType } from "../../../shared/defs/mapObjectsTyping.ts";
 import { MapObjectDefs } from "../../../shared/defs/register.ts";
@@ -13,7 +15,6 @@ import { util } from "../../../shared/utils/util.ts";
 import { v2, type Vec2 } from "../../../shared/utils/v2.ts";
 import type { AudioManager } from "../audioManager.ts";
 import type { Camera } from "../camera.ts";
-import type { DebugRendererOpts } from "../config.ts";
 import {
     renderBridge,
     renderMapBuildingBounds,
@@ -22,7 +23,6 @@ import {
 } from "../debug/debugHelpers.ts";
 import { debugLines } from "../debug/debugLines.ts";
 import type { Ctx } from "../game.ts";
-import type { SoundHandle } from "../lib/createJS.ts";
 import type { Map } from "../map.ts";
 import type { Renderer } from "../renderer.ts";
 import type { AbstractObject } from "./objectPool.ts";

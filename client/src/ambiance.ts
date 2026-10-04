@@ -1,10 +1,9 @@
+import type { SoundHandle } from "#lib/createJS.ts";
 import { type MapDefKey, MapDefs } from "../../shared/defs/mapDefs.ts";
 import { math } from "../../shared/utils/math.ts";
 import { assert } from "../../shared/utils/util.ts";
 import type { AudioManager } from "./audioManager.ts";
-import type { SoundHandle } from "./lib/createJS.ts";
 import SoundDefs from "./soundDefs.ts";
-
 export class Ambiance {
     introMusic = true;
     soundUpdateThrottle = 0;
