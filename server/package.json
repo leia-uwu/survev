@@ -26,7 +26,7 @@
     "arctic": "^3.7.0",
     "croner": "^10.0.1",
     "drizzle-orm": "^0.45.3",
-    "hono": "^4.13.8",
+    "hono": "^4.13.9",
     "nanotimer": "^0.3.15",
     "obscenity": "^0.4.6",
     "pg": "^8.23.0",
@@ -42,7 +42,7 @@
     "@types/pg": "^8.23.1",
     "concurrently": "^10.0.5",
     "drizzle-kit": "^0.31.11",
-    "rolldown": "^1.2.9",
+    "rolldown": "^1.2.11",
     "tsx": "^4.23.15",
     "unique-username-generator": "^1.5.1"
   }
