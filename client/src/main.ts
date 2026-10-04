@@ -21,6 +21,7 @@ import { Game } from "./game.ts";
 import { helpers } from "./helpers.ts";
 import { InputHandler } from "./input.ts";
 import { InputBinds, InputBindUi } from "./inputBinds.ts";
+import { initializeClientIntegrity } from "./integrity/index.ts";
 import { PingTest } from "./pingTest.ts";
 import { proxy } from "./proxy.ts";
 import { ResourceManager } from "./resources.ts";
@@ -35,6 +36,8 @@ import { Pass } from "./ui/pass.ts";
 import { ProfileUi } from "./ui/profileUi.ts";
 import { TeamMenu } from "./ui/teamMenu.ts";
 import { loadStaticDomImages } from "./ui/ui2.ts";
+
+initializeClientIntegrity();
 
 export class Application {
     nameInput = $("#player-name-input-solo");
