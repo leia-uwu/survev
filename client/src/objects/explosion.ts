@@ -497,6 +497,20 @@ const ExplosionEffectDefs: Record<string, ExplotionDef> = {
         shakeDur: 0.2,
         lifetime: 1.25,
     },
+    devil_nade: {
+        burst: {
+            particle: "explosionDevil",
+            scale: 0.4,
+            sound: {
+                grass: "explosion_03",
+                water: "explosion_02",
+            },
+        },
+        rippleCount: 3,
+        shakeStr: 0.1,
+        shakeDur: 0.2,
+        lifetime: 1.25,
+    },
     snowball: {
         burst: {
             particle: "",

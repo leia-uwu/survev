@@ -1167,6 +1167,28 @@ export const CrateDefs: Record<string, ObstacleDef> = {
         destroyType: "cache_pumpkin_airdrop_02",
         explodeParticle: "airdropCrate02h",
     }),
+    airdrop_crate_01cursed: createAirdrop({
+        collision: collider.createCircle(v2.create(0, 0), 2.5),
+        button: {
+            useImg: "map-airdrop-02h.img",
+            useParticle: "airdropCrate01h",
+            sound: { on: "airdrop_open_01", off: "" },
+        },
+        img: {
+            sprite: "map-airdrop-01h.img",
+            residue: "none",
+        },
+        sound: {
+            explode: "frag_deploy_01",
+        },
+        destroyType: "decal_imp_01",
+        createProjectiles: {
+            type: "devil_nade",
+            count: 66,
+            speed: 5,
+        },
+        explodeParticle: "airdropCrate02",
+    }),
     airdrop_crate_02tr: createAirdrop({
         button: {
             useImg: "map-airdrop-02.img",

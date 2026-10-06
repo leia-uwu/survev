@@ -60,33 +60,34 @@ export class ProjectileBarn {
         return proj;
     }
 
-    addSplitProjectiles(
-        playerId: number,
-        type: string,
-        pos: Vec2,
-        layer: number,
-        initialVel: Vec2,
-        count: number,
-        maxVel: number,
-        weaponSourceType?: string,
-    ) {
-        for (let i = 0; i < count; i++) {
-            const def = GameObjectDefs.typeToDef(type, "throwable");
+    addSplitProjectiles(params: {
+        damageType: DamageType;
+        playerId: number;
+        type: string;
+        pos: Vec2;
+        layer: number;
+        initialVel: Vec2;
+        count: number;
+        maxVel: number;
+        weaponSourceType?: string;
+    }) {
+        for (let i = 0; i < params.count; i++) {
+            const def = GameObjectDefs.typeToDef(params.type, "throwable");
 
-            const vel = util.randomPointInCircle(maxVel);
-            const velocity = v2.add(v2.mul(initialVel, 0.6), vel);
+            const vel = util.randomPointInCircle(params.maxVel);
+            const velocity = v2.add(v2.mul(params.initialVel, def.throwPhysics.playerVelMult), vel);
 
             this.game.projectileBarn.addProjectile(
-                playerId,
-                type,
-                pos,
+                params.playerId,
+                params.type,
+                params.pos,
                 1,
-                layer,
+                params.layer,
                 velocity,
                 def.fuseTime,
-                DamageType.Player,
+                params.damageType,
                 undefined,
-                weaponSourceType,
+                params.weaponSourceType,
             );
         }
     }
@@ -414,16 +415,17 @@ export class Projectile extends BaseGameObject {
         const def = GameObjectDefs.typeToDef(this.type, "throwable");
 
         if (def.splitType && def.numSplit) {
-            this.game.projectileBarn.addSplitProjectiles(
-                this.playerId,
-                def.splitType,
-                this.pos,
-                this.layer,
-                this.vel,
-                def.numSplit,
-                4,
-                this.weaponSourceType,
-            );
+            this.game.projectileBarn.addSplitProjectiles({
+                damageType: this.damageType,
+                playerId: this.playerId,
+                type: def.splitType,
+                pos: this.pos,
+                layer: this.layer,
+                initialVel: this.vel,
+                count: def.numSplit,
+                maxVel: 4,
+                weaponSourceType: this.weaponSourceType,
+            });
         }
 
         if (this.type == "bomb_iron" && !this.canBombIronExplode()) {

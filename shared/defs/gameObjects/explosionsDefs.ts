@@ -138,6 +138,16 @@ export const ExplosionDefs: Record<string, ExplosionDef> = {
         explosionEffectType: "martyr_nade",
         decalType: "decal_frag_small_explosion",
     },
+    explosion_devil_nade: {
+        type: "explosion",
+        damage: 40,
+        obstacleDamage: 1.1,
+        rad: { min: 4.5, max: 9 },
+        shrapnelCount: 0,
+        shrapnelType: "",
+        explosionEffectType: "devil_nade",
+        decalType: "",
+    },
     explosion_snowball: {
         type: "explosion",
         damage: 6,

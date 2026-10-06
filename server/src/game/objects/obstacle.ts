@@ -658,6 +658,19 @@ export class Obstacle extends BaseGameObject {
             this.game.smokeBarn.addEmitter(this.pos, this.layer);
         }
 
+        if (def.createProjectiles) {
+            this.game.projectileBarn.addSplitProjectiles({
+                damageType: GameConfig.DamageType.Airdrop,
+                playerId: 0,
+                pos: this.pos,
+                layer: this.layer,
+                initialVel: v2.create(0, 0),
+                type: def.createProjectiles.type,
+                count: def.createProjectiles.count,
+                maxVel: def.createProjectiles.speed,
+            });
+        }
+
         if (def.explosion) {
             this.game.explosionBarn.addExplosion(def.explosion, this.pos, this.layer, {
                 ...params,

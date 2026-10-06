@@ -1,26 +1,32 @@
 import type { GameConfig } from "../../gameConfig.ts";
 
-export interface BulletDef {
-    type: "bullet";
-    damage: number;
-    obstacleDamage: number;
-    falloff: number;
-    distance: number;
-    speed: number;
-    variance: number;
-    shrapnel: boolean;
-    tracerColor: keyof typeof GameConfig["tracerColors"];
-    tracerWidth: number;
-    tracerLength: number;
-    suppressed?: boolean;
-    flareColor?: number;
-    addFlare?: boolean;
-    maxFlareScale?: number;
-    skipCollision?: boolean;
-    onHit?: string;
-    noDistAdj?: boolean;
-    useExplosiveRoundsAlt?: boolean;
-}
+export type BulletDef =
+    & ({
+        type: "bullet";
+        damage: number;
+        obstacleDamage: number;
+        falloff: number;
+        distance: number;
+        speed: number;
+        variance: number;
+        shrapnel: boolean;
+        tracerColor: keyof typeof GameConfig["tracerColors"];
+        tracerWidth: number;
+        tracerLength: number;
+        suppressed?: boolean;
+        skipCollision?: boolean;
+        onHit?: string;
+        noDistAdj?: boolean;
+        useExplosiveRoundsAlt?: boolean;
+    })
+    & ({
+        addFlare: true;
+        maxFlareScale: number;
+        flareColor: number;
+        airdropType?: string;
+    } | {
+        addFlare?: false;
+    });
 
 export const BaseDefs: Record<string, BulletDef> = {
     bullet_mp5: {
@@ -739,9 +745,27 @@ export const BaseDefs: Record<string, BulletDef> = {
         tracerColor: "flare",
         tracerWidth: 0.3,
         tracerLength: 1.2,
-        flareColor: 16733184,
+        flareColor: 0xff5400,
         addFlare: true,
         maxFlareScale: 2,
+        skipCollision: true,
+    },
+    bullet_flare_cursed: {
+        type: "bullet",
+        damage: 0,
+        obstacleDamage: 1,
+        falloff: 10,
+        distance: 16,
+        speed: 4,
+        variance: 0,
+        shrapnel: false,
+        tracerColor: "flare",
+        tracerWidth: 0.3,
+        tracerLength: 1.2,
+        flareColor: 0xaa0000,
+        addFlare: true,
+        maxFlareScale: 2,
+        airdropType: "airdrop_crate_01cursed",
         skipCollision: true,
     },
     // used for guns that shoot projectiles since they still technically have to shoot a bullet of some kind

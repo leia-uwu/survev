@@ -3661,6 +3661,14 @@ const SkinDefs: Record<string, GunDef> = {
             sprite: "gun-awc-02.img",
         },
     }),
+    flare_gun_cursed: defineGunSkin("flare_gun", {
+        name: "Flare Gun?",
+        noPotatoSwap: true,
+        bulletType: "bullet_flare_cursed",
+        worldImg: {
+            tint: 0xff0000,
+        },
+    }),
 };
 
 export const GunDefs: Record<string, GunDef> = { ...BaseDefs, ...SkinDefs };

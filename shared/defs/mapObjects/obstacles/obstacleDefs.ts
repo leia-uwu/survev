@@ -179,6 +179,11 @@ export interface ObstacleDef {
     armorPlated?: boolean;
     smartLoot?: boolean;
     createSmoke?: boolean;
+    createProjectiles?: {
+        type: string;
+        count: number;
+        speed: number;
+    };
     teamId?: FactionTeam;
 }
 

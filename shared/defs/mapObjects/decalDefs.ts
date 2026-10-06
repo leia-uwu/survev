@@ -602,4 +602,16 @@ export const DecalDefs: Record<string, DecalDef> = {
             zIdx: 4,
         },
     },
+    decal_imp_01: {
+        type: "decal",
+        collision: collider.createAabbExtents(v2.create(0, 0), v2.create(0.5, 1)),
+        height: 0,
+        img: {
+            sprite: "map-decal-imp.img",
+            scale: 0.666,
+            alpha: 0.666,
+            tint: 0xffffff,
+            zIdx: 0,
+        },
+    },
 };

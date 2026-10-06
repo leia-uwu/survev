@@ -29,5 +29,8 @@ export const HalloweenAtlas: AtlasDef = {
 
         "map/map-web-01.svg",
         "map/map-light-01.svg",
+
+        "map/map-decal-imp.svg",
+        "proj/proj-devil-01.svg",
     ],
 };

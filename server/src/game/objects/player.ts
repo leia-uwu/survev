@@ -2812,15 +2812,16 @@ export class Player extends BaseGameObject {
             || this.role == "grenadier"
             || this.role == "demo"
         ) {
-            this.game.projectileBarn.addSplitProjectiles(
-                this.__id,
-                "martyr_nade",
-                this.pos,
-                this.layer,
-                v2.create(0, 0),
-                PerkProperties.martyrdom.projectileCount,
-                PerkProperties.martyrdom.projectileMaxVel,
-            );
+            this.game.projectileBarn.addSplitProjectiles({
+                damageType: GameConfig.DamageType.Player,
+                playerId: this.__id,
+                type: "martyr_nade",
+                pos: this.pos,
+                layer: this.layer,
+                initialVel: v2.create(0, 0),
+                count: PerkProperties.martyrdom.projectileCount,
+                maxVel: PerkProperties.martyrdom.projectileMaxVel,
+            });
         }
 
         if (this.game.map.factionMode) {
