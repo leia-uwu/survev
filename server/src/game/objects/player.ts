@@ -463,9 +463,7 @@ export class PlayerBarn {
     }
 
     getAliveGroups(): Group[] {
-        return [...this.groups.values()].filter(
-            (group) => group.livingPlayers.length > 0,
-        );
+        return this.groups.filter((group) => group.livingPlayers.length > 0);
     }
 
     getAliveTeams(): Team[] {
@@ -581,11 +579,6 @@ export class Player extends BaseGameObject {
 
     get rad(): number {
         return GameConfig.player.radius * this.scale;
-    }
-
-    set rad(rad: number) {
-        this.collider.rad = rad;
-        this.rad = rad;
     }
 
     get playerId() {
@@ -1165,8 +1158,6 @@ export class Player extends BaseGameObject {
         return this._perks;
     }
 
-    private _perkTypes: string[] = [];
-
     addPerk(
         type: string,
         droppable = false,
@@ -1179,7 +1170,6 @@ export class Player extends BaseGameObject {
             replaceOnDeath,
             isFromRole,
         });
-        this._perkTypes.push(type);
 
         switch (type) {
             case "trick_m9": {
@@ -1209,7 +1199,6 @@ export class Player extends BaseGameObject {
         const idx = this._perks.findIndex((perk) => perk.type === type);
         if (idx === -1) return;
         this._perks.splice(idx, 1);
-        this._perkTypes.splice(this._perkTypes.indexOf(type), 1);
 
         switch (type) {
             case "trick_m9": {
@@ -1252,7 +1241,7 @@ export class Player extends BaseGameObject {
     }
 
     hasPerk(type: string) {
-        return this._perkTypes.includes(type);
+        return this._perks.some((perk) => perk.type === type);
     }
 
     hasActivePan() {
@@ -2500,14 +2489,10 @@ export class Player extends BaseGameObject {
                     this.lastStandEffect = true;
                     this.lastStandEffectTicker = 1;
                     this.setDirty();
-                } else {
-                    // If the perk cannot mitigate, kill the player
-                    finalDamage = this.health;
                 }
-            } else {
-                // If the player lacks the perk, kill the player
-                finalDamage = this.health;
             }
+
+            finalDamage = math.min(finalDamage, this.health);
         }
 
         this.damageTaken += finalDamage;
@@ -2990,7 +2975,6 @@ export class Player extends BaseGameObject {
             }
         }
         this._perks.length = 0;
-        this._perkTypes.length = 0;
 
         // Wipe inventory
         this.invManager.wipeInventory();
@@ -3140,13 +3124,9 @@ export class Player extends BaseGameObject {
         const normalRevive = this.actionType == GameConfig.Action.Revive && this.action.targetId == 0;
         if (normalRevive) return true;
 
-        const numMedics = this.game.playerBarn.aoeHealPlayers.length;
-        if (numMedics) {
-            return this.game.playerBarn.aoeHealPlayers.some((medic) => {
-                return medic != this && medic.isReviving() && this.isAffectedByAOE(medic);
-            });
-        }
-        return false;
+        return this.game.playerBarn.aoeHealPlayers.some((medic) =>
+            medic != this && medic.isReviving() && this.isAffectedByAOE(medic)
+        );
     }
 
     /** returns player to revive if can revive */
@@ -3247,13 +3227,17 @@ export class Player extends BaseGameObject {
             );
     }
 
-    useHealingItem(item: InventoryItem): void {
-        const itemDef = GameObjectDefs.typeToDef(item, "heal");
+    useHealingOrBoostItem(item: InventoryItem): void {
+        const itemDef = GameObjectDefs.typeToDef(item);
+        if (itemDef.type != "heal" && itemDef.type != "boost") return;
 
         const hasAoeHeal = this.hasPerk("aoe_heal");
+        if (itemDef.type == "heal" && this.health == itemDef.maxHeal && !hasAoeHeal) {
+            return;
+        }
+
         if (
-            (!hasAoeHeal && this.health == itemDef.maxHeal)
-            || this.actionType == GameConfig.Action.UseItem
+            this.actionType == GameConfig.Action.UseItem
             || this.actionType == GameConfig.Action.Revive
             || this.weaponManager.cookingThrowable
         ) {
@@ -3297,34 +3281,6 @@ export class Player extends BaseGameObject {
                 : this;
             actionFunc(target);
         }
-    }
-
-    useBoostItem(item: InventoryItem): void {
-        const itemDef = GameObjectDefs.typeToDef(item, "boost");
-
-        if (
-            this.actionType == GameConfig.Action.UseItem
-            || this.actionType == GameConfig.Action.Revive
-            || this.weaponManager.cookingThrowable
-        ) {
-            return;
-        }
-        if (!this.invManager.has(item)) {
-            return;
-        }
-        const hasAoeHeal = this.hasPerk("aoe_heal");
-
-        // medics always emote the healing/boost item they're using
-        if (hasAoeHeal) {
-            this.game.playerBarn.addEmote("emote_loot", this.__id, item);
-        }
-
-        this.cancelAction();
-        this.doAction(
-            item,
-            GameConfig.Action.UseItem,
-            (hasAoeHeal ? 0.75 : 1) * itemDef.useTime,
-        );
     }
 
     moveLeft = false;
@@ -3468,11 +3424,6 @@ export class Player extends BaseGameObject {
                         if (interactable.__type === ObjectType.Player && canRevive) {
                             this.revive(playerToRevive);
                             ignoreCancel = true;
-                        } else if (
-                            interactable.__type === ObjectType.Loot
-                            && !this.downed
-                        ) {
-                            this.interactWith(interactable);
                         } else {
                             this.interactWith(interactable);
                         }
@@ -3551,10 +3502,8 @@ export class Player extends BaseGameObject {
         const def = GameObjectDefs.typeToDef(msg.useItem);
         switch (def.type) {
             case "heal":
-                this.useHealingItem(msg.useItem);
-                break;
             case "boost":
-                this.useBoostItem(msg.useItem);
+                this.useHealingOrBoostItem(msg.useItem);
                 break;
             case "scope":
                 if (this.invManager.has(msg.useItem)) {
@@ -3577,16 +3526,12 @@ export class Player extends BaseGameObject {
             const loot = objs[i];
             if (loot.__type !== ObjectType.Loot) continue;
             if (loot.destroyed) continue;
-            if (
-                util.sameLayer(loot.layer, this.layer)
-                && (loot.ownerId == 0 || loot.ownerId == this.__id)
-            ) {
-                const pos = loot.pos;
+            if (!util.sameLayer(loot.layer, this.layer)) continue;
+            if (loot.ownerId == 0 || loot.ownerId == this.__id) {
                 const rad = this.isMobile
                     ? this.rad + loot.rad * GameConfig.player.touchLootRadMult
                     : this.rad + loot.rad;
-                const toPlayer = v2.sub(this.pos, pos);
-                const distSq = v2.lengthSqr(toPlayer);
+                const distSq = v2.lengthSqr(v2.sub(this.pos, loot.pos));
                 if (distSq < rad * rad && distSq < closestDist) {
                     closestDist = distSq;
                     closestLoot = loot;
@@ -4338,12 +4283,10 @@ export class Player extends BaseGameObject {
         }
     }
 
-    emoteFromMsg(msg: net.EmoteMsg) {
+    emoteFromMsg(emoteMsg: net.EmoteMsg) {
         if (this.dead) return;
         if (this.game.map.perkMode && !this.role) return;
         if (this.emoteHardTicker > 0) return;
-
-        const emoteMsg = msg as net.EmoteMsg;
 
         const emoteIdx = this.loadout.emotes.indexOf(emoteMsg.type);
         const emoteDef = GameObjectDefs.typeToDefSafe(emoteMsg.type);
@@ -4351,7 +4294,7 @@ export class Player extends BaseGameObject {
 
         if (emoteMsg.isPing) {
             if (this.debug.teleportToPings) {
-                v2.set(this.pos, msg.pos);
+                v2.set(this.pos, emoteMsg.pos);
                 this.setPartDirty();
                 this.game.grid.updateObject(this);
             }
