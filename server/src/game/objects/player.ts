@@ -2661,10 +2661,6 @@ export class Player extends BaseGameObject {
             util.removeFrom(this.team.livingPlayers, this);
         }
 
-        if (this.weaponManager.cookingThrowable) {
-            this.weaponManager.throwThrowable(true);
-        }
-
         //
         // Send kill msg
         //
@@ -2716,33 +2712,14 @@ export class Player extends BaseGameObject {
                     for (let i = 0; i < count; i++) {
                         const item = this.game.lootBarn.getLootTable(PerkProperties.pirate.tier);
                         if (!item) continue;
-
-                        this.game.lootBarn.addLoot(
-                            item.name,
-                            this.pos,
-                            this.layer,
-                            item.count,
-                            {
-                                pushSpeed: util.random(7.5, 11),
-                                dir: v2.randomUnit(),
-                            },
-                        );
+                        this.dropDeathLoot(item.name, item.count);
                     }
 
                     // rare gun
                     if (Math.random() < PerkProperties.pirate.rareChance) {
                         const item = this.game.lootBarn.getLootTable(PerkProperties.pirate.rareTier);
                         if (item) {
-                            this.game.lootBarn.addLoot(
-                                item.name,
-                                this.pos,
-                                this.layer,
-                                item.count,
-                                {
-                                    pushSpeed: util.random(7.5, 11),
-                                    dir: v2.randomUnit(),
-                                },
-                            );
+                            this.dropDeathLoot(item.name, item.count);
                         }
                     }
                 }
@@ -2910,10 +2887,7 @@ export class Player extends BaseGameObject {
                     break;
                 case "melee":
                     if (def.noDropOnDeath || weap.type === "fists") break;
-                    this.game.lootBarn.addLoot(weap.type, this.pos, this.layer, 1, {
-                        pushSpeed: util.random(7.5, 11),
-                        dir: v2.randomUnit(),
-                    });
+                    this.dropDeathLoot(weap.type, 1);
                     weap.type = "fists";
                     break;
                 case "throwable":
@@ -2931,10 +2905,7 @@ export class Player extends BaseGameObject {
 
             const amount = this.invManager.get(item);
             if (amount > 0) {
-                this.game.lootBarn.addLoot(item, this.pos, this.layer, amount, {
-                    pushSpeed: util.random(7.5, 11),
-                    dir: v2.randomUnit(),
-                });
+                this.dropDeathLoot(item, amount);
             }
         }
 
@@ -2943,35 +2914,19 @@ export class Player extends BaseGameObject {
             if (!type) continue;
             const def = GameObjectDefs.typeToDef(type) as HelmetDef | ChestDef | BackpackDef;
             if (!!(def as ChestDef).noDrop || def.level < 1) continue;
-            this.game.lootBarn.addLoot(type, this.pos, this.layer, 1, {
-                pushSpeed: util.random(7.5, 11),
-                dir: v2.randomUnit(),
-            });
+            this.dropDeathLoot(type, 1);
         }
 
         if (this.outfit) {
             const def = GameObjectDefs.typeToDef(this.outfit, "outfit");
             if (!def.noDropOnDeath && !def.noDrop && this.outfit !== this.loadout.outfit) {
-                this.game.lootBarn.addLoot(this.outfit, this.pos, this.layer, 1, {
-                    pushSpeed: util.random(7.5, 11),
-                    dir: v2.randomUnit(),
-                });
+                this.dropDeathLoot(this.outfit, 1);
             }
         }
 
-        for (let i = this.perks.length - 1; i >= 0; i--) {
-            const perk = this.perks[i];
+        for (const perk of this.perks) {
             if (perk.droppable || perk.replaceOnDeath) {
-                this.game.lootBarn.addLoot(
-                    perk.replaceOnDeath || perk.type,
-                    this.pos,
-                    this.layer,
-                    1,
-                    {
-                        pushSpeed: util.random(7.5, 11),
-                        dir: v2.randomUnit(),
-                    },
-                );
+                this.dropDeathLoot(perk.replaceOnDeath || perk.type, 1);
             }
         }
         this._perks.length = 0;
@@ -3227,17 +3182,13 @@ export class Player extends BaseGameObject {
             );
     }
 
-    useHealingOrBoostItem(item: InventoryItem): void {
-        const itemDef = GameObjectDefs.typeToDef(item);
-        if (itemDef.type != "heal" && itemDef.type != "boost") return;
+    useHealingItem(item: InventoryItem): void {
+        const itemDef = GameObjectDefs.typeToDef(item, "heal");
 
         const hasAoeHeal = this.hasPerk("aoe_heal");
-        if (itemDef.type == "heal" && this.health == itemDef.maxHeal && !hasAoeHeal) {
-            return;
-        }
-
         if (
-            this.actionType == GameConfig.Action.UseItem
+            (!hasAoeHeal && this.health == itemDef.maxHeal)
+            || this.actionType == GameConfig.Action.UseItem
             || this.actionType == GameConfig.Action.Revive
             || this.weaponManager.cookingThrowable
         ) {
@@ -3281,6 +3232,34 @@ export class Player extends BaseGameObject {
                 : this;
             actionFunc(target);
         }
+    }
+
+    useBoostItem(item: InventoryItem): void {
+        const itemDef = GameObjectDefs.typeToDef(item, "boost");
+
+        if (
+            this.actionType == GameConfig.Action.UseItem
+            || this.actionType == GameConfig.Action.Revive
+            || this.weaponManager.cookingThrowable
+        ) {
+            return;
+        }
+        if (!this.invManager.has(item)) {
+            return;
+        }
+        const hasAoeHeal = this.hasPerk("aoe_heal");
+
+        // medics always emote the healing/boost item they're using
+        if (hasAoeHeal) {
+            this.game.playerBarn.addEmote("emote_loot", this.__id, item);
+        }
+
+        this.cancelAction();
+        this.doAction(
+            item,
+            GameConfig.Action.UseItem,
+            (hasAoeHeal ? 0.75 : 1) * itemDef.useTime,
+        );
     }
 
     moveLeft = false;
@@ -3502,14 +3481,14 @@ export class Player extends BaseGameObject {
         const def = GameObjectDefs.typeToDef(msg.useItem);
         switch (def.type) {
             case "heal":
+                this.useHealingItem(msg.useItem);
+                break;
             case "boost":
-                this.useHealingOrBoostItem(msg.useItem);
+                this.useBoostItem(msg.useItem);
                 break;
             case "scope":
-                if (this.invManager.has(msg.useItem)) {
-                    this.scope = msg.useItem;
-                    this.inventoryDirty = true;
-                }
+                this.scope = msg.useItem;
+                this.inventoryDirty = true;
                 break;
         }
     }
@@ -4101,6 +4080,13 @@ export class Player extends BaseGameObject {
             pushSpeed: util.random(7.5, 11),
             dir: v2.neg(this.dir),
             source: "player",
+        });
+    }
+
+    dropDeathLoot(type: string, count: number) {
+        this.game.lootBarn.addLoot(type, this.pos, this.layer, count, {
+            pushSpeed: util.random(7.5, 11),
+            dir: v2.neg(this.dir),
         });
     }
 
