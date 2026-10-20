@@ -3664,7 +3664,11 @@ const SkinDefs: Record<string, GunDef> = {
     flare_gun_cursed: defineGunSkin("flare_gun", {
         name: "Flare Gun?",
         noPotatoSwap: true,
+        dualWieldType: "",
         bulletType: "bullet_flare_cursed",
+        lootImg: {
+            sprite: "loot-weapon-flare-gun-cursed.img",
+        },
         worldImg: {
             tint: 0xff0000,
         },
