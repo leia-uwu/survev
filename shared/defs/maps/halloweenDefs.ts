@@ -95,6 +95,11 @@ const mapDef: PartialMapDef = {
         particles: {
             camera: "falling_leaf_halloween",
         },
+        tracerColors: {
+            "308sub": {
+                regular: 0x646947,
+            },
+        },
         ambience: {
             music: "menu_music_02",
         },
