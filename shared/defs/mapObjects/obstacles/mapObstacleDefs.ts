@@ -760,6 +760,21 @@ export const MapObstacleDefs: Record<string, ObstacleDef> = {
         },
         loot: [tierLoot("tier_pumpkin_perks", 1, 1), tierLoot("tier_fruit_xp", 1, 1)],
     }),
+    pumpkin_04: createPumpkin({
+        img: {
+            sprite: "map-pumpkin-05.img",
+            residue: "",
+        },
+        loot: [
+            tierLoot("tier_outfits", 1, 1),
+            tierLoot("tier_halloween_mystery_perks", 1, 1),
+            tierLoot("tier_airdrop_uncommon", 1, 1),
+            tierLoot("tier_airdrop_rare", 0, 1),
+            tierLoot("tier_airdrop_armor", 1, 1),
+            autoLoot("m9", 1),
+            autoLoot("9mm", 66),
+        ],
+    }),
     squash_01: createPumpkin({
         collision: collider.createCircle(v2.create(0, 0), 1),
         map: { display: true, color: 0x627344, scale: 1.25 },

@@ -291,7 +291,7 @@ const mapDef: PartialMapDef = {
                 bush_01: 90,
                 hedgehog_01: 12,
                 cache_pumpkin_01: 32,
-                cache_pumpkin_03: 32,
+                cache_pumpkin_03: 66,
                 shack_01: 6,
                 outhouse_01: 6,
                 loot_tier_1: 48,

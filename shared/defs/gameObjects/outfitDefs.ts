@@ -1498,6 +1498,16 @@ const SkinDefs: Record<string, OutfitDef> = {
             tint: 0xa9621d,
         },
     }),
+    outfitTrickTarget: defineOutfitSkin("outfitBase", {
+        name: "Gold Pumpkin Costume",
+        obstacleType: "pumpkin_04",
+        noDrop: true,
+        noDropOnDeath: true,
+        baseScale: 1,
+        lootImg: {
+            tint: 0xc5a81a,
+        },
+    }),
 };
 
 export const OutfitDefs = { ...BaseDefs, ...SkinDefs };

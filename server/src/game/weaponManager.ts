@@ -65,6 +65,7 @@ export class WeaponManager {
         return this.player.animType === GameConfig.Anim.Cook;
     }
     cookTicker = 0;
+    throwableFuseTime = 0;
     throwableCooldown = 0;
 
     get activeWeapon(): string {
@@ -339,9 +340,11 @@ export class WeaponManager {
             }
 
             if (
-                (itemDef.type === "throwable"
+                (
+                    itemDef.type === "throwable"
                     && itemDef.cookable
-                    && this.cookTicker > itemDef.fuseTime) // safety check
+                    && this.cookTicker > (this.throwableFuseTime ?? itemDef.fuseTime)
+                ) // safety check
                 || (!player.shootHold && this.cookTicker > GameConfig.player.cookTime)
             ) {
                 this.throwThrowable();
@@ -865,6 +868,10 @@ export class WeaponManager {
             distanceMult *= PerkProperties.high_velocity.distanceMult;
         }
 
+        if (this.player.hasPerk("trick_velocity")) {
+            speedMult *= PerkProperties.trick_velocity.speedMult;
+        }
+
         if (this.player.hasPerk("bonus_assault")) {
             speedMult *= PerkProperties.bonus_assault.speedMult;
         }
@@ -1202,10 +1209,23 @@ export class WeaponManager {
         const itemDef = GameObjectDefs.typeToDef(this.activeWeapon, "throwable");
 
         this.cookTicker = 0;
+        this.throwableFuseTime = itemDef.fuseTime;
+
+        if (
+            itemDef.cookable
+            && this.player.hasPerk("trick_explosive")
+        ) {
+            this.throwableFuseTime = util.random(
+                PerkProperties.trick_explosive.minFuseTime,
+                itemDef.fuseTime,
+            );
+        }
 
         this.player.playAnim(
             GameConfig.Anim.Cook,
-            itemDef.cookable ? itemDef.fuseTime : Infinity,
+            itemDef.cookable
+                ? this.throwableFuseTime ?? itemDef.fuseTime
+                : Infinity,
         );
     }
 
@@ -1319,7 +1339,7 @@ export class WeaponManager {
 
         const fuseTime = math.max(
             0.0,
-            throwableDef.fuseTime - (throwableDef.cookable ? this.cookTicker : 0),
+            this.throwableFuseTime - (throwableDef.cookable ? this.cookTicker : 0),
         );
         const projectile = this.player.game.projectileBarn.addProjectile(
             this.player.__id,
@@ -1333,6 +1353,7 @@ export class WeaponManager {
             dir,
             oldThrowableType,
         );
+        this.throwableFuseTime = 0;
 
         if (oldThrowableType == "strobe" && throwableDef.strikeDelay) {
             const duration = 3;

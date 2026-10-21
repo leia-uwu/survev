@@ -728,6 +728,8 @@ export const Main: MapDef = {
             { name: "trick_m9", count: 1, weight: 1 },
             { name: "trick_chatty", count: 1, weight: 1 },
             { name: "trick_drain", count: 1, weight: 1 },
+            { name: "trick_explosive", count: 1, weight: 1 },
+            { name: "trick_velocity", count: 1, weight: 1 },
 
             { name: "treat_9mm", count: 1, weight: 1 },
             { name: "treat_12g", count: 1, weight: 1 },

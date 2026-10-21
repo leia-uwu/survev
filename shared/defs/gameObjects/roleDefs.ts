@@ -450,6 +450,27 @@ export const RoleDefs: Record<string, RoleDef> = {
         },
         perks: ["hunted"],
     },
+    // Halloween-Specific Kill Leader
+    target_trick: {
+        type: "role",
+        defaultItems: createDefaultItems({
+            outfit: "outfitTrickTarget",
+            noDropOutfit: true,
+        }),
+        announce: true,
+        killFeed: { assign: true, dead: true, color: "#ff0000" },
+        sound: {
+            assign: "leader_assigned_01",
+            dead: "leader_dead_01",
+        },
+        mapIndicator: {
+            sprite: "loot-perk-trick-target.img",
+            tint: 0xff0000,
+            pulse: true,
+            pulseTint: 0xff0000,
+        },
+        perks: ["trick_target"],
+    },
     healer: {
         type: "role",
         defaultItems: createDefaultItems({

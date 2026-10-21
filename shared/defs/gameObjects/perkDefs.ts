@@ -142,12 +142,18 @@ export const PerkProperties = {
         speedMult: 1.4,
         distanceMult: 1.3,
     },
+    trick_velocity: {
+        speedMult: 0.5,
+    },
     trick_chatty: {
         minInterval: 5,
         maxInterval: 15,
     },
     trick_drain: {
         bleedTickRateMult: 3,
+    },
+    trick_explosive: {
+        minFuseTime: 1,
     },
     bonus_assault: {
         speedMult: 1.1,
@@ -768,6 +774,49 @@ export const PerkDefs: Record<string, PerkDef> = {
         emoteOnPickup: "emote_trick_drain",
         lootImg: {
             sprite: "loot-perk-trick-drain.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-04.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },
+    trick_explosive: {
+        name: "Unstable Explosives",
+        type: "perk",
+        emoteOnPickup: "emote_trick_explosive",
+        lootImg: {
+            sprite: "loot-perk-trick-explosive.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-04.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: {
+            pickup: "perk_pickup_01",
+        },
+    },
+    trick_velocity: {
+        name: "Low-Velocity Rounds",
+        type: "perk",
+        emoteOnPickup: "emote_trick_velocity",
+        lootImg: {
+            sprite: "loot-perk-trick-velocity.img",
+            tint: 0xffffff,
+            border: "loot-circle-outer-04.img",
+            borderTint: 0xffffff,
+            scale: 0.275,
+        },
+        sound: { pickup: "perk_pickup_01" },
+    },
+    trick_target: {
+        name: "High-Value Target",
+        type: "perk",
+        emoteOnPickup: "emote_trick_target",
+        lootImg: {
+            sprite: "loot-perk-trick-target.img",
             tint: 0xffffff,
             border: "loot-circle-outer-04.img",
             borderTint: 0xffffff,
