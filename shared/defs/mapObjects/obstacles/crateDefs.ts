@@ -372,7 +372,8 @@ export const CrateDefs: Record<string, ObstacleDef> = {
         loot: [
             tierLoot("tier_noir_outfit", 1, 1),
             tierLoot("tier_chest_04", 1, 1),
-            autoLoot("9mm", 300),
+            autoLoot("9mm", 150),
+            autoLoot("9mm", 150),
             autoLoot("smoke", 4),
             autoLoot("backpack02", 1),
         ],
